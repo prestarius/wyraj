@@ -3,23 +3,14 @@
 from rich.text import Text
 from textual.widgets import Static
 
-from wyraj.core.components import Health, Hunger, Lore, Position, Renderable, Wielding
+from wyraj.core.components import Health, Hunger, Item, Lore, Position, Renderable, Wielding
 from wyraj.core.game import Game
 from wyraj.core.map import Tile
+from wyraj.ui.portrait import hp_band, render_portrait
 
 # (unicode, ascii) glyphs per terrain
 TREE_GLYPHS = ("♣", "#")
 FLOOR_GLYPHS = ("·", ".")
-
-PORTRAIT = """\
-   ▄▄▄▄▄
-  ▟█████▙
-  █▓▒░▒▓█
-  ▀▜███▛▀
- ▄███████▄
- █ ▒███▒ █
- ▛ ▒███▒ ▜
-   ▐█▌▐█▌"""
 
 
 class MapView(Static):
@@ -71,15 +62,25 @@ class MapView(Static):
 
 
 class CharacterPanel(Static):
-    def __init__(self, game: Game) -> None:
+    def __init__(self, game: Game, portrait_style: str = "half") -> None:
         super().__init__()
         self.game = game
+        self.portrait_style = portrait_style
+
+    def _weapon_key(self) -> str | None:
+        wielding = self.game.world.get(self.game.player, Wielding)
+        if wielding is None or wielding.item is None:
+            return None
+        item = self.game.world.get(wielding.item, Item)
+        return item.key if item else None
 
     def render(self) -> Text:
         game = self.game
         health = game.world.expect(game.player, Health)
         text = Text()
-        text.append(PORTRAIT, style="grey74")
+        text.append(
+            render_portrait(self.portrait_style, hp_band(health.fraction), self._weapon_key())
+        )
         text.append("\n\n")
         text.append(" Wędrowiec\n", style="bold")
         text.append(f" Turn {game.turn}\n\n", style="grey58")

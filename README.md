@@ -6,15 +6,19 @@ readable folk-horror prose. No goblins, no orcs: leszy, strzyga, utopiec, bies.
 
 > *Wyraj* — the Slavic otherworld where souls fly as birds and return in spring.
 
-**Status:** pre-alpha, milestone M0 (walking skeleton) in progress.
+**Status:** pre-alpha, milestone M1 ("it reads like a story") complete.
 
 ## Run
 
 ```sh
 uv sync
-uv run wyraj            # play
-uv run wyraj --seed 42  # deterministic run
+uv run wyraj                 # play
+uv run wyraj --seed 42       # deterministic run
+uv run wyraj --portrait box  # box-drawing portrait (default: halfblock)
 ```
+
+Keys: `hjkl`/`yubn`/arrows move (bump to attack), `.` wait, `g` get,
+`i` inventory, `x` examine, `c` codex, `q` quit.
 
 ## Develop
 

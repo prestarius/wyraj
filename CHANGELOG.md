@@ -2,6 +2,24 @@
 
 All notable changes to Wyraj. Format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.1-m1] — 2026-08-14 — It Reads Like a Story
+
+### Added
+- ContextEnricher: HP-band, unseen-attacker, and recency ("again") context
+  tags; tag-filtered variant selection with anti-repetition.
+- TurnComposer: one composed narrative paragraph per full round.
+- Grammar-aware string-form tables (spec §7): EN def/indef/plural/pronoun
+  accessors, PL case tables supported and tested; slots like
+  `{defender.name.def}` in packs.
+- Content wave 1: five monsters (bies, wilk, utopiec, strzyga, martwiak),
+  ten items (folk remedies, weapons, trinkets), weighted spawns.
+- Inventory (get/use/wield), hunger clock with starvation, weapon damage
+  flowing into combat events.
+- Examine screen, bestiary codex unlocked by sightings, per-monster
+  first-sighting narration (`LoreDiscovered`).
+- Reactive portrait: HP-band color wash + wound decals + weapon overlay;
+  two prototype art directions (`--portrait half|box`) for decision #5.
+
 ## [0.0-m0] — 2026-08-14 — Walking Skeleton
 
 ### Added
