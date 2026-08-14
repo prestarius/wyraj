@@ -2,6 +2,7 @@ import random
 
 import pytest
 
+from wyraj.content.bestiary import load_bestiary
 from wyraj.core.events import (
     AttackResolved,
     EntityDied,
@@ -12,10 +13,12 @@ from wyraj.core.events import (
     Outcome,
 )
 from wyraj.narration.engine import NarrationEngine, NarrationLine
+from wyraj.narration.forms import build_form_registry
 from wyraj.narration.templates import TemplateNarrator, load_pack, render, rule_key
 
 PLAYER = EntityRef(entity=1, key="player", name="you", is_player=True)
 BIES = EntityRef(entity=2, key="bies", name="bies")
+REGISTRY = build_form_registry(load_bestiary())
 
 
 def fixture_event(event_key: str, subkey: str | None) -> GameEvent:
@@ -46,7 +49,7 @@ def test_every_pack_entry_renders_cleanly() -> None:
         event = fixture_event(event_key, subkey)
         assert rule_key(event) == (event_key, subkey)
         for variant in variants:
-            text = render(variant.en, event)
+            text = render(variant.en, event, REGISTRY)
             assert "{" not in text and "}" not in text
             assert text.strip()
 
@@ -54,7 +57,7 @@ def test_every_pack_entry_renders_cleanly() -> None:
 def test_unresolved_slot_raises() -> None:
     event = EntityDied(entity=BIES)
     with pytest.raises(KeyError):
-        render("The {entity.nonexistent} dies.", event)
+        render("The {entity.nonexistent} dies.", event, REGISTRY)
 
 
 def test_narrator_is_deterministic() -> None:
@@ -62,7 +65,7 @@ def test_narrator_is_deterministic() -> None:
     event = fixture_event("attack_resolved", "player_hit")
 
     def run() -> list[str]:
-        narrator = TemplateNarrator(pack, random.Random(7))
+        narrator = TemplateNarrator(pack, random.Random(7), REGISTRY)
         return [line.text for _ in range(10) for line in narrator.compose(event)]
 
     assert run() == run()
@@ -71,14 +74,14 @@ def test_narrator_is_deterministic() -> None:
 def test_unknown_event_is_silent() -> None:
     from wyraj.core.events import EntityMoved
 
-    narrator = TemplateNarrator(load_pack("en"), random.Random(1))
+    narrator = TemplateNarrator(load_pack("en"), random.Random(1), REGISTRY)
     moved = EntityMoved(actor=PLAYER, from_pos=(0, 0), to_pos=(1, 0))
     assert narrator.compose(moved) == []
 
 
 def test_engine_collects_lines_and_notifies_sinks() -> None:
     bus = EventBus()
-    engine = NarrationEngine(bus, TemplateNarrator(load_pack("en"), random.Random(1)))
+    engine = NarrationEngine(bus, TemplateNarrator(load_pack("en"), random.Random(1), REGISTRY))
     received: list[NarrationLine] = []
     engine.add_sink(received.append)
     bus.publish(fixture_event("attack_resolved", "enemy_hit"))

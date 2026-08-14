@@ -21,6 +21,8 @@ class MonsterDef(BaseModel):
     behavior: str = "approach"
     epithets: list[str] = []
     description: str = ""
+    # String-form tables per language (spec §7), e.g. {"en": {"plural": "biesy"}}
+    forms: dict[str, dict[str, str | bool]] = {}
 
 
 def load_bestiary(root: Path | None = None) -> dict[str, MonsterDef]:

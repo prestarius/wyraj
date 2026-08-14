@@ -9,9 +9,11 @@ import os
 import random
 from pathlib import Path
 
+from wyraj.content.bestiary import load_bestiary
 from wyraj.core.actions import Action, Move, Wait
 from wyraj.core.game import Game
 from wyraj.narration.engine import NarrationEngine
+from wyraj.narration.forms import build_form_registry
 from wyraj.narration.templates import TemplateNarrator, load_pack
 
 GOLDEN = Path(__file__).parent / "golden" / "seed42_walk.log"
@@ -36,7 +38,9 @@ def build_script() -> list[Action]:
 
 def produce_transcript() -> str:
     game = Game(seed=SEED)
-    narration = NarrationEngine(game.bus, TemplateNarrator(load_pack("en"), game.rng.narration))
+    registry = build_form_registry(load_bestiary())
+    narrator = TemplateNarrator(load_pack("en"), game.rng.narration, registry)
+    narration = NarrationEngine(game.bus, narrator)
     lines: list[str] = []
     game.bus.subscribe_all(lambda e: lines.append(repr(e)))
     narration.add_sink(lambda line: lines.append(f"NARRATE: {line.text}"))
