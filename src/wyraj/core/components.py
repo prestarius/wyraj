@@ -51,6 +51,47 @@ class AI:
 
 
 @dataclass(frozen=True)
+class Item:
+    key: str
+    kind: str  # "weapon" | "consumable" | "trinket"
+
+
+@dataclass(frozen=True)
+class WeaponStats:
+    damage: int
+
+
+@dataclass(frozen=True)
+class Consumable:
+    effect: str  # "heal" | "feed"
+    power: int
+
+
+@dataclass(frozen=True)
+class Inventory:
+    items: tuple[int, ...] = ()  # entity ids
+
+
+@dataclass(frozen=True)
+class Wielding:
+    item: int | None = None  # entity id of the wielded weapon
+
+
+@dataclass(frozen=True)
+class Hunger:
+    satiation: int
+    max_satiation: int
+
+    @property
+    def band(self) -> str:
+        if self.satiation <= 0:
+            return "starving"
+        if self.satiation <= self.max_satiation // 3:
+            return "hungry"
+        return "sated"
+
+
+@dataclass(frozen=True)
 class Lore:
     """Narrative metadata used by the narration engine."""
 

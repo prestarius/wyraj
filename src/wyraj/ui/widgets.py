@@ -3,7 +3,7 @@
 from rich.text import Text
 from textual.widgets import Static
 
-from wyraj.core.components import Health, Position, Renderable
+from wyraj.core.components import Health, Hunger, Lore, Position, Renderable, Wielding
 from wyraj.core.game import Game
 from wyraj.core.map import Tile
 
@@ -34,9 +34,14 @@ class MapView(Static):
         tree = TREE_GLYPHS[glyph_index]
         floor = FLOOR_GLYPHS[glyph_index]
 
+        # Items first, creatures second — creatures draw on top.
         entities: dict[tuple[int, int], Renderable] = {}
-        for _entity, (pos, renderable) in game.world.query(Position, Renderable):
-            entities[(pos.x, pos.y)] = renderable
+        for entity, (pos, renderable) in game.world.query(Position, Renderable):
+            if not game.world.has(entity, Health):
+                entities[(pos.x, pos.y)] = renderable
+        for entity, (pos, renderable) in game.world.query(Position, Renderable):
+            if game.world.has(entity, Health):
+                entities[(pos.x, pos.y)] = renderable
 
         text = Text()
         for y in range(game.map.height):
@@ -86,4 +91,15 @@ class CharacterPanel(Static):
         text.append("█" * filled, style=hp_style)
         text.append("░" * (bar_width - filled), style="grey23")
         text.append(f" {health.hp}/{health.max_hp}\n")
+
+        hunger = game.world.get(game.player, Hunger)
+        if hunger is not None:
+            band_styles = {"sated": "grey58", "hungry": "yellow", "starving": "bold red"}
+            text.append(f"\n {hunger.band.capitalize()}\n", style=band_styles[hunger.band])
+
+        wielding = game.world.get(game.player, Wielding)
+        if wielding is not None and wielding.item is not None:
+            lore = game.world.get(wielding.item, Lore)
+            if lore is not None:
+                text.append(f" Wields: {lore.name}\n", style="grey66")
         return text

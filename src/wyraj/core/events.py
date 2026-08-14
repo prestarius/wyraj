@@ -64,6 +64,39 @@ class EntityDied(GameEvent):
 
 
 @dataclass(frozen=True)
+class ItemPickedUp(GameEvent):
+    actor: EntityRef
+    item: EntityRef
+
+
+@dataclass(frozen=True)
+class ItemUsed(GameEvent):
+    actor: EntityRef
+    item: EntityRef
+    effect: str
+    power: int
+
+
+@dataclass(frozen=True)
+class ItemWielded(GameEvent):
+    actor: EntityRef
+    item: EntityRef
+
+
+@dataclass(frozen=True)
+class HungerChanged(GameEvent):
+    actor: EntityRef
+    band: str  # "sated" | "hungry" | "starving"
+
+
+@dataclass(frozen=True)
+class StarvationHit(GameEvent):
+    actor: EntityRef
+    damage: int
+    hp_frac: float
+
+
+@dataclass(frozen=True)
 class TurnEnded(GameEvent):
     turn: int
 

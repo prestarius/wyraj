@@ -17,3 +17,18 @@ class Move(Action):
 @dataclass(frozen=True)
 class Wait(Action):
     pass
+
+
+@dataclass(frozen=True)
+class Get(Action):
+    """Pick up the item on the current tile."""
+
+
+@dataclass(frozen=True)
+class UseItem(Action):
+    item: int  # entity id from the actor's inventory
+
+
+@dataclass(frozen=True)
+class WieldItem(Action):
+    item: int  # entity id from the actor's inventory

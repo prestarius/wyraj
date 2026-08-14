@@ -12,7 +12,7 @@ def test_game_boots_deterministically() -> None:
     monsters_a = [a.world.expect(e, Position) for e in a.world.entities_with(AI)]
     monsters_b = [b.world.expect(e, Position) for e in b.world.entities_with(AI)]
     assert monsters_a == monsters_b
-    assert len(monsters_a) == 4
+    assert len(monsters_a) == 6
 
 
 def test_scripted_run_same_event_log() -> None:

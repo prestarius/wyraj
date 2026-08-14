@@ -1,0 +1,70 @@
+odwar:
+  name: "odwar of yarrow"
+  glyph: "!"
+  ascii_glyph: "!"
+  style: "medium_purple3"
+  kind: consumable
+  effect: heal
+  power: 8
+  spawn_weight: 4
+  forms:
+    en: { article: "an", plural: "odwary" }
+  description: >
+    A bitter herbal decoction in a clay flask, brewed the way the old
+    zielarki taught: yarrow, oak bark, and a whisper over the pot. It closes
+    wounds faster than any barber's needle.
+
+mocny_odwar:
+  name: "black odwar"
+  glyph: "!"
+  ascii_glyph: "!"
+  style: "purple4"
+  kind: consumable
+  effect: heal
+  power: 16
+  spawn_weight: 2
+  description: >
+    Thick as tar and smelling of burnt honey. The zielarka who brewed it
+    would not say what went into the pot, only that you should drink it
+    with your eyes shut.
+
+sol_swiecona:
+  name: "blessed salt"
+  glyph: "%"
+  ascii_glyph: "%"
+  style: "white"
+  kind: consumable
+  effect: heal
+  power: 3
+  spawn_weight: 3
+  description: >
+    A twist of linen holding salt blessed on Gromniczna. A pinch on the
+    tongue steadies the soul and knits the flesh — a little. Its true work
+    is against things that should not walk.
+
+chleb:
+  name: "loaf of dark bread"
+  glyph: ","
+  ascii_glyph: ","
+  style: "tan"
+  kind: consumable
+  effect: feed
+  power: 250
+  spawn_weight: 4
+  description: >
+    Heavy rye bread, baked hard for the road. The bies hates the smell of
+    it, the old people say. Good — more for you.
+
+suszone_mieso:
+  name: "strip of dried meat"
+  glyph: ","
+  ascii_glyph: ","
+  style: "dark_orange3"
+  kind: consumable
+  effect: feed
+  power: 400
+  spawn_weight: 3
+  description: >
+    Smoked over a juniper fire until it bends like leather. Chewing it
+    takes half a day and gives you something to think about other than
+    the sounds between the trees.

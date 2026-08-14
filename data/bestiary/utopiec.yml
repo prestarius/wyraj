@@ -1,0 +1,19 @@
+utopiec:
+  name: "utopiec"
+  glyph: "u"
+  ascii_glyph: "u"
+  style: "cadet_blue"
+  hp: 10
+  speed: 80
+  damage: 4
+  to_hit: 60
+  behavior: approach
+  spawn_weight: 2
+  epithets: ["the drowned one", "he who waits under the reeds"]
+  forms:
+    en: { article: "an", plural: "utopce" }
+  description: >
+    The soul of a drowned man, swollen and green-slick, that pulls the
+    living down to keep it company. It is strongest in the water and it
+    knows it; on dry moss it moves like a thing remembering how legs
+    worked. Do not let it remember near a pool.

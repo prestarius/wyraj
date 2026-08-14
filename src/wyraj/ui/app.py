@@ -9,13 +9,13 @@ from textual.binding import Binding
 from textual.containers import Horizontal
 from textual.widgets import Footer, RichLog
 
-from wyraj.core.actions import Action, Move, Wait
+from wyraj.core.actions import Action, Get, Move, Wait
 from wyraj.core.game import Game
 from wyraj.narration.context import ContextEnricher
 from wyraj.narration.engine import NarrationEngine, NarrationLine
 from wyraj.narration.forms import build_form_registry
 from wyraj.narration.templates import TemplateNarrator, load_pack
-from wyraj.ui.screens import DeathScreen
+from wyraj.ui.screens import DeathScreen, InventoryScreen
 from wyraj.ui.widgets import CharacterPanel, MapView
 
 MOVE_KEYS: dict[str, tuple[int, int]] = {
@@ -42,13 +42,15 @@ class WyrajApp(App[None]):
     BINDINGS: ClassVar = [
         Binding("q", "quit", "Quit"),
         Binding("full_stop", "wait", "Wait", key_display="."),
+        Binding("g", "get", "Get"),
+        Binding("i", "inventory", "Inventory"),
     ]
 
     def __init__(self, seed: int, use_ascii: bool = False) -> None:
         super().__init__()
         self.game = Game(seed)
         self.use_ascii = use_ascii
-        registry = build_form_registry(self.game.bestiary)
+        registry = build_form_registry({**self.game.bestiary, **self.game.items_catalog})
         narrator = TemplateNarrator(load_pack("en"), self.game.rng.narration, registry)
         enricher = ContextEnricher(self.game)
         self.narration = NarrationEngine(self.game.bus, narrator, enricher=enricher.enrich)
@@ -77,12 +79,24 @@ class WyrajApp(App[None]):
             self.query_one(RichLog).write(Text(line.text, style=style))
 
     def on_key(self, event: events.Key) -> None:
+        if len(self.screen_stack) > 1:
+            return  # a modal is open; it owns the keys
         if event.key in MOVE_KEYS:
             dx, dy = MOVE_KEYS[event.key]
             self._play(Move(dx, dy))
 
     def action_wait(self) -> None:
         self._play(Wait())
+
+    def action_get(self) -> None:
+        self._play(Get())
+
+    def action_inventory(self) -> None:
+        def on_result(action: Action | None) -> None:
+            if action is not None:
+                self._play(action)
+
+        self.push_screen(InventoryScreen(self.game), on_result)
 
     def _play(self, action: Action) -> None:
         if self.game.game_over:

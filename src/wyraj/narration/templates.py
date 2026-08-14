@@ -22,7 +22,18 @@ import yaml
 from pydantic import BaseModel, Field
 
 from wyraj.content.paths import data_dir
-from wyraj.core.events import AttackResolved, EntityDied, EntityRef, GameEvent, MoveBlocked
+from wyraj.core.events import (
+    AttackResolved,
+    EntityDied,
+    EntityRef,
+    GameEvent,
+    HungerChanged,
+    ItemPickedUp,
+    ItemUsed,
+    ItemWielded,
+    MoveBlocked,
+    StarvationHit,
+)
 from wyraj.narration.engine import NarrationLine
 from wyraj.narration.forms import FormRegistry
 
@@ -51,6 +62,16 @@ def rule_key(event: GameEvent) -> RuleKey:
             return "entity_died", "player" if event.entity.is_player else "enemy"
         case MoveBlocked():
             return "move_blocked", "player" if event.actor.is_player else "enemy"
+        case ItemPickedUp():
+            return "item_picked_up", None
+        case ItemUsed():
+            return "item_used", event.effect
+        case ItemWielded():
+            return "item_wielded", None
+        case HungerChanged():
+            return "hunger_changed", event.band
+        case StarvationHit():
+            return "starvation_hit", None
         case _:
             name = type(event).__name__
             snake = re.sub(r"(?<!^)(?=[A-Z])", "_", name).lower()

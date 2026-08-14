@@ -1,0 +1,42 @@
+item_picked_up:
+  - weight: 2
+    en: "You take {item.name.def} from the moss."
+  - weight: 1
+    en: "You pick up {item.name.def} and weigh it in your hand."
+
+item_used:
+  heal:
+    - weight: 2
+      en: "You drink down {item.name.def}; warmth spreads through the hurt like sun through cold water."
+    - weight: 1
+      en: "{item.name.Def} burns going down, and the pain dulls to an ache."
+    - weight: 2
+      tags: [player_dying]
+      en: "Hands shaking, you force down {item.name.def}. The dark at the edges of your sight pulls back."
+  feed:
+    - weight: 2
+      en: "You eat {item.name.def}, and the forest seems a little less hungry in turn."
+    - weight: 1
+      en: "You make short work of {item.name.def}. It tastes of woodsmoke and home."
+
+item_wielded:
+  - weight: 2
+    en: "You take up {item.name.def}; its weight settles into your grip like an answer."
+  - weight: 1
+    en: "You wield {item.name.def} now. The trees keep their opinion to themselves."
+
+hunger_changed:
+  sated: []
+  hungry:
+    - weight: 1
+      en: "Your stomach tightens. It has been too long since bread."
+  starving:
+    - weight: 1
+      importance: high
+      en: "Hunger is no longer a feeling but a hollow where your strength used to be."
+
+starvation_hit:
+  - weight: 2
+    en: "Your legs tremble; the hunger is eating what the forest has not."
+  - weight: 1
+    en: "You stumble, hollow to the bones. You must eat, and soon."
