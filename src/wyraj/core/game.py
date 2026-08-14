@@ -14,17 +14,20 @@ from wyraj.core.actions import Action, Ascend, Descend, Get, Move, UseItem, Wait
 from wyraj.core.components import (
     AI,
     Actor,
+    AttackStatus,
     Consumable,
     Health,
     Hunger,
     Inventory,
     Item,
+    LightSource,
     Lore,
     Melee,
     OnLevel,
     Player,
     Position,
     Renderable,
+    StatusEffects,
     WeaponStats,
     Wielding,
 )
@@ -34,7 +37,7 @@ from wyraj.core.map import GameMap, Tile
 from wyraj.core.refs import ref_for
 from wyraj.core.rng import RngStreams
 from wyraj.core.scheduler import TurnScheduler
-from wyraj.core.systems import ai, combat, hunger, items, movement
+from wyraj.core.systems import ai, combat, hunger, items, movement, status
 from wyraj.procgen.forest import generate_forest
 from wyraj.procgen.kurhany import generate_kurhan
 
@@ -43,6 +46,7 @@ MONSTER_COUNT = 6
 ITEM_COUNT = 8
 MIN_SPAWN_DISTANCE = 8
 MAX_DEPTH = 3  # deepest kurhan level
+CRYPT_FOV_RADIUS = 4  # unlit barrow darkness
 
 PLAYER_HP = 20
 PLAYER_SPEED = 100
@@ -165,7 +169,7 @@ class Game:
         return entity
 
     def spawn_monster(self, definition: MonsterDef, x: int, y: int, depth: int = 0) -> Entity:
-        return self.world.create(
+        entity = self.world.create(
             Position(x, y),
             OnLevel(depth),
             Renderable(
@@ -184,6 +188,15 @@ class Game:
                 description=definition.description,
             ),
         )
+        if definition.attack_status is not None:
+            spec = definition.attack_status
+            self.world.add(
+                entity,
+                AttackStatus(
+                    kind=spec.kind, chance=spec.chance, duration=spec.duration, power=spec.power
+                ),
+            )
+        return entity
 
     def _change_level(self, new_depth: int, direction: str) -> None:
         self._ensure_level(new_depth)
@@ -207,6 +220,7 @@ class Game:
             return
         self._apply_player_action(action)
         self._update_player_fov()
+        self._tick_statuses()
         hunger.tick(self.world, self.bus, self.player, self.turn + 1)
         if self.world.expect(self.player, Health).hp <= 0:
             self.game_over = True
@@ -254,9 +268,26 @@ class Game:
                     self.game_over = True
             self.scheduler.spend(entity)
 
+    @property
+    def fov_radius(self) -> int:
+        """Crypts are dark; a lit gromnica pushes the dark back."""
+        if self.depth > 0 and self.world.get(self.player, LightSource) is None:
+            return CRYPT_FOV_RADIUS
+        return FOV_RADIUS
+
+    def _tick_statuses(self) -> None:
+        actors = [self.player] + [
+            e
+            for e in self.world.entities_with(StatusEffects)
+            if e != self.player and movement.level_of(self.world, e) == self.depth
+        ]
+        for entity in actors:
+            if self.world.is_alive(entity):
+                status.tick(self.world, self.bus, entity)
+
     def _update_player_fov(self) -> None:
         pos = self.world.expect(self.player, Position)
-        self.map.update_fov((pos.x, pos.y), FOV_RADIUS)
+        self.map.update_fov((pos.x, pos.y), self.fov_radius)
         self._discover_visible()
 
     def _discover_visible(self) -> None:

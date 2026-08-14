@@ -3,7 +3,17 @@
 from rich.text import Text
 from textual.widgets import Static
 
-from wyraj.core.components import Health, Hunger, Item, Lore, Position, Renderable, Wielding
+from wyraj.core.components import (
+    Health,
+    Hunger,
+    Item,
+    LightSource,
+    Lore,
+    Position,
+    Renderable,
+    StatusEffects,
+    Wielding,
+)
 from wyraj.core.game import Game
 from wyraj.core.map import Tile
 from wyraj.core.systems.movement import level_of
@@ -120,4 +130,21 @@ class CharacterPanel(Static):
             lore = game.world.get(wielding.item, Lore)
             if lore is not None:
                 text.append(f" Wields: {lore.name}\n", style="grey66")
+
+        statuses = game.world.get(game.player, StatusEffects)
+        if statuses is not None and statuses.effects:
+            status_styles = {
+                "bleeding": "red3",
+                "poison": "chartreuse4",
+                "fear": "medium_purple3",
+                "blessing": "light_goldenrod2",
+            }
+            text.append("\n")
+            for effect in statuses.effects:
+                style = status_styles.get(effect.kind, "grey66")
+                text.append(f" {effect.kind} ({effect.duration})\n", style=style)
+
+        light = game.world.get(game.player, LightSource)
+        if light is not None:
+            text.append(f"\n Gromnica: {light.turns}\n", style="light_goldenrod2")
         return text

@@ -62,11 +62,8 @@ AttackResolved(attacker=EntityRef(entity=6, key='bies', name='bies', is_player=F
 NARRATE: The wilk tears at you, and the world swims grey at the edges. The bies tears at you, and the world swims grey at the edges.
 TurnEnded(turn=22)
 EntityMoved(actor=EntityRef(entity=1, key='player', name='you', is_player=True), from_pos=(50, 3), to_pos=(51, 3))
-AttackResolved(attacker=EntityRef(entity=4, key='wilk', name='wilk', is_player=False), defender=EntityRef(entity=1, key='player', name='you', is_player=True), weapon=None, damage=0, outcome=<Outcome.MISS: 'miss'>, defender_hp_frac=0.05)
-NARRATE: The wilk circles and comes at you again, patient as winter.
-TurnEnded(turn=23)
 AttackResolved(attacker=EntityRef(entity=4, key='wilk', name='wilk', is_player=False), defender=EntityRef(entity=1, key='player', name='you', is_player=True), weapon=None, damage=2, outcome=<Outcome.KILL: 'kill'>, defender_hp_frac=0.0)
 EntityDied(entity=EntityRef(entity=1, key='player', name='you', is_player=True))
 NARRATE: The wilk bears you down into the cold moss. The last thing you hear is its breathing. Darkness closes over you. Somewhere above the canopy, a bird takes wing toward Wyraj.
-TurnEnded(turn=24)
-END turn=24 game_over=True
+TurnEnded(turn=23)
+END turn=23 game_over=True

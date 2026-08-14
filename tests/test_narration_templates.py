@@ -15,10 +15,14 @@ from wyraj.core.events import (
     ItemUsed,
     ItemWielded,
     LevelChanged,
+    LightExtinguished,
     LoreDiscovered,
     MoveBlocked,
     Outcome,
     StarvationHit,
+    StatusApplied,
+    StatusExpired,
+    StatusTick,
 )
 from wyraj.narration.engine import NarrationEngine, NarrationLine
 from wyraj.narration.forms import build_form_registry
@@ -67,6 +71,17 @@ def fixture_event(event_key: str, subkey: str | None) -> GameEvent:
     if event_key == "level_changed":
         assert subkey is not None
         return LevelChanged(depth=1, direction=subkey)
+    if event_key == "status_applied":
+        assert subkey is not None
+        return StatusApplied(actor=PLAYER, kind=subkey, duration=4)
+    if event_key == "status_tick":
+        assert subkey is not None
+        return StatusTick(actor=PLAYER, kind=subkey, damage=1, hp_frac=0.4)
+    if event_key == "status_expired":
+        assert subkey is not None
+        return StatusExpired(actor=PLAYER, kind=subkey)
+    if event_key == "light_extinguished":
+        return LightExtinguished(actor=PLAYER)
     raise AssertionError(f"no fixture for pack rule {event_key}/{subkey}")
 
 

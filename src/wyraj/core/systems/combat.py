@@ -3,11 +3,19 @@
 import random
 from dataclasses import replace
 
-from wyraj.core.components import Health, Melee, WeaponStats, Wielding
+from wyraj.core.components import (
+    AttackStatus,
+    Health,
+    Melee,
+    StatusEffect,
+    WeaponStats,
+    Wielding,
+)
 from wyraj.core.ecs import Entity, World
 from wyraj.core.events import AttackResolved, EventBus, Outcome
 from wyraj.core.refs import ref_for
 from wyraj.core.systems.death import kill
+from wyraj.core.systems.status import apply_status, to_hit_modifier
 
 
 def _weapon(world: World, attacker: Entity) -> tuple[Entity | None, int | None]:
@@ -32,8 +40,9 @@ def attack(
     weapon_ref = ref_for(world, weapon_entity) if weapon_entity is not None else None
     damage = weapon_damage if weapon_damage is not None else melee.damage
 
+    to_hit = max(5, min(95, melee.to_hit + to_hit_modifier(world, attacker)))
     roll = rng.randint(1, 100)
-    if roll > melee.to_hit:
+    if roll > to_hit:
         bus.publish(
             AttackResolved(
                 attacker=attacker_ref,
@@ -61,3 +70,17 @@ def attack(
     )
     if outcome is Outcome.KILL:
         kill(world, bus, defender)
+        return
+
+    attack_status = world.get(attacker, AttackStatus)
+    if attack_status is not None and rng.randint(1, 100) <= attack_status.chance:
+        apply_status(
+            world,
+            bus,
+            defender,
+            StatusEffect(
+                kind=attack_status.kind,
+                duration=attack_status.duration,
+                power=attack_status.power,
+            ),
+        )
