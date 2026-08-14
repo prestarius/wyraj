@@ -51,6 +51,11 @@ class AI:
 
 
 @dataclass(frozen=True)
+class OnLevel:
+    depth: int  # 0 = surface puszcza, 1+ = kurhany crypts
+
+
+@dataclass(frozen=True)
 class Item:
     key: str
     kind: str  # "weapon" | "consumable" | "trinket"

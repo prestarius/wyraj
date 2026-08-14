@@ -5,9 +5,12 @@ player actions via `step()`. Between player actions the engine runs every
 other actor that is due.
 """
 
+import hashlib
+import random
+
 from wyraj.content.bestiary import MonsterDef, load_bestiary
 from wyraj.content.items import ItemDef, load_items
-from wyraj.core.actions import Action, Get, Move, UseItem, Wait, WieldItem
+from wyraj.core.actions import Action, Ascend, Descend, Get, Move, UseItem, Wait, WieldItem
 from wyraj.core.components import (
     AI,
     Actor,
@@ -18,6 +21,7 @@ from wyraj.core.components import (
     Item,
     Lore,
     Melee,
+    OnLevel,
     Player,
     Position,
     Renderable,
@@ -25,24 +29,31 @@ from wyraj.core.components import (
     Wielding,
 )
 from wyraj.core.ecs import Entity, World
-from wyraj.core.events import EventBus, LoreDiscovered, TurnEnded
-from wyraj.core.map import GameMap
+from wyraj.core.events import EventBus, LevelChanged, LoreDiscovered, TurnEnded
+from wyraj.core.map import GameMap, Tile
 from wyraj.core.refs import ref_for
 from wyraj.core.rng import RngStreams
 from wyraj.core.scheduler import TurnScheduler
 from wyraj.core.systems import ai, combat, hunger, items, movement
 from wyraj.procgen.forest import generate_forest
+from wyraj.procgen.kurhany import generate_kurhan
 
 FOV_RADIUS = 8
 MONSTER_COUNT = 6
 ITEM_COUNT = 8
 MIN_SPAWN_DISTANCE = 8
+MAX_DEPTH = 3  # deepest kurhan level
 
 PLAYER_HP = 20
 PLAYER_SPEED = 100
 PLAYER_DAMAGE = 4
 PLAYER_TO_HIT = 75
 PLAYER_SATIATION = 600
+
+
+def _level_seed(master_seed: int, depth: int) -> int:
+    digest = hashlib.sha256(f"{master_seed}:level:{depth}".encode()).digest()
+    return int.from_bytes(digest[:8], "big")
 
 
 class Game:
@@ -59,16 +70,20 @@ class Game:
         self.turn = 0
         self.game_over = False
         self.codex_seen: set[str] = set()
+        self.depth = 0
+        self.levels: dict[int, GameMap] = {}
 
-        self.map: GameMap = generate_forest(self.rng.worldgen.getrandbits(32))
         self.bestiary = bestiary if bestiary is not None else load_bestiary()
         self.items_catalog = items_catalog if items_catalog is not None else load_items()
 
+        self.levels[0] = generate_forest(_level_seed(seed, 0))
         floors = self.map.floor_tiles()
-        px, py = self.rng.worldgen.choice(floors)
+        level_rng = random.Random(_level_seed(seed, 0) ^ 0xA5A5)
+        px, py = level_rng.choice(floors)
         self.player: Entity = self.world.create(
             Player(),
             Position(px, py),
+            OnLevel(0),
             Renderable(glyph="@", style="bold white"),
             Health(PLAYER_HP, PLAYER_HP),
             Melee(damage=PLAYER_DAMAGE, to_hit=PLAYER_TO_HIT),
@@ -79,38 +94,62 @@ class Game:
             Lore(key="player", name="you"),
         )
 
-        self._spawn_monsters(floors, (px, py))
-        self._spawn_items(floors, (px, py))
+        self._populate_level(0, level_rng, avoid=(px, py))
 
         self.scheduler = TurnScheduler(self.world)
         self.map.update_fov((px, py), FOV_RADIUS)
         self._advance_until_player_turn()
 
-    def _spawn_monsters(self, floors: list[tuple[int, int]], player_pos: tuple[int, int]) -> None:
-        px, py = player_pos
-        candidates = [
-            (x, y) for x, y in floors if max(abs(x - px), abs(y - py)) >= MIN_SPAWN_DISTANCE
-        ]
-        spots = self.rng.worldgen.sample(candidates, min(MONSTER_COUNT, len(candidates)))
-        defs = sorted(self.bestiary.values(), key=lambda d: d.key)
-        weights = [d.spawn_weight for d in defs]
-        for x, y in spots:
-            chosen = self.rng.worldgen.choices(defs, weights=weights)[0]
-            self.spawn_monster(chosen, x, y)
+    @property
+    def map(self) -> GameMap:
+        return self.levels[self.depth]
 
-    def _spawn_items(self, floors: list[tuple[int, int]], player_pos: tuple[int, int]) -> None:
-        px, py = player_pos
-        candidates = [(x, y) for x, y in floors if (x, y) != (px, py)]
-        spots = self.rng.loot.sample(candidates, min(ITEM_COUNT, len(candidates)))
-        defs = sorted(self.items_catalog.values(), key=lambda d: d.key)
-        weights = [d.spawn_weight for d in defs]
-        for x, y in spots:
-            chosen = self.rng.loot.choices(defs, weights=weights)[0]
-            self.spawn_item(chosen, x, y)
+    def _biome_defs(self, biome: str) -> list[MonsterDef]:
+        return [d for d in sorted(self.bestiary.values(), key=lambda d: d.key) if biome in d.biomes]
 
-    def spawn_item(self, definition: ItemDef, x: int, y: int) -> Entity:
+    def _populate_level(
+        self, depth: int, level_rng: random.Random, avoid: tuple[int, int] | None = None
+    ) -> None:
+        """Spawn monsters and items on a level. Pure function of the level RNG,
+        so lazily generated levels are deterministic regardless of play order."""
+        game_map = self.levels[depth]
+        floors = game_map.floor_tiles()
+        biome = game_map.biome
+
+        monster_count = MONSTER_COUNT + (depth * 2 if biome == "kurhany" else 0)
+        candidates = floors
+        if avoid is not None:
+            ax, ay = avoid
+            candidates = [
+                (x, y) for x, y in floors if max(abs(x - ax), abs(y - ay)) >= MIN_SPAWN_DISTANCE
+            ]
+        defs = self._biome_defs(biome)
+        weights = [d.spawn_weight for d in defs]
+        spots = level_rng.sample(candidates, min(monster_count, len(candidates)))
+        for x, y in spots:
+            chosen = level_rng.choices(defs, weights=weights)[0]
+            self.spawn_monster(chosen, x, y, depth)
+
+        item_defs = sorted(self.items_catalog.values(), key=lambda d: d.key)
+        item_weights = [d.spawn_weight for d in item_defs]
+        item_candidates = [t for t in floors if t != avoid]
+        item_spots = level_rng.sample(item_candidates, min(ITEM_COUNT, len(item_candidates)))
+        for x, y in item_spots:
+            chosen_item = level_rng.choices(item_defs, weights=item_weights)[0]
+            self.spawn_item(chosen_item, x, y, depth)
+
+    def _ensure_level(self, depth: int) -> None:
+        if depth in self.levels:
+            return
+        self.levels[depth] = generate_kurhan(
+            _level_seed(self.seed, depth), with_down_stairs=depth < MAX_DEPTH
+        )
+        self._populate_level(depth, random.Random(_level_seed(self.seed, depth) ^ 0xA5A5))
+
+    def spawn_item(self, definition: ItemDef, x: int, y: int, depth: int = 0) -> Entity:
         entity = self.world.create(
             Position(x, y),
+            OnLevel(depth),
             Renderable(
                 glyph=definition.glyph,
                 style=definition.style,
@@ -125,9 +164,10 @@ class Game:
             self.world.add(entity, Consumable(effect=definition.effect, power=definition.power))
         return entity
 
-    def spawn_monster(self, definition: MonsterDef, x: int, y: int) -> Entity:
+    def spawn_monster(self, definition: MonsterDef, x: int, y: int, depth: int = 0) -> Entity:
         return self.world.create(
             Position(x, y),
+            OnLevel(depth),
             Renderable(
                 glyph=definition.glyph,
                 style=definition.style,
@@ -144,6 +184,21 @@ class Game:
                 description=definition.description,
             ),
         )
+
+    def _change_level(self, new_depth: int, direction: str) -> None:
+        self._ensure_level(new_depth)
+        target_map = self.levels[new_depth]
+        arrival = (
+            target_map.find_tile(Tile.STAIRS_UP)
+            if direction == "down"
+            else target_map.find_tile(Tile.STAIRS_DOWN)
+        )
+        if arrival is None:  # defensive: generators always place stairs
+            arrival = target_map.floor_tiles()[0]
+        self.depth = new_depth
+        self.world.add(self.player, OnLevel(new_depth))
+        self.world.add(self.player, Position(*arrival))
+        self.bus.publish(LevelChanged(depth=new_depth, direction=direction))
 
     def step(self, action: Action) -> None:
         """Execute one player action, then run other actors until it is the
@@ -166,11 +221,19 @@ class Game:
         match action:
             case Move(dx=dx, dy=dy):
                 pos = self.world.expect(self.player, Position)
-                target = movement.blocking_entity_at(self.world, pos.x + dx, pos.y + dy)
+                target = movement.blocking_entity_at(self.world, pos.x + dx, pos.y + dy, self.depth)
                 if target is not None and target != self.player:
                     combat.attack(self.world, self.bus, self.rng.combat, self.player, target)
                 else:
                     movement.try_move(self.world, self.map, self.bus, self.player, dx, dy)
+            case Descend():
+                pos = self.world.expect(self.player, Position)
+                if self.map.tiles[pos.y][pos.x] is Tile.STAIRS_DOWN and self.depth < MAX_DEPTH:
+                    self._change_level(self.depth + 1, "down")
+            case Ascend():
+                pos = self.world.expect(self.player, Position)
+                if self.map.tiles[pos.y][pos.x] is Tile.STAIRS_UP and self.depth > 0:
+                    self._change_level(self.depth - 1, "up")
             case Get():
                 items.pick_up(self.world, self.bus, self.player)
             case UseItem(item=item):
@@ -182,7 +245,7 @@ class Game:
 
     def _advance_until_player_turn(self) -> None:
         while not self.game_over:
-            entity = self.scheduler.next_actor()
+            entity = self.scheduler.next_actor(self.depth)
             if entity is None or entity == self.player:
                 return
             if self.world.has(entity, AI):
@@ -198,6 +261,8 @@ class Game:
 
     def _discover_visible(self) -> None:
         for entity, (_ai, lore, pos) in self.world.query(AI, Lore, Position):
+            if movement.level_of(self.world, entity) != self.depth:
+                continue
             if (pos.x, pos.y) in self.map.visible and lore.key not in self.codex_seen:
                 self.codex_seen.add(lore.key)
                 self.bus.publish(LoreDiscovered(entity=ref_for(self.world, entity)))

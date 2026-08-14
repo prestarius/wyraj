@@ -9,7 +9,7 @@ from textual.binding import Binding
 from textual.containers import Horizontal
 from textual.widgets import Footer, RichLog
 
-from wyraj.core.actions import Action, Get, Move, Wait
+from wyraj.core.actions import Action, Ascend, Descend, Get, Move, Wait
 from wyraj.core.game import Game
 from wyraj.narration.context import ContextEnricher
 from wyraj.narration.engine import NarrationEngine, NarrationLine
@@ -87,6 +87,10 @@ class WyrajApp(App[None]):
         if event.key in MOVE_KEYS:
             dx, dy = MOVE_KEYS[event.key]
             self._play(Move(dx, dy))
+        elif event.character == ">":
+            self._play(Descend())
+        elif event.character == "<":
+            self._play(Ascend())
 
     def action_wait(self) -> None:
         self._play(Wait())

@@ -1,63 +1,72 @@
-EntityMoved(actor=EntityRef(entity=1, key='player', name='you', is_player=True), from_pos=(19, 32), to_pos=(20, 31))
+EntityMoved(actor=EntityRef(entity=1, key='player', name='you', is_player=True), from_pos=(46, 5), to_pos=(47, 4))
 TurnEnded(turn=1)
-EntityMoved(actor=EntityRef(entity=1, key='player', name='you', is_player=True), from_pos=(20, 31), to_pos=(21, 31))
+EntityMoved(actor=EntityRef(entity=1, key='player', name='you', is_player=True), from_pos=(47, 4), to_pos=(48, 4))
 TurnEnded(turn=2)
-EntityMoved(actor=EntityRef(entity=1, key='player', name='you', is_player=True), from_pos=(21, 31), to_pos=(20, 31))
+EntityMoved(actor=EntityRef(entity=1, key='player', name='you', is_player=True), from_pos=(48, 4), to_pos=(47, 4))
 TurnEnded(turn=3)
-EntityMoved(actor=EntityRef(entity=1, key='player', name='you', is_player=True), from_pos=(20, 31), to_pos=(21, 31))
+EntityMoved(actor=EntityRef(entity=1, key='player', name='you', is_player=True), from_pos=(47, 4), to_pos=(48, 4))
 TurnEnded(turn=4)
 TurnEnded(turn=5)
-EntityMoved(actor=EntityRef(entity=1, key='player', name='you', is_player=True), from_pos=(21, 31), to_pos=(20, 31))
-LoreDiscovered(entity=EntityRef(entity=5, key='wilk', name='wilk', is_player=False))
-NARRATE: Grey on grey against the treeline: a wilk, watching you the way a butcher watches a fattened pig.
+EntityMoved(actor=EntityRef(entity=1, key='player', name='you', is_player=True), from_pos=(48, 4), to_pos=(47, 4))
 TurnEnded(turn=6)
+LoreDiscovered(entity=EntityRef(entity=4, key='wilk', name='wilk', is_player=False))
+NARRATE: Grey on grey against the treeline: a wilk, watching you the way a butcher watches a fattened pig.
 TurnEnded(turn=7)
-EntityMoved(actor=EntityRef(entity=1, key='player', name='you', is_player=True), from_pos=(20, 31), to_pos=(21, 32))
+EntityMoved(actor=EntityRef(entity=1, key='player', name='you', is_player=True), from_pos=(47, 4), to_pos=(48, 5))
 TurnEnded(turn=8)
-EntityMoved(actor=EntityRef(entity=1, key='player', name='you', is_player=True), from_pos=(21, 32), to_pos=(22, 31))
+EntityMoved(actor=EntityRef(entity=1, key='player', name='you', is_player=True), from_pos=(48, 5), to_pos=(49, 4))
 TurnEnded(turn=9)
-EntityMoved(actor=EntityRef(entity=1, key='player', name='you', is_player=True), from_pos=(22, 31), to_pos=(22, 30))
-AttackResolved(attacker=EntityRef(entity=5, key='wilk', name='wilk', is_player=False), defender=EntityRef(entity=1, key='player', name='you', is_player=True), weapon=None, damage=2, outcome=<Outcome.HIT: 'hit'>, defender_hp_frac=0.9)
-NARRATE: The wilk rakes you with crooked claws; pain flares hot along your ribs.
+EntityMoved(actor=EntityRef(entity=1, key='player', name='you', is_player=True), from_pos=(49, 4), to_pos=(49, 3))
 TurnEnded(turn=10)
-LoreDiscovered(entity=EntityRef(entity=2, key='strzyga', name='strzyga', is_player=False))
-AttackResolved(attacker=EntityRef(entity=5, key='wilk', name='wilk', is_player=False), defender=EntityRef(entity=1, key='player', name='you', is_player=True), weapon=None, damage=2, outcome=<Outcome.HIT: 'hit'>, defender_hp_frac=0.8)
-NARRATE: Lamplight eyes catch yours through the branches. A strzyga — and she has already counted your nights. The wilk slams into you, and you taste blood and old leaves.
+LoreDiscovered(entity=EntityRef(entity=6, key='bies', name='bies', is_player=False))
+NARRATE: A crooked shape unfolds from the thicket — a bies, the one the old people would not name after dark.
 TurnEnded(turn=11)
-EntityMoved(actor=EntityRef(entity=1, key='player', name='you', is_player=True), from_pos=(22, 30), to_pos=(21, 30))
-AttackResolved(attacker=EntityRef(entity=5, key='wilk', name='wilk', is_player=False), defender=EntityRef(entity=1, key='player', name='you', is_player=True), weapon=None, damage=2, outcome=<Outcome.HIT: 'hit'>, defender_hp_frac=0.7)
+EntityMoved(actor=EntityRef(entity=1, key='player', name='you', is_player=True), from_pos=(49, 3), to_pos=(48, 3))
+AttackResolved(attacker=EntityRef(entity=4, key='wilk', name='wilk', is_player=False), defender=EntityRef(entity=1, key='player', name='you', is_player=True), weapon=None, damage=2, outcome=<Outcome.HIT: 'hit'>, defender_hp_frac=0.9)
 NARRATE: The wilk rakes you with crooked claws; pain flares hot along your ribs.
 TurnEnded(turn=12)
-EntityMoved(actor=EntityRef(entity=1, key='player', name='you', is_player=True), from_pos=(21, 30), to_pos=(21, 31))
+EntityMoved(actor=EntityRef(entity=1, key='player', name='you', is_player=True), from_pos=(48, 3), to_pos=(48, 4))
+AttackResolved(attacker=EntityRef(entity=4, key='wilk', name='wilk', is_player=False), defender=EntityRef(entity=1, key='player', name='you', is_player=True), weapon=None, damage=2, outcome=<Outcome.HIT: 'hit'>, defender_hp_frac=0.8)
+NARRATE: The wilk slams into you, and you taste blood and old leaves.
 TurnEnded(turn=13)
-AttackResolved(attacker=EntityRef(entity=5, key='wilk', name='wilk', is_player=False), defender=EntityRef(entity=1, key='player', name='you', is_player=True), weapon=None, damage=0, outcome=<Outcome.MISS: 'miss'>, defender_hp_frac=0.7)
-NARRATE: The wilk lunges — you twist away, its claws snapping shut on nothing.
+AttackResolved(attacker=EntityRef(entity=4, key='wilk', name='wilk', is_player=False), defender=EntityRef(entity=1, key='player', name='you', is_player=True), weapon=None, damage=2, outcome=<Outcome.HIT: 'hit'>, defender_hp_frac=0.7)
+NARRATE: The wilk rakes you with crooked claws; pain flares hot along your ribs.
 TurnEnded(turn=14)
-EntityMoved(actor=EntityRef(entity=1, key='player', name='you', is_player=True), from_pos=(21, 31), to_pos=(22, 30))
-AttackResolved(attacker=EntityRef(entity=3, key='wilk', name='wilk', is_player=False), defender=EntityRef(entity=1, key='player', name='you', is_player=True), weapon=None, damage=2, outcome=<Outcome.HIT: 'hit'>, defender_hp_frac=0.6)
-AttackResolved(attacker=EntityRef(entity=5, key='wilk', name='wilk', is_player=False), defender=EntityRef(entity=1, key='player', name='you', is_player=True), weapon=None, damage=0, outcome=<Outcome.MISS: 'miss'>, defender_hp_frac=0.6)
-AttackResolved(attacker=EntityRef(entity=5, key='wilk', name='wilk', is_player=False), defender=EntityRef(entity=1, key='player', name='you', is_player=True), weapon=None, damage=2, outcome=<Outcome.HIT: 'hit'>, defender_hp_frac=0.5)
-NARRATE: The wilk slams into you, and you taste blood and old leaves. The wilk circles and comes at you again, patient as winter. The wilk rakes you with crooked claws; pain flares hot along your ribs.
+EntityMoved(actor=EntityRef(entity=1, key='player', name='you', is_player=True), from_pos=(48, 4), to_pos=(49, 3))
+AttackResolved(attacker=EntityRef(entity=4, key='wilk', name='wilk', is_player=False), defender=EntityRef(entity=1, key='player', name='you', is_player=True), weapon=None, damage=0, outcome=<Outcome.MISS: 'miss'>, defender_hp_frac=0.7)
+NARRATE: The wilk lunges — you twist away, its claws snapping shut on nothing.
 TurnEnded(turn=15)
-AttackResolved(attacker=EntityRef(entity=3, key='wilk', name='wilk', is_player=False), defender=EntityRef(entity=1, key='player', name='you', is_player=True), weapon=None, damage=0, outcome=<Outcome.MISS: 'miss'>, defender_hp_frac=0.5)
-AttackResolved(attacker=EntityRef(entity=5, key='wilk', name='wilk', is_player=False), defender=EntityRef(entity=1, key='player', name='you', is_player=True), weapon=None, damage=2, outcome=<Outcome.HIT: 'hit'>, defender_hp_frac=0.4)
-NARRATE: The wilk circles and comes at you again, patient as winter. The wilk slams into you, and you taste blood and old leaves.
+AttackResolved(attacker=EntityRef(entity=4, key='wilk', name='wilk', is_player=False), defender=EntityRef(entity=1, key='player', name='you', is_player=True), weapon=None, damage=2, outcome=<Outcome.HIT: 'hit'>, defender_hp_frac=0.6)
+NARRATE: The wilk slams into you, and you taste blood and old leaves.
 TurnEnded(turn=16)
-AttackResolved(attacker=EntityRef(entity=1, key='player', name='you', is_player=True), defender=EntityRef(entity=5, key='wilk', name='wilk', is_player=False), weapon=None, damage=4, outcome=<Outcome.HIT: 'hit'>, defender_hp_frac=0.3333333333333333)
-AttackResolved(attacker=EntityRef(entity=2, key='strzyga', name='strzyga', is_player=False), defender=EntityRef(entity=1, key='player', name='you', is_player=True), weapon=None, damage=5, outcome=<Outcome.HIT: 'hit'>, defender_hp_frac=0.15)
-AttackResolved(attacker=EntityRef(entity=3, key='wilk', name='wilk', is_player=False), defender=EntityRef(entity=1, key='player', name='you', is_player=True), weapon=None, damage=2, outcome=<Outcome.HIT: 'hit'>, defender_hp_frac=0.05)
-AttackResolved(attacker=EntityRef(entity=5, key='wilk', name='wilk', is_player=False), defender=EntityRef(entity=1, key='player', name='you', is_player=True), weapon=None, damage=0, outcome=<Outcome.MISS: 'miss'>, defender_hp_frac=0.05)
-NARRATE: You strike true. The wilk shudders, black blood beading where you cut. The strzyga tears at you, and the world swims grey at the edges. The wilk tears at you, and the world swims grey at the edges. The wilk circles and comes at you again, patient as winter.
+AttackResolved(attacker=EntityRef(entity=1, key='player', name='you', is_player=True), defender=EntityRef(entity=4, key='wilk', name='wilk', is_player=False), weapon=None, damage=0, outcome=<Outcome.MISS: 'miss'>, defender_hp_frac=1.0)
+AttackResolved(attacker=EntityRef(entity=4, key='wilk', name='wilk', is_player=False), defender=EntityRef(entity=1, key='player', name='you', is_player=True), weapon=None, damage=2, outcome=<Outcome.HIT: 'hit'>, defender_hp_frac=0.5)
+NARRATE: You swing wide; the wilk sways aside like a branch in wind. The wilk rakes you with crooked claws; pain flares hot along your ribs.
 TurnEnded(turn=17)
-AttackResolved(attacker=EntityRef(entity=1, key='player', name='you', is_player=True), defender=EntityRef(entity=3, key='wilk', name='wilk', is_player=False), weapon=None, damage=4, outcome=<Outcome.HIT: 'hit'>, defender_hp_frac=0.3333333333333333)
-AttackResolved(attacker=EntityRef(entity=2, key='strzyga', name='strzyga', is_player=False), defender=EntityRef(entity=1, key='player', name='you', is_player=True), weapon=None, damage=0, outcome=<Outcome.MISS: 'miss'>, defender_hp_frac=0.05)
-AttackResolved(attacker=EntityRef(entity=3, key='wilk', name='wilk', is_player=False), defender=EntityRef(entity=1, key='player', name='you', is_player=True), weapon=None, damage=0, outcome=<Outcome.MISS: 'miss'>, defender_hp_frac=0.05)
-AttackResolved(attacker=EntityRef(entity=5, key='wilk', name='wilk', is_player=False), defender=EntityRef(entity=1, key='player', name='you', is_player=True), weapon=None, damage=0, outcome=<Outcome.MISS: 'miss'>, defender_hp_frac=0.05)
-NARRATE: Your strike tears its flesh, and the wilk howls. The strzyga circles and comes at you again, patient as winter. The wilk circles and comes at you again, patient as winter. And again.
+EntityMoved(actor=EntityRef(entity=1, key='player', name='you', is_player=True), from_pos=(49, 3), to_pos=(50, 3))
 TurnEnded(turn=18)
-EntityMoved(actor=EntityRef(entity=1, key='player', name='you', is_player=True), from_pos=(22, 30), to_pos=(23, 29))
-AttackResolved(attacker=EntityRef(entity=2, key='strzyga', name='strzyga', is_player=False), defender=EntityRef(entity=1, key='player', name='you', is_player=True), weapon=None, damage=5, outcome=<Outcome.KILL: 'kill'>, defender_hp_frac=0.0)
-EntityDied(entity=EntityRef(entity=1, key='player', name='you', is_player=True))
-NARRATE: The strzyga bears you down into the cold moss. The last thing you hear is its breathing. Darkness closes over you. Somewhere above the canopy, a bird takes wing toward Wyraj.
+EntityMoved(actor=EntityRef(entity=1, key='player', name='you', is_player=True), from_pos=(50, 3), to_pos=(51, 2))
 TurnEnded(turn=19)
-END turn=19 game_over=True
+MoveBlocked(actor=EntityRef(entity=1, key='player', name='you', is_player=True), to_pos=(50, 1))
+AttackResolved(attacker=EntityRef(entity=4, key='wilk', name='wilk', is_player=False), defender=EntityRef(entity=1, key='player', name='you', is_player=True), weapon=None, damage=0, outcome=<Outcome.MISS: 'miss'>, defender_hp_frac=0.5)
+AttackResolved(attacker=EntityRef(entity=4, key='wilk', name='wilk', is_player=False), defender=EntityRef(entity=1, key='player', name='you', is_player=True), weapon=None, damage=2, outcome=<Outcome.HIT: 'hit'>, defender_hp_frac=0.4)
+NARRATE: The trees stand shoulder to shoulder here; there is no way through. It comes at you low and fast, but you are faster, this once. The wilk slams into you, and you taste blood and old leaves.
+TurnEnded(turn=20)
+EntityMoved(actor=EntityRef(entity=1, key='player', name='you', is_player=True), from_pos=(51, 2), to_pos=(51, 3))
+AttackResolved(attacker=EntityRef(entity=4, key='wilk', name='wilk', is_player=False), defender=EntityRef(entity=1, key='player', name='you', is_player=True), weapon=None, damage=2, outcome=<Outcome.HIT: 'hit'>, defender_hp_frac=0.3)
+NARRATE: The wilk rakes you with crooked claws; pain flares hot along your ribs.
+TurnEnded(turn=21)
+EntityMoved(actor=EntityRef(entity=1, key='player', name='you', is_player=True), from_pos=(51, 3), to_pos=(50, 3))
+AttackResolved(attacker=EntityRef(entity=4, key='wilk', name='wilk', is_player=False), defender=EntityRef(entity=1, key='player', name='you', is_player=True), weapon=None, damage=2, outcome=<Outcome.HIT: 'hit'>, defender_hp_frac=0.2)
+AttackResolved(attacker=EntityRef(entity=6, key='bies', name='bies', is_player=False), defender=EntityRef(entity=1, key='player', name='you', is_player=True), weapon=None, damage=3, outcome=<Outcome.HIT: 'hit'>, defender_hp_frac=0.05)
+NARRATE: The wilk tears at you, and the world swims grey at the edges. The bies tears at you, and the world swims grey at the edges.
+TurnEnded(turn=22)
+EntityMoved(actor=EntityRef(entity=1, key='player', name='you', is_player=True), from_pos=(50, 3), to_pos=(51, 3))
+AttackResolved(attacker=EntityRef(entity=4, key='wilk', name='wilk', is_player=False), defender=EntityRef(entity=1, key='player', name='you', is_player=True), weapon=None, damage=0, outcome=<Outcome.MISS: 'miss'>, defender_hp_frac=0.05)
+NARRATE: The wilk circles and comes at you again, patient as winter.
+TurnEnded(turn=23)
+AttackResolved(attacker=EntityRef(entity=4, key='wilk', name='wilk', is_player=False), defender=EntityRef(entity=1, key='player', name='you', is_player=True), weapon=None, damage=2, outcome=<Outcome.KILL: 'kill'>, defender_hp_frac=0.0)
+EntityDied(entity=EntityRef(entity=1, key='player', name='you', is_player=True))
+NARRATE: The wilk bears you down into the cold moss. The last thing you hear is its breathing. Darkness closes over you. Somewhere above the canopy, a bird takes wing toward Wyraj.
+TurnEnded(turn=24)
+END turn=24 game_over=True

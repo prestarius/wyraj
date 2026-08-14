@@ -7,7 +7,7 @@ from wyraj.core.ecs import Entity, World
 from wyraj.core.events import EventBus
 from wyraj.core.map import GameMap
 from wyraj.core.systems.combat import attack
-from wyraj.core.systems.movement import blocking_entity_at
+from wyraj.core.systems.movement import blocking_entity_at, level_of
 
 
 def _sign(n: int) -> int:
@@ -34,11 +34,12 @@ def take_turn(
     candidates = [(sx, sy)]
     axis_steps = [(sx, 0), (0, sy)] if abs(dx) >= abs(dy) else [(0, sy), (sx, 0)]
     candidates += axis_steps
+    depth = level_of(world, entity)
     for mx, my in candidates:
         if (mx, my) == (0, 0):
             continue
         nx, ny = pos.x + mx, pos.y + my
-        if game_map.is_walkable(nx, ny) and blocking_entity_at(world, nx, ny) is None:
+        if game_map.is_walkable(nx, ny) and blocking_entity_at(world, nx, ny, depth) is None:
             world.add(entity, Position(nx, ny))
             return
     # Boxed in: skip the turn silently (no event — nothing observable happened).

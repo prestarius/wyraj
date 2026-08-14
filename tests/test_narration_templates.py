@@ -14,6 +14,7 @@ from wyraj.core.events import (
     ItemPickedUp,
     ItemUsed,
     ItemWielded,
+    LevelChanged,
     LoreDiscovered,
     MoveBlocked,
     Outcome,
@@ -63,6 +64,9 @@ def fixture_event(event_key: str, subkey: str | None) -> GameEvent:
     if event_key == "lore_discovered":
         assert subkey is not None
         return LoreDiscovered(entity=EntityRef(entity=9, key=subkey, name=subkey))
+    if event_key == "level_changed":
+        assert subkey is not None
+        return LevelChanged(depth=1, direction=subkey)
     raise AssertionError(f"no fixture for pack rule {event_key}/{subkey}")
 
 

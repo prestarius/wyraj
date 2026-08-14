@@ -6,13 +6,19 @@ from wyraj.core.fov import compute_fov
 
 
 class Tile(Enum):
-    WALL = "wall"  # in the puszcza: dense trees
+    WALL = "wall"  # in the puszcza: dense trees; in kurhany: barrow stone
     FLOOR = "floor"
+    STAIRS_DOWN = "stairs_down"
+    STAIRS_UP = "stairs_up"
+
+
+WALKABLE = {Tile.FLOOR, Tile.STAIRS_DOWN, Tile.STAIRS_UP}
 
 
 class GameMap:
-    def __init__(self, tiles: list[list[Tile]]) -> None:
+    def __init__(self, tiles: list[list[Tile]], biome: str = "puszcza") -> None:
         self.tiles = tiles
+        self.biome = biome
         self.height = len(tiles)
         self.width = len(tiles[0]) if tiles else 0
         self.visible: set[tuple[int, int]] = set()
@@ -22,7 +28,14 @@ class GameMap:
         return 0 <= x < self.width and 0 <= y < self.height
 
     def is_walkable(self, x: int, y: int) -> bool:
-        return self.in_bounds(x, y) and self.tiles[y][x] is Tile.FLOOR
+        return self.in_bounds(x, y) and self.tiles[y][x] in WALKABLE
+
+    def find_tile(self, tile: Tile) -> tuple[int, int] | None:
+        for y in range(self.height):
+            for x in range(self.width):
+                if self.tiles[y][x] is tile:
+                    return (x, y)
+        return None
 
     def is_transparent(self, x: int, y: int) -> bool:
         # In the forest, what blocks feet also blocks sight.
@@ -36,7 +49,7 @@ class GameMap:
         self.explored |= self.visible
 
     def floor_tiles(self) -> list[tuple[int, int]]:
-        """All walkable tiles in row-major order (deterministic for spawning)."""
+        """All plain floor tiles in row-major order (deterministic for spawning)."""
         return [
             (x, y)
             for y in range(self.height)

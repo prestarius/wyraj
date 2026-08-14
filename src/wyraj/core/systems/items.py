@@ -8,29 +8,32 @@ from wyraj.core.components import (
     Hunger,
     Inventory,
     Item,
+    OnLevel,
     Position,
     Wielding,
 )
 from wyraj.core.ecs import Entity, World
 from wyraj.core.events import EventBus, HungerChanged, ItemPickedUp, ItemUsed, ItemWielded
 from wyraj.core.refs import ref_for
+from wyraj.core.systems.movement import level_of
 
 
-def item_at(world: World, x: int, y: int) -> Entity | None:
+def item_at(world: World, x: int, y: int, depth: int) -> Entity | None:
     for entity, (pos, _item) in world.query(Position, Item):
-        if (pos.x, pos.y) == (x, y):
+        if (pos.x, pos.y) == (x, y) and level_of(world, entity) == depth:
             return entity
     return None
 
 
 def pick_up(world: World, bus: EventBus, actor: Entity) -> bool:
     pos = world.expect(actor, Position)
-    item = item_at(world, pos.x, pos.y)
+    item = item_at(world, pos.x, pos.y, level_of(world, actor))
     if item is None:
         return False
     inventory = world.get(actor, Inventory) or Inventory()
     item_ref = ref_for(world, item)
     world.remove(item, Position)
+    world.remove(item, OnLevel)
     world.add(actor, Inventory(items=(*inventory.items, item)))
     bus.publish(ItemPickedUp(actor=ref_for(world, actor), item=item_ref))
     return True
