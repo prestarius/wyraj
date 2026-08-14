@@ -1,0 +1,33 @@
+rozkopany_grob:
+  name: "opened grave"
+  glyph: "‡"
+  ascii_glyph: "="
+  style: "grey54"
+  biomes: [kurhany]
+  description: >
+    The slab has been levered aside — from below. The bones that should
+    sleep here are elsewhere now, walking their errands. The grave-goods lie
+    untouched: whatever left did not want gold.
+
+misa_ofiarna:
+  name: "stone offering bowl"
+  glyph: "○"
+  ascii_glyph: "0"
+  style: "gold3"
+  biomes: [kurhany]
+  description: >
+    A basin worn smooth by a thousand years of grain, mead, and darker
+    payments. It is not empty. The offering in it is fresh, and you did not
+    bring it, and no one has passed you on the stairs.
+
+sciana_znakow:
+  name: "wall of old signs"
+  glyph: "≋"
+  ascii_glyph: "#"
+  style: "cadet_blue"
+  biomes: [kurhany]
+  description: >
+    Spirals, sun-wheels, and long rows of tally marks cut into the stone,
+    older than any alphabet you know. One row of tallies is longer than the
+    rest, and the last mark is new — the dust of its cutting still on the
+    floor below.

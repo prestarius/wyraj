@@ -51,6 +51,13 @@ class AI:
 
 
 @dataclass(frozen=True)
+class StoryHook:
+    """A narrative seed placed by procgen; discovered on first sight."""
+
+    key: str
+
+
+@dataclass(frozen=True)
 class OnLevel:
     depth: int  # 0 = surface puszcza, 1+ = kurhany crypts
 

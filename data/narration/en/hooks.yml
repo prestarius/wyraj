@@ -1,0 +1,25 @@
+lore_discovered:
+  kapliczka:
+    - weight: 1
+      importance: high
+      en: "Between the trees stands a ransacked chapel of Perun, door torn away, thunder-marks clawed through. Someone hated the old god enough to visit him at home."
+  umarly_wedrowiec:
+    - weight: 1
+      importance: high
+      en: "A dead traveler sits against an oak as if only resting. The puszcza has been patient with him. Something took his boots."
+  drzewo_szeptow:
+    - weight: 1
+      importance: high
+      en: "A whisper-tree rises ahead, ribbons and nailed coins and a child's shirt in its branches. The air around it is holding its breath."
+  rozkopany_grob:
+    - weight: 1
+      importance: high
+      en: "An opened grave gapes beside the path — the slab pushed aside from below. The gold is untouched. Whatever left wanted something else."
+  misa_ofiarna:
+    - weight: 1
+      importance: high
+      en: "A stone offering bowl stands in the gloom, worn smooth by a thousand years of payment. The offering in it is fresh."
+  sciana_znakow:
+    - weight: 1
+      importance: high
+      en: "A wall of old signs runs along the passage — spirals, sun-wheels, tally rows older than letters. The newest mark was cut today."
