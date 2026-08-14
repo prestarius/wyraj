@@ -33,6 +33,8 @@ class Variant(BaseModel):
     en: str
     weight: int = Field(default=1, gt=0)
     importance: str = "normal"
+    # Context tags required for this variant (all must be present).
+    tags: list[str] = []
 
 
 RuleKey = tuple[str, str | None]
@@ -99,16 +101,59 @@ def load_pack(lang: str = "en") -> GrammarPack:
     return GrammarPack.load_dir(data_dir() / "narration" / lang)
 
 
+NO_TAGS: frozenset[str] = frozenset()
+
+
 class TemplateNarrator:
     def __init__(self, pack: GrammarPack, rng: random.Random, registry: FormRegistry) -> None:
         self.pack = pack
         self.rng = rng
         self.registry = registry
+        # Per-rule memory of the last template used (anti-repetition).
+        self._last_template: dict[RuleKey, str] = {}
 
-    def compose(self, event: GameEvent) -> list[NarrationLine]:
-        variants = self.pack.rules.get(rule_key(event))
+    def compose(self, event: GameEvent, tags: frozenset[str] = NO_TAGS) -> list[NarrationLine]:
+        key = rule_key(event)
+        variants = self.pack.rules.get(key)
         if not variants:
             return []  # no rule = deliberately silent (e.g. routine movement)
-        chosen = self.rng.choices(variants, weights=[v.weight for v in variants])[0]
+        chosen = self._pick(key, variants, tags)
+        if chosen is None:
+            return []
         text = render(chosen.en, event, self.registry)
         return [NarrationLine(text=text, importance=chosen.importance)]
+
+    def _pick(self, key: RuleKey, variants: list[Variant], tags: frozenset[str]) -> Variant | None:
+        eligible = [v for v in variants if set(v.tags) <= tags]
+        if not eligible:
+            eligible = [v for v in variants if not v.tags]
+        if not eligible:
+            return None
+        # Prefer the most context-specific variants (tone modifiers win).
+        max_specificity = max(len(v.tags) for v in eligible)
+        pool = [v for v in eligible if len(v.tags) == max_specificity]
+        # Avoid repeating the template chosen last time for this rule.
+        fresh = [v for v in pool if v.en != self._last_template.get(key)]
+        pool = fresh or pool
+        chosen = self.rng.choices(pool, weights=[v.weight for v in pool])[0]
+        self._last_template[key] = chosen.en
+        return chosen
+
+    def compose_turn(self, batch: list[tuple[GameEvent, frozenset[str]]]) -> list[NarrationLine]:
+        """Coalesce one turn's events into a single composed paragraph."""
+        sentences: list[str] = []
+        importance = "normal"
+        again_added = False
+        for event, tags in batch:
+            for line in self.compose(event, tags):
+                if line.text in sentences:
+                    if not again_added:
+                        sentences.append("And again.")
+                        again_added = True
+                    continue
+                sentences.append(line.text)
+                if line.importance == "high":
+                    importance = "high"
+        if not sentences:
+            return []
+        return [NarrationLine(text=" ".join(sentences), importance=importance)]

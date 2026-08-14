@@ -25,11 +25,23 @@ attack_resolved:
       en: "{attacker.name.Def} rakes you with crooked claws; pain flares hot along your ribs."
     - weight: 2
       en: "{attacker.name.Def} slams into you, and you taste blood and old leaves."
+    - weight: 4
+      tags: [player_dying]
+      en: "{attacker.name.Def} tears at you, and the world swims grey at the edges."
+    - weight: 4
+      tags: [unseen_attacker]
+      en: "Something unseen strikes you from the dark between the trees."
+    - weight: 4
+      tags: [darkness]
+      en: "Claws find you in the blackness; you strike back at nothing but sound."
   enemy_miss:
     - weight: 3
       en: "{attacker.name.Def} lunges — you twist away, {attacker.pronoun.poss} claws snapping shut on nothing."
     - weight: 1
       en: "It comes at you low and fast, but you are faster, this once."
+    - weight: 4
+      tags: [again]
+      en: "{attacker.name.Def} circles and comes at you again, patient as winter."
   enemy_kill:
     - weight: 1
       importance: high
