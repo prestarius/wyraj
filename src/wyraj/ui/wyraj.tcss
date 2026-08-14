@@ -1,0 +1,37 @@
+/* "czarnoles" — the default dark theme */
+
+Screen {
+    background: #0d0f0c;
+    color: #b8b6a9;
+}
+
+#top {
+    height: 1fr;
+}
+
+MapView {
+    width: 1fr;
+    height: 100%;
+    border: round #2e3d2a;
+    border-title-color: #7a8f6e;
+    padding: 0 1;
+    overflow: hidden hidden;
+}
+
+CharacterPanel {
+    width: 26;
+    height: 100%;
+    border: round #2e3d2a;
+    padding: 0 1;
+}
+
+#narrative {
+    height: 12;
+    border: round #2e3d2a;
+    background: #0d0f0c;
+    padding: 0 1;
+}
+
+DeathScreen {
+    background: #0a0505;
+}

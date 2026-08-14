@@ -1,6 +1,7 @@
 """Entrypoint for `uv run wyraj`."""
 
 import argparse
+import secrets
 
 
 def main() -> None:
@@ -9,7 +10,11 @@ def main() -> None:
     parser.add_argument("--ascii", action="store_true", help="CP437-safe glyphs (no Unicode)")
     args = parser.parse_args()
 
-    print(f"Wyraj pre-alpha — nothing to play yet (seed={args.seed}).")
+    seed = args.seed if args.seed is not None else secrets.randbelow(2**31)
+
+    from wyraj.ui.app import WyrajApp
+
+    WyrajApp(seed=seed, use_ascii=args.ascii).run()
 
 
 if __name__ == "__main__":
