@@ -18,6 +18,16 @@ item_used:
       en: "You eat {item.name.def}, and the forest seems a little less hungry in turn."
     - weight: 1
       en: "You make short work of {item.name.def}. It tastes of woodsmoke and home."
+  bless:
+    - weight: 1
+      en: "You touch the blessed salt to your tongue. Something old and kind stands a little closer."
+  light:
+    - weight: 2
+      en: "You light {item.name.def}; the flame catches, and the shadows step back to arm's length."
+    - weight: 2
+      tags: [darkness]
+      importance: high
+      en: "Flame takes the wick of {item.name.def}, and the barrow dark peels back from the blessed light."
 
 item_wielded:
   - weight: 2

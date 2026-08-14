@@ -97,6 +97,32 @@ class StarvationHit(GameEvent):
 
 
 @dataclass(frozen=True)
+class StatusApplied(GameEvent):
+    actor: EntityRef
+    kind: str
+    duration: int
+
+
+@dataclass(frozen=True)
+class StatusTick(GameEvent):
+    actor: EntityRef
+    kind: str
+    damage: int
+    hp_frac: float
+
+
+@dataclass(frozen=True)
+class StatusExpired(GameEvent):
+    actor: EntityRef
+    kind: str
+
+
+@dataclass(frozen=True)
+class LightExtinguished(GameEvent):
+    actor: EntityRef
+
+
+@dataclass(frozen=True)
 class LevelChanged(GameEvent):
     depth: int  # level arrived at
     direction: str  # "down" | "up"

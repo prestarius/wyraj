@@ -8,6 +8,7 @@ martwiak:
   damage: 3
   to_hit: 75
   behavior: approach
+  attack_status: { kind: poison, chance: 30, duration: 5, power: 1 }
   spawn_weight: 4
   biomes: [kurhany]
   epithets: ["the unburied", "cold clay that walks"]

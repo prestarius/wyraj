@@ -83,6 +83,33 @@ class Wielding:
 
 
 @dataclass(frozen=True)
+class StatusEffect:
+    kind: str  # "bleeding" | "poison" | "fear" | "blessing"
+    duration: int  # turns remaining
+    power: int  # per-tick damage (dots) or to-hit modifier (fear/blessing)
+
+
+@dataclass(frozen=True)
+class StatusEffects:
+    effects: tuple[StatusEffect, ...] = ()
+
+
+@dataclass(frozen=True)
+class AttackStatus:
+    """A status this creature's hits may inflict (from bestiary data)."""
+
+    kind: str
+    chance: int  # percent
+    duration: int
+    power: int
+
+
+@dataclass(frozen=True)
+class LightSource:
+    turns: int
+
+
+@dataclass(frozen=True)
 class Hunger:
     satiation: int
     max_satiation: int

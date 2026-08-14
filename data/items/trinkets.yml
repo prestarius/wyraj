@@ -3,7 +3,9 @@ gromnica:
   glyph: "|"
   ascii_glyph: "|"
   style: "light_goldenrod2"
-  kind: trinket
+  kind: consumable
+  effect: light
+  power: 80
   spawn_weight: 3
   description: >
     A thunder-candle of blessed wax, lit against storms and against worse

@@ -1,0 +1,47 @@
+status_applied:
+  bleeding:
+    - weight: 1
+      importance: high
+      en: "The wound is deep, and it will not close on its own. Blood runs warm under your shirt."
+  poison:
+    - weight: 1
+      importance: high
+      en: "Grave-rot spreads cold from the wound, like ink through water."
+  fear:
+    - weight: 1
+      importance: high
+      en: "Cold dread pours into you. Your hands know better than your head how bad this is."
+  blessing:
+    - weight: 1
+      en: "The blessing settles over you like a warm cloak; your hands steady."
+
+status_tick:
+  bleeding:
+    - weight: 2
+      en: "Your wound weeps freely, leaving dark coins of blood on the moss."
+    - weight: 1
+      en: "The bleeding drags at your strength, step by step."
+  poison:
+    - weight: 2
+      en: "The rot gnaws deeper; your veins ache with cold."
+    - weight: 1
+      en: "You taste iron and old earth. The poison is working."
+
+status_expired:
+  bleeding:
+    - weight: 1
+      en: "The bleeding finally slows to a sticky seep, then stops."
+  poison:
+    - weight: 1
+      en: "The cold in your veins loosens its grip at last."
+  fear:
+    - weight: 1
+      en: "The dread lifts. Your breath comes back to you."
+  blessing:
+    - weight: 1
+      en: "The blessing fades, quiet as candle smoke."
+
+light_extinguished:
+  - weight: 1
+    importance: high
+    en: "The gromnica gutters, flares once, and dies. The dark steps closer."

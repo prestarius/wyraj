@@ -34,8 +34,8 @@ sol_swiecona:
   ascii_glyph: "%"
   style: "white"
   kind: consumable
-  effect: heal
-  power: 3
+  effect: bless
+  power: 12
   spawn_weight: 3
   description: >
     A twist of linen holding salt blessed on Gromniczna. A pinch on the

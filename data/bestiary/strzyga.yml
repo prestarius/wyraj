@@ -8,6 +8,7 @@ strzyga:
   damage: 5
   to_hit: 70
   behavior: approach
+  attack_status: { kind: bleeding, chance: 40, duration: 4, power: 1 }
   spawn_weight: 1
   epithets: ["the twice-souled", "she of the two rows of teeth"]
   forms:

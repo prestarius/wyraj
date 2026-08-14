@@ -32,9 +32,13 @@ from wyraj.core.events import (
     ItemUsed,
     ItemWielded,
     LevelChanged,
+    LightExtinguished,
     LoreDiscovered,
     MoveBlocked,
     StarvationHit,
+    StatusApplied,
+    StatusExpired,
+    StatusTick,
 )
 from wyraj.narration.engine import NarrationLine
 from wyraj.narration.forms import FormRegistry
@@ -78,6 +82,14 @@ def rule_key(event: GameEvent) -> RuleKey:
             return "lore_discovered", event.entity.key
         case LevelChanged():
             return "level_changed", event.direction
+        case StatusApplied():
+            return "status_applied", event.kind
+        case StatusTick():
+            return "status_tick", event.kind
+        case StatusExpired():
+            return "status_expired", event.kind
+        case LightExtinguished():
+            return "light_extinguished", None
         case _:
             name = type(event).__name__
             snake = re.sub(r"(?<!^)(?=[A-Z])", "_", name).lower()

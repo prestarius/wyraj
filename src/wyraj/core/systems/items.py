@@ -8,14 +8,19 @@ from wyraj.core.components import (
     Hunger,
     Inventory,
     Item,
+    LightSource,
     OnLevel,
     Position,
+    StatusEffect,
     Wielding,
 )
 from wyraj.core.ecs import Entity, World
 from wyraj.core.events import EventBus, HungerChanged, ItemPickedUp, ItemUsed, ItemWielded
 from wyraj.core.refs import ref_for
 from wyraj.core.systems.movement import level_of
+from wyraj.core.systems.status import apply_status
+
+BLESSING_TO_HIT = 15
 
 
 def item_at(world: World, x: int, y: int, depth: int) -> Entity | None:
@@ -49,6 +54,16 @@ def use_item(world: World, bus: EventBus, actor: Entity, item: Entity) -> bool:
     if consumable.effect == "heal":
         health = world.expect(actor, Health)
         world.add(actor, replace(health, hp=min(health.hp + consumable.power, health.max_hp)))
+    elif consumable.effect == "bless":
+        # power = duration in turns; the to-hit bonus is fixed.
+        apply_status(
+            world,
+            bus,
+            actor,
+            StatusEffect(kind="blessing", duration=consumable.power, power=BLESSING_TO_HIT),
+        )
+    elif consumable.effect == "light":
+        world.add(actor, LightSource(turns=consumable.power))
     elif consumable.effect == "feed":
         hunger = world.get(actor, Hunger)
         if hunger is not None:

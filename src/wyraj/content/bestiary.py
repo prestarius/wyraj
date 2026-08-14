@@ -8,6 +8,13 @@ from pydantic import BaseModel, Field
 from wyraj.content.paths import data_dir
 
 
+class StatusSpec(BaseModel):
+    kind: str
+    chance: int = Field(ge=0, le=100)
+    duration: int = Field(gt=0)
+    power: int = Field(ge=0)
+
+
 class MonsterDef(BaseModel):
     key: str
     name: str
@@ -21,6 +28,7 @@ class MonsterDef(BaseModel):
     behavior: str = "approach"
     spawn_weight: int = Field(default=1, ge=0)
     biomes: list[str] = ["puszcza", "kurhany"]
+    attack_status: StatusSpec | None = None
     epithets: list[str] = []
     description: str = ""
     # String-form tables per language (spec §7), e.g. {"en": {"plural": "biesy"}}
