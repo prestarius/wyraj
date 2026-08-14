@@ -14,6 +14,7 @@ from wyraj.core.events import (
     ItemPickedUp,
     ItemUsed,
     ItemWielded,
+    LoreDiscovered,
     MoveBlocked,
     Outcome,
     StarvationHit,
@@ -59,6 +60,9 @@ def fixture_event(event_key: str, subkey: str | None) -> GameEvent:
         return HungerChanged(actor=PLAYER, band=subkey)
     if event_key == "starvation_hit":
         return StarvationHit(actor=PLAYER, damage=1, hp_frac=0.4)
+    if event_key == "lore_discovered":
+        assert subkey is not None
+        return LoreDiscovered(entity=EntityRef(entity=9, key=subkey, name=subkey))
     raise AssertionError(f"no fixture for pack rule {event_key}/{subkey}")
 
 

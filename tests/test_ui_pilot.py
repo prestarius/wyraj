@@ -6,7 +6,7 @@ from textual.widgets import RichLog
 
 from wyraj.core.components import AI, Health, Position
 from wyraj.ui.app import WyrajApp
-from wyraj.ui.screens import DeathScreen
+from wyraj.ui.screens import CodexScreen, DeathScreen, ExamineScreen, InventoryScreen
 from wyraj.ui.widgets import CharacterPanel, MapView
 
 
@@ -22,6 +22,17 @@ def test_app_boots_and_waits_advance_turns() -> None:
             await pilot.press("h")
             await pilot.press("l")
             assert app.game.turn == start_turn + 3
+
+            await pilot.press("x")
+            assert isinstance(app.screen, ExamineScreen)
+            await pilot.press("escape")
+            await pilot.press("c")
+            assert isinstance(app.screen, CodexScreen)
+            await pilot.press("escape")
+            await pilot.press("i")
+            assert isinstance(app.screen, InventoryScreen)
+            await pilot.press("escape")
+            assert app.game.turn == start_turn + 3  # modals cost no turns
 
     asyncio.run(run())
 

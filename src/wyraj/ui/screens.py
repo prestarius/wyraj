@@ -11,7 +11,7 @@ from textual.screen import ModalScreen, Screen
 from textual.widgets import Static
 
 from wyraj.core.actions import Action, UseItem, WieldItem
-from wyraj.core.components import Inventory, Item, Lore, Wielding
+from wyraj.core.components import AI, Health, Inventory, Item, Lore, Position, Wielding
 from wyraj.core.game import Game
 
 
@@ -86,6 +86,87 @@ class InventoryScreen(ModalScreen[Action | None]):
                 else:
                     self.dismiss(None)
                 return
+
+    def action_close(self) -> None:
+        self.dismiss(None)
+
+
+def _hp_word(health: Health) -> str:
+    if health.fraction > 0.75:
+        return "unhurt"
+    if health.fraction > 0.5:
+        return "scratched"
+    if health.fraction > 0.25:
+        return "bloodied"
+    return "near death"
+
+
+class ExamineScreen(ModalScreen[None]):
+    """What the player currently sees, with lore."""
+
+    BINDINGS: ClassVar = [("escape", "close", "Close"), ("x", "close", "Close")]
+
+    def __init__(self, game: Game) -> None:
+        super().__init__()
+        self.game = game
+
+    def compose(self) -> ComposeResult:
+        game = self.game
+        text = Text()
+        text.append("— What you see —\n\n", style="bold")
+        seen_something = False
+        for _entity, (_ai, lore, pos, health) in game.world.query(AI, Lore, Position, Health):
+            if (pos.x, pos.y) not in game.map.visible:
+                continue
+            seen_something = True
+            text.append(f" {lore.name}", style="bold red3")
+            if lore.epithets:
+                text.append(f" — {lore.epithets[0]}", style="italic grey58")
+            text.append(f" ({_hp_word(health)})\n", style="grey58")
+            if lore.description:
+                text.append(f"   {lore.description.strip()}\n\n", style="grey66")
+        for _entity, (_item, lore, pos) in game.world.query(Item, Lore, Position):
+            if (pos.x, pos.y) not in game.map.visible:
+                continue
+            seen_something = True
+            text.append(f" {lore.name}", style="gold3")
+            text.append(" lies here.\n", style="grey58")
+        if not seen_something:
+            text.append("Only trees, and the spaces between them.\n", style="grey58")
+        text.append("\nEsc to close.", style="grey42")
+        with Middle(), Center():
+            yield Static(text)
+
+    def action_close(self) -> None:
+        self.dismiss(None)
+
+
+class CodexScreen(ModalScreen[None]):
+    """Bestiary codex: folklore entries unlocked by seeing the creature."""
+
+    BINDINGS: ClassVar = [("escape", "close", "Close"), ("c", "close", "Close")]
+
+    def __init__(self, game: Game) -> None:
+        super().__init__()
+        self.game = game
+
+    def compose(self) -> ComposeResult:
+        game = self.game
+        text = Text()
+        text.append("— Codex of the Puszcza —\n\n", style="bold")
+        for key in sorted(game.bestiary):
+            definition = game.bestiary[key]
+            if key in game.codex_seen:
+                text.append(f" {definition.name}", style="bold")
+                if definition.epithets:
+                    text.append(f" — {', '.join(definition.epithets)}", style="italic grey58")
+                text.append("\n")
+                text.append(f"   {definition.description.strip()}\n\n", style="grey66")
+            else:
+                text.append(" — a shape not yet seen —\n\n", style="grey30")
+        text.append("Esc to close.", style="grey42")
+        with Middle(), Center():
+            yield Static(text)
 
     def action_close(self) -> None:
         self.dismiss(None)

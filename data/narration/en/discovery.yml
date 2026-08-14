@@ -1,0 +1,25 @@
+lore_discovered:
+  default:
+    - weight: 1
+      importance: high
+      en: "Something moves between the trees — a shape you know from fireside stories, and the stories were kind by half."
+  bies:
+    - weight: 1
+      importance: high
+      en: "A crooked shape unfolds from the thicket — a bies, the one the old people would not name after dark."
+  wilk:
+    - weight: 1
+      importance: high
+      en: "Grey on grey against the treeline: a wilk, watching you the way a butcher watches a fattened pig."
+  utopiec:
+    - weight: 1
+      importance: high
+      en: "A wet, green-slick figure hauls itself over the roots — an utopiec, far from its pool and hungry for company."
+  strzyga:
+    - weight: 1
+      importance: high
+      en: "Lamplight eyes catch yours through the branches. A strzyga — and she has already counted your nights."
+  martwiak:
+    - weight: 1
+      importance: high
+      en: "Cold clay that walks: a martwiak, buried without rites, comes on with the patience of the grave."

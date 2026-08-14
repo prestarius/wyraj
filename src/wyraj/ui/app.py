@@ -15,7 +15,7 @@ from wyraj.narration.context import ContextEnricher
 from wyraj.narration.engine import NarrationEngine, NarrationLine
 from wyraj.narration.forms import build_form_registry
 from wyraj.narration.templates import TemplateNarrator, load_pack
-from wyraj.ui.screens import DeathScreen, InventoryScreen
+from wyraj.ui.screens import CodexScreen, DeathScreen, ExamineScreen, InventoryScreen
 from wyraj.ui.widgets import CharacterPanel, MapView
 
 MOVE_KEYS: dict[str, tuple[int, int]] = {
@@ -44,6 +44,8 @@ class WyrajApp(App[None]):
         Binding("full_stop", "wait", "Wait", key_display="."),
         Binding("g", "get", "Get"),
         Binding("i", "inventory", "Inventory"),
+        Binding("x", "examine", "Examine"),
+        Binding("c", "codex", "Codex"),
     ]
 
     def __init__(self, seed: int, use_ascii: bool = False) -> None:
@@ -90,6 +92,12 @@ class WyrajApp(App[None]):
 
     def action_get(self) -> None:
         self._play(Get())
+
+    def action_examine(self) -> None:
+        self.push_screen(ExamineScreen(self.game))
+
+    def action_codex(self) -> None:
+        self.push_screen(CodexScreen(self.game))
 
     def action_inventory(self) -> None:
         def on_result(action: Action | None) -> None:
