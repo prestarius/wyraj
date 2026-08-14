@@ -123,7 +123,7 @@ class CharacterPanel(Static):
             render_portrait(self.portrait_style, hp_band(health.fraction), self._weapon_key())
         )
         text.append("\n\n")
-        text.append(" Wędrowiec\n", style="bold")
+        text.append(f" {game.origin.name}, {game.origin.title}\n", style="bold")
         places = {0: "Wieś", 1: "Puszcza", 2: "Bagna"}
         place = places.get(game.depth, f"Kurhan, poziom {game.depth - 2}")
         text.append(f" {place}\n", style="grey58")

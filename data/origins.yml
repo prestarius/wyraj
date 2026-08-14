@@ -1,0 +1,50 @@
+wygnaniec:
+  name: "Wygnaniec"
+  title: "the Exile"
+  hp: 24
+  to_hit: 75
+  damage: 4
+  satiation: 500
+  starting_items: [noz, chleb]
+  intro: >
+    They read your sentence at the church door and broke a clay bowl over
+    the threshold. Whatever you did — and the wieś argues about it still —
+    the puszcza is your country now. You have survived one winter in it
+    already. That is one more than most exiles manage.
+  description: >
+    Hardier than most (24 HP), inured to hunger's first bite, but the
+    village owes you nothing. Starts with a knife and a loaf of stolen bread.
+
+zielarka:
+  name: "Zielarka"
+  title: "the Herbwoman"
+  hp: 18
+  to_hit: 70
+  damage: 3
+  satiation: 600
+  starting_items: [odwar, odwar, sol_swiecona, gromnica]
+  intro: >
+    You know the puszcza the way the priest knows his psalter — which bark
+    quiets a fever, which moss packs a wound, and which clearings to leave
+    before dusk. Now something in the forest has changed its habits, and
+    the herbs you need grow only where it hunts.
+  description: >
+    Frail (18 HP) but never without remedies. Starts with two odwary,
+    blessed salt, and a gromnica candle.
+
+najemnik:
+  name: "Najemnik"
+  title: "the Sellsword"
+  hp: 20
+  to_hit: 80
+  damage: 4
+  satiation: 550
+  starting_items: [toporek, wilcza_skora]
+  intro: >
+    You fought for three banners and outlived all three paymasters. The
+    silver in this village is thin, but the work is honest by your
+    standards: something is taking people from the edge of the woods, and
+    the wieś will feed whoever makes it stop.
+  description: >
+    A practiced killer (20 HP, sure-handed in a fight). Starts with a
+    woodsman's toporek and a wolfskin cloak.
