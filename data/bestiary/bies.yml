@@ -8,6 +8,7 @@ bies:
   damage: 3
   to_hit: 65
   behavior: approach
+  spawn_weight: 3
   epithets: ["the unclean one", "spirit of the thicket"]
   forms:
     en: { plural: "biesy" }

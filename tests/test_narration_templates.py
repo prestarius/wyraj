@@ -3,14 +3,20 @@ import random
 import pytest
 
 from wyraj.content.bestiary import load_bestiary
+from wyraj.content.items import load_items
 from wyraj.core.events import (
     AttackResolved,
     EntityDied,
     EntityRef,
     EventBus,
     GameEvent,
+    HungerChanged,
+    ItemPickedUp,
+    ItemUsed,
+    ItemWielded,
     MoveBlocked,
     Outcome,
+    StarvationHit,
 )
 from wyraj.narration.engine import NarrationEngine, NarrationLine
 from wyraj.narration.forms import build_form_registry
@@ -18,7 +24,9 @@ from wyraj.narration.templates import TemplateNarrator, load_pack, render, rule_
 
 PLAYER = EntityRef(entity=1, key="player", name="you", is_player=True)
 BIES = EntityRef(entity=2, key="bies", name="bies")
-REGISTRY = build_form_registry(load_bestiary())
+ODWAR = EntityRef(entity=3, key="odwar", name="odwar of yarrow")
+CIUPAGA = EntityRef(entity=4, key="ciupaga", name="shepherd's ciupaga")
+REGISTRY = build_form_registry({**load_bestiary(), **load_items()})
 
 
 def fixture_event(event_key: str, subkey: str | None) -> GameEvent:
@@ -39,6 +47,18 @@ def fixture_event(event_key: str, subkey: str | None) -> GameEvent:
         return EntityDied(entity=PLAYER if subkey == "player" else BIES)
     if event_key == "move_blocked":
         return MoveBlocked(actor=PLAYER if subkey == "player" else BIES, to_pos=(0, 0))
+    if event_key == "item_picked_up":
+        return ItemPickedUp(actor=PLAYER, item=ODWAR)
+    if event_key == "item_used":
+        assert subkey is not None
+        return ItemUsed(actor=PLAYER, item=ODWAR, effect=subkey, power=8)
+    if event_key == "item_wielded":
+        return ItemWielded(actor=PLAYER, item=CIUPAGA)
+    if event_key == "hunger_changed":
+        assert subkey is not None
+        return HungerChanged(actor=PLAYER, band=subkey)
+    if event_key == "starvation_hit":
+        return StarvationHit(actor=PLAYER, damage=1, hp_frac=0.4)
     raise AssertionError(f"no fixture for pack rule {event_key}/{subkey}")
 
 

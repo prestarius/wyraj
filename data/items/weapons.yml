@@ -1,0 +1,38 @@
+noz:
+  name: "skinning knife"
+  glyph: ")"
+  ascii_glyph: ")"
+  style: "grey66"
+  kind: weapon
+  damage: 3
+  spawn_weight: 4
+  description: >
+    A short, well-worn blade for hides and rope. It was never meant for
+    what you will use it for, but it will not complain.
+
+toporek:
+  name: "woodsman's toporek"
+  glyph: ")"
+  ascii_glyph: ")"
+  style: "grey78"
+  kind: weapon
+  damage: 5
+  spawn_weight: 3
+  description: >
+    A hatchet with a scarred haft, ground to a working edge. Half the
+    villages along the puszcza were raised with one of these; a few were
+    defended with one, too.
+
+ciupaga:
+  name: "shepherd's ciupaga"
+  glyph: ")"
+  ascii_glyph: ")"
+  style: "gold3"
+  kind: weapon
+  damage: 6
+  spawn_weight: 2
+  forms:
+    en: { plural: "ciupagi" }
+  description: >
+    A long-hafted highland axe, walking stick and weapon in one. The brass
+    inlay on the head is worn smooth by a hand that is no longer here.

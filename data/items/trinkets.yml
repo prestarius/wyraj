@@ -1,0 +1,23 @@
+gromnica:
+  name: "gromnica candle"
+  glyph: "|"
+  ascii_glyph: "|"
+  style: "light_goldenrod2"
+  kind: trinket
+  spawn_weight: 3
+  description: >
+    A thunder-candle of blessed wax, lit against storms and against worse
+    things. Unlit, it is only a promise — but even the promise is worth
+    carrying in the dark under the trees.
+
+wilczy_amulet:
+  name: "wolf-tooth amulet"
+  glyph: "\""
+  ascii_glyph: "\""
+  style: "grey62"
+  kind: trinket
+  spawn_weight: 2
+  description: >
+    A yellowed fang on a leather cord, taken — the seller swore — from the
+    lead wolf of a winter pack. Whether it wards off wolves or calls to
+    them is a matter of some debate.

@@ -1,0 +1,19 @@
+strzyga:
+  name: "strzyga"
+  glyph: "s"
+  ascii_glyph: "s"
+  style: "red3"
+  hp: 14
+  speed: 110
+  damage: 5
+  to_hit: 70
+  behavior: approach
+  spawn_weight: 1
+  epithets: ["the twice-souled", "she of the two rows of teeth"]
+  forms:
+    en: { plural: "strzygi", pronoun_subj: "she", pronoun_obj: "her", pronoun_poss: "her" }
+  description: >
+    Born with two souls and buried with one, the strzyga comes back for
+    what she is owed. Two rows of teeth, eyes that catch lamplight like a
+    cat's, and patience — she will circle a camp for three nights before
+    the fourth. There is no fifth.

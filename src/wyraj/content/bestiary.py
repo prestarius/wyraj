@@ -19,6 +19,7 @@ class MonsterDef(BaseModel):
     damage: int = Field(ge=0)
     to_hit: int = Field(ge=0, le=100)
     behavior: str = "approach"
+    spawn_weight: int = Field(default=1, ge=0)
     epithets: list[str] = []
     description: str = ""
     # String-form tables per language (spec §7), e.g. {"en": {"plural": "biesy"}}

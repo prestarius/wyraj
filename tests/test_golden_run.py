@@ -10,6 +10,7 @@ import random
 from pathlib import Path
 
 from wyraj.content.bestiary import load_bestiary
+from wyraj.content.items import load_items
 from wyraj.core.actions import Action, Move, Wait
 from wyraj.core.game import Game
 from wyraj.narration.context import ContextEnricher
@@ -39,7 +40,7 @@ def build_script() -> list[Action]:
 
 def produce_transcript() -> str:
     game = Game(seed=SEED)
-    registry = build_form_registry(load_bestiary())
+    registry = build_form_registry({**load_bestiary(), **load_items()})
     narrator = TemplateNarrator(load_pack("en"), game.rng.narration, registry)
     narration = NarrationEngine(game.bus, narrator, enricher=ContextEnricher(game).enrich)
     lines: list[str] = []

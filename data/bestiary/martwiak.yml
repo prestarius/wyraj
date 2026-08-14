@@ -1,0 +1,19 @@
+martwiak:
+  name: "martwiak"
+  glyph: "m"
+  ascii_glyph: "m"
+  style: "dark_sea_green4"
+  hp: 12
+  speed: 60
+  damage: 3
+  to_hit: 75
+  behavior: approach
+  spawn_weight: 2
+  epithets: ["the unburied", "cold clay that walks"]
+  forms:
+    en: { plural: "martwiaki" }
+  description: >
+    A dead man the earth refused — buried without rites, or dug up by
+    something, or never buried at all. It does not hunger and does not
+    tire; it only continues. Blessed salt burns it like a brand, which is
+    the most useful thing the old people know about it.
