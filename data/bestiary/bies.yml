@@ -1,0 +1,15 @@
+bies:
+  name: bies
+  glyph: "b"
+  ascii_glyph: "b"
+  style: "dark_red"
+  hp: 8
+  speed: 90
+  damage: 3
+  to_hit: 65
+  behavior: approach
+  epithets: ["the unclean one", "spirit of the thicket"]
+  description: >
+    A crooked thing of the deep puszcza, neither beast nor man. The old
+    people would not say its name after dark; they called it only "the one
+    from the woods". It hates fire, bells, and the smell of bread.
