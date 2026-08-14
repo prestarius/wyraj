@@ -1,0 +1,53 @@
+[project]
+name = "wyraj"
+version = "0.0.0"
+description = "Wyraj — a narrated roguelike set in Slavic dark fantasy."
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "textual>=8.2",
+    "pydantic>=2.13",
+    "pyyaml>=6.0",
+]
+
+[project.scripts]
+wyraj = "wyraj.app:main"
+
+[dependency-groups]
+dev = [
+    "pytest>=9.1",
+    "ruff>=0.16",
+    "mypy>=2.3",
+    "types-pyyaml>=6.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+target-version = "py312"
+line-length = 100
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM", "RUF"]
+
+[tool.mypy]
+python_version = "3.12"
+mypy_path = "src"
+packages = ["wyraj"]
+strict = true
+
+[[tool.mypy.overrides]]
+# Strictness is required only on core/ and narration/ (spec §11); relax the
+# noisiest strict flags elsewhere so UI/procgen code stays pragmatic.
+module = ["wyraj.ui.*", "wyraj.app"]
+disallow_untyped_defs = false
+disallow_incomplete_defs = false
+disallow_untyped_calls = false
+disallow_any_generics = false
+warn_return_any = false

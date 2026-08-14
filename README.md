@@ -1,0 +1,28 @@
+# Wyraj
+
+A **narrated roguelike** set in Slavic dark fantasy. Procedural world, permadeath,
+turn-based tactics — and a narration engine that turns every mechanical event into
+readable folk-horror prose. No goblins, no orcs: leszy, strzyga, utopiec, bies.
+
+> *Wyraj* — the Slavic otherworld where souls fly as birds and return in spring.
+
+**Status:** pre-alpha, milestone M0 (walking skeleton) in progress.
+
+## Run
+
+```sh
+uv sync
+uv run wyraj            # play
+uv run wyraj --seed 42  # deterministic run
+```
+
+## Develop
+
+```sh
+uv run pytest           # tests
+uv run ruff check .     # lint
+uv run mypy             # typecheck (strict on core/ and narration/)
+```
+
+See `docs/WYRAJ_PROJECT.md` for the full project specification and
+`docs/IMPLEMENTATION_PLAN.md` for the roadmap.
