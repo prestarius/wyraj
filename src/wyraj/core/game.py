@@ -13,6 +13,7 @@ from wyraj.content.bestiary import MonsterDef, load_bestiary
 from wyraj.content.hooks import HookDef, load_hooks
 from wyraj.content.items import ItemDef, load_items
 from wyraj.content.loot import load_loot_tables
+from wyraj.content.origins import OriginDef, load_origins
 from wyraj.core.actions import (
     Action,
     Ascend,
@@ -97,6 +98,7 @@ class Game:
     def __init__(
         self,
         seed: int,
+        origin: str = "wygnaniec",
         bestiary: dict[str, MonsterDef] | None = None,
         items_catalog: dict[str, ItemDef] | None = None,
     ) -> None:
@@ -114,6 +116,8 @@ class Game:
         self.items_catalog = items_catalog if items_catalog is not None else load_items()
         self.loot_tables = load_loot_tables()
         self.hooks_catalog = load_hooks()
+        self.origins_catalog = load_origins()
+        self.origin: OriginDef = self.origins_catalog[origin]
 
         layout = generate_village()
         self.levels[0] = layout.map
@@ -123,11 +127,11 @@ class Game:
             Position(px, py),
             OnLevel(0),
             Renderable(glyph="@", style="bold white"),
-            Health(PLAYER_HP, PLAYER_HP),
-            Melee(damage=PLAYER_DAMAGE, to_hit=PLAYER_TO_HIT),
+            Health(self.origin.hp, self.origin.hp),
+            Melee(damage=self.origin.damage, to_hit=self.origin.to_hit),
             Actor(speed=PLAYER_SPEED),
-            Hunger(PLAYER_SATIATION, PLAYER_SATIATION),
-            Inventory(),
+            Hunger(self.origin.satiation, self.origin.satiation),
+            Inventory(items=tuple(self.spawn_stock_item(k) for k in self.origin.starting_items)),
             Wielding(),
             Lore(key="player", name="you"),
         )

@@ -21,7 +21,7 @@ from wyraj.core.map import GameMap, Tile
 from wyraj.core.rng import STREAM_NAMES, RngStreams
 from wyraj.core.scheduler import TurnScheduler
 
-SAVE_VERSION = 1
+SAVE_VERSION = 2
 
 _TILE_TO_CHAR = {
     Tile.WALL: "#",
@@ -97,6 +97,7 @@ def save_game(game: Game, path: Path | None = None) -> Path:
         "depth": game.depth,
         "game_over": game.game_over,
         "codex_seen": sorted(game.codex_seen),
+        "origin": game.origin.key,
         "player": game.player,
         "rng": game.rng.get_states(),
         "levels": {str(depth): _encode_map(m) for depth, m in game.levels.items()},
@@ -137,6 +138,7 @@ def load_game(path: Path | None = None) -> Game | None:
     from wyraj.content.hooks import load_hooks
     from wyraj.content.items import load_items
     from wyraj.content.loot import load_loot_tables
+    from wyraj.content.origins import load_origins
     from wyraj.core.ecs import World
     from wyraj.core.events import EventBus
 
@@ -144,6 +146,8 @@ def load_game(path: Path | None = None) -> Game | None:
     game.items_catalog = load_items()
     game.loot_tables = load_loot_tables()
     game.hooks_catalog = load_hooks()
+    game.origins_catalog = load_origins()
+    game.origin = game.origins_catalog[payload.get("origin", "wygnaniec")]
 
     game.levels = {int(d): _decode_map(m) for d, m in payload["levels"].items()}
 

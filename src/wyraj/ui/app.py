@@ -64,9 +64,10 @@ class WyrajApp(App[None]):
         use_ascii: bool = False,
         portrait_style: str = "half",
         game: Game | None = None,
+        origin: str = "wygnaniec",
     ) -> None:
         super().__init__()
-        self.game = game if game is not None else Game(seed)
+        self.game = game if game is not None else Game(seed, origin=origin)
         self.use_ascii = use_ascii
         self.portrait_style = portrait_style
         registry = build_form_registry({**self.game.bestiary, **self.game.items_catalog})
@@ -85,11 +86,13 @@ class WyrajApp(App[None]):
 
     def on_mount(self) -> None:
         log = self.query_one(RichLog)
+        intro = self.game.origin.intro.strip().replace("\n", " ")
+        log.write(Text(intro, style="italic grey74"))
         log.write(
             Text(
-                "The puszcza swallows the path behind you. "
-                "Somewhere in the dark between the trees, something is already awake.",
-                style="italic grey74",
+                "The wieś is behind you the moment you stop looking at it. "
+                "Somewhere between the trees, something is already awake.",
+                style="italic grey58",
             )
         )
 
