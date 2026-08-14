@@ -1,0 +1,12 @@
+count: 7
+count_per_depth: 0
+weights:
+  odwar: 3
+  mocny_odwar: 2
+  sol_swiecona: 2
+  gromnica: 2
+  suszone_mieso: 2
+  chleb: 1
+  noz: 2
+  ciupaga: 1
+  wilcza_skora: 2

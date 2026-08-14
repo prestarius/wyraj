@@ -10,7 +10,7 @@ from textual.containers import Center, Middle
 from textual.screen import ModalScreen, Screen
 from textual.widgets import Static
 
-from wyraj.core.actions import Action, UseItem, WearItem, WieldItem
+from wyraj.core.actions import Action, TradeItems, UseItem, WearItem, WieldItem
 from wyraj.core.components import (
     AI,
     Health,
@@ -116,6 +116,67 @@ def _hp_word(health: Health) -> str:
     if health.fraction > 0.25:
         return "bloodied"
     return "near death"
+
+
+class TradeScreen(ModalScreen[Action | None]):
+    """Barter v0: letter picks what you give, then what you take."""
+
+    BINDINGS: ClassVar = [("escape", "close", "Close")]
+
+    def __init__(self, game: Game, trader: int) -> None:
+        super().__init__()
+        self.game = game
+        self.trader = trader
+        self.giving: int | None = None
+        player_inv = game.world.get(game.player, Inventory) or Inventory()
+        trader_inv = game.world.get(trader, Inventory) or Inventory()
+        self.mine = self._entries(player_inv, string.ascii_lowercase)
+        self.theirs = self._entries(trader_inv, string.ascii_uppercase)
+
+    def _entries(self, inventory: Inventory, letters: str) -> list[tuple[str, int, str]]:
+        result = []
+        for letter, entity in zip(letters, inventory.items, strict=False):
+            lore = self.game.world.get(entity, Lore)
+            result.append((letter, entity, lore.name if lore else "something"))
+        return result
+
+    def compose(self) -> ComposeResult:
+        text = Text()
+        text.append("— The handlarz's cart —\n\n", style="bold")
+        if not self.mine:
+            text.append("You have nothing to trade. He is polite about it.\n", style="grey58")
+        else:
+            text.append("Yours (pick with a-z):\n", style="grey58")
+            for letter, entity, name in self.mine:
+                style = "bold gold3" if entity == self.giving else "gold3"
+                text.append(f" {letter}", style=style)
+                text.append(f" — {name}{'  ← offering' if entity == self.giving else ''}\n")
+            text.append("\nHis stock (pick with A-Z):\n", style="grey58")
+            for letter, _entity, name in self.theirs:
+                text.append(f" {letter}", style="bold cyan")
+                text.append(f" — {name}\n")
+        text.append("\nEsc to walk away.", style="grey42")
+        with Middle(), Center():
+            yield Static(text)
+
+    def on_key(self, event: events.Key) -> None:
+        event.stop()
+        if event.key == "escape":
+            return
+        for letter, entity, _name in self.mine:
+            if event.key == letter:
+                self.giving = entity
+                self.refresh(recompose=True)
+                return
+        if self.giving is None:
+            return
+        for letter, entity, _name in self.theirs:
+            if event.key == letter:
+                self.dismiss(TradeItems(trader=self.trader, give=self.giving, take=entity))
+                return
+
+    def action_close(self) -> None:
+        self.dismiss(None)
 
 
 class ExamineScreen(ModalScreen[None]):

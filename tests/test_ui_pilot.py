@@ -4,7 +4,7 @@ import asyncio
 
 from textual.widgets import RichLog
 
-from wyraj.core.components import AI, Health, Position
+from wyraj.core.components import AI, Health, OnLevel, Position
 from wyraj.ui.app import WyrajApp
 from wyraj.ui.screens import CodexScreen, DeathScreen, ExamineScreen, InventoryScreen
 from wyraj.ui.widgets import CharacterPanel, MapView
@@ -41,9 +41,11 @@ def test_death_screen_appears_on_game_over() -> None:
     async def run() -> None:
         app = WyrajApp(seed=42)
         async with app.run_test(size=(100, 40)) as pilot:
-            # Teleport a bies next to the player, then wait until it kills us.
+            # Pull a forest monster next to the player, then wait until it kills us.
+            app.game._ensure_level(1)
             ppos = app.game.world.expect(app.game.player, Position)
             bies = app.game.world.entities_with(AI)[0]
+            app.game.world.add(bies, OnLevel(0))
             app.game.world.add(bies, Position(ppos.x + 1, ppos.y))
             for _ in range(60):
                 if app.game.game_over:

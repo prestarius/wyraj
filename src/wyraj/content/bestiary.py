@@ -29,6 +29,8 @@ class MonsterDef(BaseModel):
     spawn_weight: int = Field(default=1, ge=0)
     biomes: list[str] = ["puszcza", "kurhany"]
     attack_status: StatusSpec | None = None
+    swims: bool = False
+    prefers_water: bool = False
     epithets: list[str] = []
     description: str = ""
     # String-form tables per language (spec §7), e.g. {"en": {"plural": "biesy"}}

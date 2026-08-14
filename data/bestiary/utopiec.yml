@@ -9,7 +9,9 @@ utopiec:
   to_hit: 60
   behavior: approach
   spawn_weight: 2
-  biomes: [puszcza]
+  biomes: [puszcza, bagna]
+  swims: true
+  prefers_water: true
   epithets: ["the drowned one", "he who waits under the reeds"]
   forms:
     en: { article: "an", plural: "utopce" }

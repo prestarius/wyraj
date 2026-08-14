@@ -129,6 +129,24 @@ class LightExtinguished(GameEvent):
 
 
 @dataclass(frozen=True)
+class TalkedTo(GameEvent):
+    villager: EntityRef
+    role: str
+
+
+@dataclass(frozen=True)
+class Rested(GameEvent):
+    actor: EntityRef
+
+
+@dataclass(frozen=True)
+class ItemTraded(GameEvent):
+    actor: EntityRef
+    gave: EntityRef
+    got: EntityRef
+
+
+@dataclass(frozen=True)
 class LevelChanged(GameEvent):
     depth: int  # level arrived at
     direction: str  # "down" | "up"

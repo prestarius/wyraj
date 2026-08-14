@@ -6,8 +6,9 @@ from wyraj.core.fov import compute_fov
 
 
 class Tile(Enum):
-    WALL = "wall"  # in the puszcza: dense trees; in kurhany: barrow stone
+    WALL = "wall"  # dense trees / barrow stone / reed thicket, per biome
     FLOOR = "floor"
+    WATER = "water"  # open marsh pools: see over, don't walk in (swimmers may)
     STAIRS_DOWN = "stairs_down"
     STAIRS_UP = "stairs_up"
 
@@ -38,8 +39,7 @@ class GameMap:
         return None
 
     def is_transparent(self, x: int, y: int) -> bool:
-        # In the forest, what blocks feet also blocks sight.
-        return self.is_walkable(x, y)
+        return self.in_bounds(x, y) and self.tiles[y][x] is not Tile.WALL
 
     def update_fov(self, origin: tuple[int, int], radius: int) -> None:
         self.visible = compute_fov(

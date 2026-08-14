@@ -21,9 +21,20 @@ from wyraj.core.systems.movement import level_of
 from wyraj.ui.portrait import hp_band, render_portrait
 
 # (unicode, ascii) glyphs per terrain, keyed by biome
-WALL_GLYPHS = {"puszcza": ("♣", "#"), "kurhany": ("▒", "#")}
-WALL_STYLES = {"puszcza": "dark_green", "kurhany": "grey39"}
+WALL_GLYPHS = {
+    "puszcza": ("♣", "#"),
+    "kurhany": ("▒", "#"),
+    "bagna": ('"', '"'),
+    "wies": ("#", "#"),
+}
+WALL_STYLES = {
+    "puszcza": "dark_green",
+    "kurhany": "grey39",
+    "bagna": "dark_olive_green3",
+    "wies": "tan",
+}
 FLOOR_GLYPHS = ("·", ".")
+WATER_GLYPHS = ("≈", "~")
 STAIRS_DOWN_GLYPHS = (">", ">")
 STAIRS_UP_GLYPHS = ("<", "<")
 
@@ -43,6 +54,8 @@ class MapView(Static):
             return STAIRS_DOWN_GLYPHS[glyph_index]
         if tile is Tile.STAIRS_UP:
             return STAIRS_UP_GLYPHS[glyph_index]
+        if tile is Tile.WATER:
+            return WATER_GLYPHS[glyph_index]
         return FLOOR_GLYPHS[glyph_index]
 
     def render(self) -> Text:
@@ -76,6 +89,8 @@ class MapView(Static):
                         text.append(self._terrain_glyph(tile), style=wall_style)
                     elif tile in (Tile.STAIRS_DOWN, Tile.STAIRS_UP):
                         text.append(self._terrain_glyph(tile), style="bold gold3")
+                    elif tile is Tile.WATER:
+                        text.append(self._terrain_glyph(tile), style="deep_sky_blue4")
                     else:
                         text.append(self._terrain_glyph(tile), style="grey58")
                 elif cell in game.map.explored:
@@ -109,7 +124,8 @@ class CharacterPanel(Static):
         )
         text.append("\n\n")
         text.append(" Wędrowiec\n", style="bold")
-        place = "Puszcza" if game.depth == 0 else f"Kurhan, poziom {game.depth}"
+        places = {0: "Wieś", 1: "Puszcza", 2: "Bagna"}
+        place = places.get(game.depth, f"Kurhan, poziom {game.depth - 2}")
         text.append(f" {place}\n", style="grey58")
         text.append(f" Turn {game.turn}\n\n", style="grey58")
         text.append(" HP ")

@@ -9,14 +9,21 @@ from textual.binding import Binding
 from textual.containers import Horizontal
 from textual.widgets import Footer, RichLog
 
-from wyraj.core.actions import Action, Ascend, Descend, Get, Move, Wait
+from wyraj.core.actions import Action, Ascend, Descend, Get, Move, Rest, Wait
+from wyraj.core.events import TalkedTo
 from wyraj.core.game import Game
 from wyraj.narration.context import ContextEnricher
 from wyraj.narration.engine import NarrationEngine, NarrationLine
 from wyraj.narration.forms import build_form_registry
 from wyraj.narration.templates import TemplateNarrator, load_pack
 from wyraj.persistence.save import delete_save, save_game
-from wyraj.ui.screens import CodexScreen, DeathScreen, ExamineScreen, InventoryScreen
+from wyraj.ui.screens import (
+    CodexScreen,
+    DeathScreen,
+    ExamineScreen,
+    InventoryScreen,
+    TradeScreen,
+)
 from wyraj.ui.widgets import CharacterPanel, MapView
 
 MOVE_KEYS: dict[str, tuple[int, int]] = {
@@ -48,6 +55,7 @@ class WyrajApp(App[None]):
         Binding("x", "examine", "Examine"),
         Binding("c", "codex", "Codex"),
         Binding("s", "save_quit", "Save+Quit"),
+        Binding("r", "rest", "Rest"),
     ]
 
     def __init__(
@@ -66,6 +74,7 @@ class WyrajApp(App[None]):
         enricher = ContextEnricher(self.game)
         self.narration = NarrationEngine(self.game.bus, narrator, enricher=enricher.enrich)
         self.narration.add_sink(self._on_narration)
+        self.game.bus.subscribe(TalkedTo, self._on_talked_to)
 
     def compose(self) -> ComposeResult:
         with Horizontal(id="top"):
@@ -105,6 +114,20 @@ class WyrajApp(App[None]):
 
     def action_get(self) -> None:
         self._play(Get())
+
+    def action_rest(self) -> None:
+        self._play(Rest())
+
+    def _on_talked_to(self, event: TalkedTo) -> None:
+        if event.role == "trader" and self.is_running:
+
+            def on_result(action: Action | None) -> None:
+                if action is not None:
+                    self._play(action)
+
+            self.call_after_refresh(
+                self.push_screen, TradeScreen(self.game, event.villager.entity), on_result
+            )
 
     def action_save_quit(self) -> None:
         if not self.game.game_over:

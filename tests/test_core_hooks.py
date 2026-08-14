@@ -9,10 +9,8 @@ from wyraj.narration.templates import load_pack
 
 def test_hooks_load_three_per_biome() -> None:
     hooks = load_hooks()
-    puszcza = [h for h in hooks.values() if "puszcza" in h.biomes]
-    kurhany = [h for h in hooks.values() if "kurhany" in h.biomes]
-    assert len(puszcza) == 3
-    assert len(kurhany) == 3
+    for biome in ("puszcza", "kurhany", "bagna"):
+        assert len([h for h in hooks.values() if biome in h.biomes]) == 3
 
 
 def test_every_hook_has_discovery_narration() -> None:
@@ -23,17 +21,18 @@ def test_every_hook_has_discovery_narration() -> None:
 
 def test_levels_are_seeded_with_hooks() -> None:
     game = Game(seed=42)
-    surface_hooks = [
-        game.world.expect(e, Lore).key
-        for e, _ in game.world.query(StoryHook)
-        if level_of(game.world, e) == 0
-    ]
-    assert len(surface_hooks) == 3
     game._ensure_level(1)
-    crypt_hooks = [
+    forest_hooks = [
         game.world.expect(e, Lore).key
         for e, _ in game.world.query(StoryHook)
         if level_of(game.world, e) == 1
+    ]
+    assert len(forest_hooks) == 3
+    game._ensure_level(3)
+    crypt_hooks = [
+        game.world.expect(e, Lore).key
+        for e, _ in game.world.query(StoryHook)
+        if level_of(game.world, e) == 3
     ]
     assert len(crypt_hooks) == 3
     allowed = {k for k, h in game.hooks_catalog.items() if "kurhany" in h.biomes}
@@ -44,7 +43,11 @@ def test_hook_discovery_emits_once() -> None:
     game = Game(seed=42)
     discovered: list[LoreDiscovered] = []
     game.bus.subscribe(LoreDiscovered, discovered.append)
-    hook = next(e for e, _ in game.world.query(StoryHook) if level_of(game.world, e) == 0)
+    game._ensure_level(1)
+    hook = next(e for e, _ in game.world.query(StoryHook) if level_of(game.world, e) == 1)
+    from wyraj.core.components import OnLevel
+
+    game.world.add(hook, OnLevel(0))
     ppos = game.world.expect(game.player, Position)
     game.world.add(hook, Position(ppos.x + 1, ppos.y))
     game.step(Wait())

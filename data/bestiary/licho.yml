@@ -9,6 +9,7 @@ licho:
   to_hit: 80
   behavior: flee
   spawn_weight: 2
+  biomes: [puszcza, bagna, kurhany]
   epithets: ["the one-eyed", "ill luck on two legs"]
   forms:
     en: { plural: "licha" }

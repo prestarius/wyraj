@@ -1,5 +1,5 @@
 from wyraj.core.actions import Wait
-from wyraj.core.components import AI, Position
+from wyraj.core.components import AI, OnLevel, Position
 from wyraj.core.events import LoreDiscovered
 from wyraj.core.game import Game
 
@@ -9,8 +9,10 @@ def test_first_sighting_emits_lore_discovered_once() -> None:
     discovered: list[LoreDiscovered] = []
     game.bus.subscribe(LoreDiscovered, discovered.append)
 
+    game._ensure_level(1)
     ppos = game.world.expect(game.player, Position)
     monster = game.world.entities_with(AI)[0]
+    game.world.add(monster, OnLevel(0))
     game.world.add(monster, Position(ppos.x + 1, ppos.y))
 
     game.step(Wait())

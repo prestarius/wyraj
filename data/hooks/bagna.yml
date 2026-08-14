@@ -1,0 +1,35 @@
+zatopiony_krzyz:
+  name: "sunken cross"
+  glyph: "†"
+  ascii_glyph: "+"
+  style: "steel_blue"
+  biomes: [bagna]
+  description: >
+    A roadside cross leans out of the black water at a drowned man's angle.
+    There was a path here once, and a village at the end of it. The bagna
+    remembers both, in its way, which is to say it swallowed them.
+
+chata_ptasznika:
+  name: "fowler's hut on stilts"
+  glyph: "⌂"
+  ascii_glyph: "^"
+  style: "tan"
+  biomes: [bagna]
+  description: >
+    A one-room hut on tarred stilts above the ooze, snares and bird-cages
+    rotting under the eaves. The door is barred from the outside. Someone
+    wanted very much for nothing to come out.
+
+bledne_ogniki:
+  name: "błędne ogniki"
+  glyph: "*"
+  ascii_glyph: "*"
+  style: "light_goldenrod2"
+  biomes: [bagna]
+  forms:
+    en: { plural: "błędne ogniki", proper: true }
+  description: >
+    Pale lights sway over the pools, always a few steps further on, always
+    at the edge of seeing. They are the souls of the unbaptized, say some;
+    a marsh-gas trick, say others. Both camps agree on the important part:
+    the lights want you to follow, and you must not.

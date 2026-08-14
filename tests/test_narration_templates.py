@@ -12,6 +12,7 @@ from wyraj.core.events import (
     GameEvent,
     HungerChanged,
     ItemPickedUp,
+    ItemTraded,
     ItemUsed,
     ItemWielded,
     ItemWorn,
@@ -20,10 +21,12 @@ from wyraj.core.events import (
     LoreDiscovered,
     MoveBlocked,
     Outcome,
+    Rested,
     StarvationHit,
     StatusApplied,
     StatusExpired,
     StatusTick,
+    TalkedTo,
 )
 from wyraj.narration.engine import NarrationEngine, NarrationLine
 from wyraj.narration.forms import build_form_registry
@@ -85,6 +88,14 @@ def fixture_event(event_key: str, subkey: str | None) -> GameEvent:
         return StatusExpired(actor=PLAYER, kind=subkey)
     if event_key == "light_extinguished":
         return LightExtinguished(actor=PLAYER)
+    if event_key == "talked_to":
+        assert subkey is not None
+        villager = EntityRef(entity=7, key="dziad", name="old Świętosław")
+        return TalkedTo(villager=villager, role=subkey)
+    if event_key == "rested":
+        return Rested(actor=PLAYER)
+    if event_key == "item_traded":
+        return ItemTraded(actor=PLAYER, gave=CIUPAGA, got=ODWAR)
     raise AssertionError(f"no fixture for pack rule {event_key}/{subkey}")
 
 

@@ -1,6 +1,7 @@
 import random
 
-from wyraj.core.actions import Descend, Get, UseItem, Wait
+from tests.conftest import goto_depth
+from wyraj.core.actions import Get, UseItem, Wait
 from wyraj.core.components import (
     AttackStatus,
     Health,
@@ -19,7 +20,6 @@ from wyraj.core.events import (
     StatusTick,
 )
 from wyraj.core.game import CRYPT_FOV_RADIUS, FOV_RADIUS, Game
-from wyraj.core.map import Tile
 from wyraj.core.systems import status
 from wyraj.core.systems.combat import attack
 
@@ -101,10 +101,7 @@ def test_dot_can_kill_player_in_game() -> None:
 def test_crypt_darkness_and_gromnica() -> None:
     game = Game(seed=42)
     assert game.fov_radius == FOV_RADIUS
-    spot = game.map.find_tile(Tile.STAIRS_DOWN)
-    assert spot is not None
-    game.world.add(game.player, Position(*spot))
-    game.step(Descend())
+    goto_depth(game, 3)
     assert game.fov_radius == CRYPT_FOV_RADIUS
 
     ppos = game.world.expect(game.player, Position)
@@ -134,10 +131,7 @@ def test_darkness_tag_in_crypt() -> None:
     enricher = ContextEnricher(game)
     event = EntityDied(entity=EntityRef(entity=99, key="bies", name="bies"))
     assert "darkness" not in enricher.enrich(event)
-    spot = game.map.find_tile(Tile.STAIRS_DOWN)
-    assert spot is not None
-    game.world.add(game.player, Position(*spot))
-    game.step(Descend())
+    goto_depth(game, 3)
     assert "darkness" in enricher.enrich(event)
     game.world.add(game.player, LightSource(turns=10))
     assert "darkness" not in enricher.enrich(event)

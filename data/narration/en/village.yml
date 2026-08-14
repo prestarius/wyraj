@@ -1,0 +1,38 @@
+talked_to:
+  innkeeper:
+    - weight: 2
+      en: "Dobrava the karczmarka looks you over like a wet dog on her doorstep. \"There's a bed and a fire, wanderer. Rest while resting's free.\""
+    - weight: 1
+      en: "\"Eat something,\" says the karczmarka, in the tone of a woman who has buried people who didn't."
+  trader:
+    - weight: 2
+      en: "Miłosz the handlarz spreads his wares with a flourish. \"Trade for trade, friend. Coin is for towns; out here we deal in useful things.\""
+    - weight: 1
+      en: "The handlarz squints at your pack. \"Everything has a price. Out here the price is usually something you'll miss later.\""
+  gossip:
+    - weight: 2
+      en: "Old Świętosław leans on his stick. \"The strzyga counts your nights, wanderer. Three she watches, on the fourth she comes. Keep a fire.\""
+    - weight: 2
+      en: "\"The utopiec cannot leave his pool far behind,\" the dziad mutters. \"On dry moss he is slow. Remember that when the water smells wrong.\""
+    - weight: 2
+      en: "\"Salt from Gromniczna burns the unburied like a brand,\" says the old man. \"The martwiak fears nothing else. Not even you.\""
+    - weight: 2
+      en: "The dziad spits over his shoulder. \"See a one-eyed little thing? Do not chase it. Whatever it takes from you, chasing it costs more.\""
+    - weight: 1
+      en: "\"The wilki are not the danger,\" Świętosław says. \"The wilki are the warning. When they run past you, run with them.\""
+    - weight: 1
+      en: "\"Under the mounds the dark is older than fire,\" the old man whispers. \"Take the thunder-candle. Take two.\""
+    - weight: 1
+      en: "\"The lights over the bagna are souls,\" he says. \"Whose souls? Follow them and find out. No? Wise.\""
+
+rested:
+  - weight: 2
+    en: "You sleep behind the karczma's fire, and for one night the forest stays on the other side of the wall. You wake whole."
+  - weight: 1
+    en: "Straw, smoke, and the murmur of the wieś below — you sleep like the dead, and unlike them, you get up."
+
+item_traded:
+  - weight: 2
+    en: "Hands are shaken: your {gave.name} for {got.name.def}. The handlarz looks pleased, which is mildly worrying."
+  - weight: 1
+    en: "You part with your {gave.name} and pocket {got.name.def}. Out here, that counts as commerce."
