@@ -1,0 +1,34 @@
+name: Bug report
+description: Something broke in the puszcza
+labels: [bug]
+body:
+  - type: input
+    id: seed
+    attributes:
+      label: Seed
+      description: Shown on the death screen and in the character panel; makes the bug reproducible.
+      placeholder: "42"
+    validations:
+      required: false
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: What you did, what you expected, what actually happened.
+    validations:
+      required: true
+  - type: textarea
+    id: env
+    attributes:
+      label: Environment
+      description: OS, terminal, Python version, `wyraj` version/commit.
+      placeholder: "macOS 15, iTerm2, Python 3.12, v0.3-m3"
+    validations:
+      required: false
+  - type: textarea
+    id: log
+    attributes:
+      label: Traceback or morgue file
+      render: text
+    validations:
+      required: false

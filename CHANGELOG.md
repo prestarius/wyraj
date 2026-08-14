@@ -2,6 +2,28 @@
 
 All notable changes to Wyraj. Format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.3-m3] — 2026-08-15 — Public Release Cut
+
+### Added
+- The wieś: an authored village hub with karczmarka (rest), handlarz
+  (barter trade v0), and the dziad whose rumors feed the narration.
+  Bumping a villager talks; nobody in the wieś wants a fight.
+- Bagna biome between forest and crypts: water pools you can see across
+  but not wade, swimming utopce that haunt the shorelines, marsh loot and
+  three new story hooks (the sunken cross, the fowler's hut, błędne ogniki).
+- Character creation: Wygnaniec, Zielarka, Najemnik — distinct stats,
+  starting kits, and opening narration; data-driven in `data/origins.yml`;
+  `--origin` flag and selection screen.
+- Morgue files on death, SQLite run history (`wyraj --history`),
+  `~/.wyraj/config.yml`; cause of death tracked and shown.
+- Licensing: AGPL-3.0-or-later (code), CC BY-SA 4.0 (`data/`), CLA;
+  CONTRIBUTING, Code of Conduct, issue templates.
+- Docs: ARCHITECTURE.md, CONTENT.md, NARRATION.md, README with screenshot.
+
+### Changed
+- World is now a fixed chain: wieś (0) → puszcza (1) → bagna (2) →
+  kurhany (3–5); crypt darkness starts at depth 3. Save format v2.
+
 ## [0.2-m2] — 2026-08-14 — Depth & Danger
 
 ### Added

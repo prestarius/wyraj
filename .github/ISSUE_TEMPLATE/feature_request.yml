@@ -1,0 +1,21 @@
+name: Feature or content idea
+description: A mechanic, monster, item, or story hook you'd like to see
+labels: [enhancement]
+body:
+  - type: textarea
+    id: idea
+    attributes:
+      label: The idea
+      description: >
+        What is it, and how does it narrate? (Design pillar 1: if a feature
+        doesn't produce interesting narration or interesting decisions, we
+        cut it.)
+    validations:
+      required: true
+  - type: textarea
+    id: folklore
+    attributes:
+      label: Folklore source (for content)
+      description: Where does this creature/custom/item come from? Sources welcome.
+    validations:
+      required: false
