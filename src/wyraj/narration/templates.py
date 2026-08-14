@@ -22,8 +22,9 @@ import yaml
 from pydantic import BaseModel, Field
 
 from wyraj.content.paths import data_dir
-from wyraj.core.events import AttackResolved, EntityDied, GameEvent, MoveBlocked
+from wyraj.core.events import AttackResolved, EntityDied, EntityRef, GameEvent, MoveBlocked
 from wyraj.narration.engine import NarrationLine
+from wyraj.narration.forms import FormRegistry
 
 _SLOT = re.compile(r"\{([a-zA-Z_][a-zA-Z0-9_.]*)\}")
 
@@ -54,17 +55,26 @@ def rule_key(event: GameEvent) -> RuleKey:
             return snake, None
 
 
-def _resolve(event: GameEvent, path: str) -> str:
+def _resolve(event: GameEvent, path: str, registry: FormRegistry) -> str:
+    parts = path.split(".")
     value: Any = event
-    for part in path.split("."):
+    for i, part in enumerate(parts):
+        if isinstance(value, EntityRef) and part in ("name", "pronoun"):
+            forms = registry.forms_for(value)
+            rest = parts[i + 1 :]
+            if len(rest) > 1:
+                raise KeyError(f"slot '{path}' goes too deep past '{part}'")
+            if part == "name":
+                return forms.resolve(rest[0] if rest else "base")
+            return forms.pronoun(rest[0] if rest else "subj")
         if value is None or not hasattr(value, part):
             raise KeyError(f"unresolved slot '{path}' for {type(event).__name__}")
         value = getattr(value, part)
     return str(value)
 
 
-def render(template: str, event: GameEvent) -> str:
-    return _SLOT.sub(lambda m: _resolve(event, m.group(1)), template)
+def render(template: str, event: GameEvent, registry: FormRegistry) -> str:
+    return _SLOT.sub(lambda m: _resolve(event, m.group(1), registry), template)
 
 
 class GrammarPack:
@@ -90,13 +100,15 @@ def load_pack(lang: str = "en") -> GrammarPack:
 
 
 class TemplateNarrator:
-    def __init__(self, pack: GrammarPack, rng: random.Random) -> None:
+    def __init__(self, pack: GrammarPack, rng: random.Random, registry: FormRegistry) -> None:
         self.pack = pack
         self.rng = rng
+        self.registry = registry
 
     def compose(self, event: GameEvent) -> list[NarrationLine]:
         variants = self.pack.rules.get(rule_key(event))
         if not variants:
             return []  # no rule = deliberately silent (e.g. routine movement)
         chosen = self.rng.choices(variants, weights=[v.weight for v in variants])[0]
-        return [NarrationLine(text=render(chosen.en, event), importance=chosen.importance)]
+        text = render(chosen.en, event, self.registry)
+        return [NarrationLine(text=text, importance=chosen.importance)]

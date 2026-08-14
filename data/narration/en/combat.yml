@@ -1,37 +1,39 @@
 attack_resolved:
   player_hit:
     - weight: 3
-      en: "Your blow bites into the {defender.name}; it recoils with a wet hiss."
+      en: "Your blow bites into {defender.name.def}; it recoils with a wet hiss."
     - weight: 2
-      en: "You strike true. The {defender.name} shudders, black blood beading where you cut."
+      en: "You strike true. {defender.name.Def} shudders, black blood beading where you cut."
+    - weight: 2
+      en: "Your strike tears {defender.pronoun.poss} flesh, and {defender.name.def} howls."
     - weight: 1
       en: "You drive it back a step, your arm ringing with the force of the blow."
   player_miss:
     - weight: 3
-      en: "You swing wide; the {defender.name} sways aside like a branch in wind."
+      en: "You swing wide; {defender.name.def} sways aside like a branch in wind."
     - weight: 1
-      en: "Your strike finds only cold air, and the {defender.name} grins."
+      en: "Your strike finds only cold air, and {defender.name.def} grins."
   player_kill:
     - weight: 2
       importance: high
-      en: "Your last blow lands with a crack. The {defender.name} folds into the moss and is still."
+      en: "Your last blow lands with a crack. {defender.name.Def} folds into the moss and is still."
     - weight: 1
       importance: high
-      en: "The {defender.name} comes apart under your strike, and the forest is quieter for it."
+      en: "{defender.name.Def} comes apart under your strike, and the forest is quieter for it."
   enemy_hit:
     - weight: 3
-      en: "The {attacker.name} rakes you with crooked claws; pain flares hot along your ribs."
+      en: "{attacker.name.Def} rakes you with crooked claws; pain flares hot along your ribs."
     - weight: 2
-      en: "The {attacker.name} slams into you, and you taste blood and old leaves."
+      en: "{attacker.name.Def} slams into you, and you taste blood and old leaves."
   enemy_miss:
     - weight: 3
-      en: "The {attacker.name} lunges — you twist away, its claws snapping shut on nothing."
+      en: "{attacker.name.Def} lunges — you twist away, {attacker.pronoun.poss} claws snapping shut on nothing."
     - weight: 1
       en: "It comes at you low and fast, but you are faster, this once."
   enemy_kill:
     - weight: 1
       importance: high
-      en: "The {attacker.name} bears you down into the cold moss. The last thing you hear is its breathing."
+      en: "{attacker.name.Def} bears you down into the cold moss. The last thing you hear is its breathing."
 
 entity_died:
   player:

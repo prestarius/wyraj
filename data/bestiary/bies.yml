@@ -9,6 +9,8 @@ bies:
   to_hit: 65
   behavior: approach
   epithets: ["the unclean one", "spirit of the thicket"]
+  forms:
+    en: { plural: "biesy" }
   description: >
     A crooked thing of the deep puszcza, neither beast nor man. The old
     people would not say its name after dark; they called it only "the one
