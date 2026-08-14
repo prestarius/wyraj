@@ -105,8 +105,8 @@ Goal: `uv run wyraj --seed 42` is a completable-by-dying game; golden-run test r
 - US 4.1 — Bagna biome + village hub (rest, trade v0, rumor lines)
 - US 4.2 — Character creation (Wygnaniec / Zielarka / Najemnik)
 - US 4.3 — Morgue files + run history (SQLite), `--ascii`, config file
-- US 4.4 — Docs polish (README GIF, CONTENT.md, NARRATION.md), CoC, issue templates → **publish; re-verify + register PyPI name first**
-- US 4.5 — Licensing rollout (decided 2026-08-14): `LICENSE` = AGPL-3.0 for code, `data/LICENSE` = CC-BY-SA 4.0 for content, `CLA.md` + CLA-assistant (or DCO-style) flow for contributors; license headers/metadata in `pyproject.toml`
+- ~~US 4.4~~ — **DONE** docs polish (screenshot, CONTENT/NARRATION/ARCHITECTURE), CoC, issue templates. **Publish step awaits Maciek: create GitHub repo + push, re-verify & register PyPI name.**
+- ~~US 4.5~~ — **DONE** (2026-08-15): AGPL-3.0 `LICENSE`, CC-BY-SA 4.0 `data/LICENSE`, `CLA.md`, CONTRIBUTING flow
 
 ## Epic 5 — M4: Polski
 
