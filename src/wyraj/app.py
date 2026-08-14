@@ -2,6 +2,16 @@
 
 import argparse
 import secrets
+from typing import Any
+
+
+def _load_config_safely() -> dict[str, Any]:
+    try:
+        from wyraj.persistence.config import load_config
+
+        return load_config()
+    except Exception:
+        return {}  # a broken config file must never block the game
 
 
 def main() -> None:
@@ -20,7 +30,31 @@ def main() -> None:
         default=None,
         help="skip character creation and start as this origin",
     )
+    parser.add_argument("--history", action="store_true", help="show recent runs and exit")
     args = parser.parse_args()
+
+    if args.history:
+        from wyraj.persistence.history import recent_runs
+
+        runs = recent_runs(limit=15)
+        if not runs:
+            print("No runs recorded yet. The forest is patient.")
+            return
+        for run in runs:
+            depth_note = f"depth {run.max_depth}" if run.max_depth else "the wieś"
+            print(
+                f"{run.ts}  seed {run.seed:<12} {run.origin:<10} "
+                f"{run.turns:>5} turns  reached {depth_note:<10} — {run.cause}"
+            )
+        return
+
+    config = _load_config_safely()
+    if config.get("ascii") and not args.ascii:
+        args.ascii = True
+    if args.portrait == "half" and config.get("portrait") in ("half", "box"):
+        args.portrait = config["portrait"]
+    if args.origin is None and config.get("origin"):
+        args.origin = config["origin"]
 
     seed = args.seed if args.seed is not None else secrets.randbelow(2**31)
 

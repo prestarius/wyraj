@@ -1,5 +1,6 @@
 """The Textual application: three-pane layout, key handling, narration log."""
 
+from datetime import datetime
 from typing import ClassVar
 
 from rich.text import Text
@@ -16,6 +17,8 @@ from wyraj.narration.context import ContextEnricher
 from wyraj.narration.engine import NarrationEngine, NarrationLine
 from wyraj.narration.forms import build_form_registry
 from wyraj.narration.templates import TemplateNarrator, load_pack
+from wyraj.persistence.history import record_run
+from wyraj.persistence.morgue import write_morgue
 from wyraj.persistence.save import delete_save, save_game
 from wyraj.ui.screens import (
     CodexScreen,
@@ -158,4 +161,21 @@ class WyrajApp(App[None]):
         self.query_one(CharacterPanel).refresh()
         if self.game.game_over:
             delete_save()  # permadeath: the run is over
-            self.push_screen(DeathScreen(seed=self.game.seed, turn=self.game.turn))
+            now = datetime.now()
+            morgue_path = write_morgue(self.game, when=now)
+            record_run(
+                seed=self.game.seed,
+                origin=self.game.origin.key,
+                turns=self.game.turn,
+                max_depth=self.game.max_depth_reached,
+                cause=self.game.death_cause or "lost to the forest",
+                when=now,
+            )
+            self.push_screen(
+                DeathScreen(
+                    seed=self.game.seed,
+                    turn=self.game.turn,
+                    cause=self.game.death_cause,
+                    morgue_path=str(morgue_path),
+                )
+            )
