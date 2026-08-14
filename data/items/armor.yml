@@ -1,0 +1,25 @@
+wilcza_skora:
+  name: "wolfskin cloak"
+  glyph: "["
+  ascii_glyph: "["
+  style: "grey54"
+  kind: armor
+  protection: 1
+  spawn_weight: 3
+  description: >
+    A heavy pelt worn fur-out against the rain and claw-in against worse.
+    It smells of smoke and dog, and the old people swear a wolf will think
+    twice before biting its own.
+
+kaftan:
+  name: "quilted kaftan"
+  glyph: "["
+  ascii_glyph: "["
+  style: "tan"
+  kind: armor
+  protection: 2
+  spawn_weight: 2
+  description: >
+    Layers of wool and linen stitched tight, the poor man's mail. Whoever
+    wore it into the barrow did not need it afterward, which says something
+    about kaftans and something else about barrows.

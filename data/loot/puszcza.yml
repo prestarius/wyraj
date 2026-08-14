@@ -1,0 +1,14 @@
+count: 8
+count_per_depth: 0
+weights:
+  odwar: 4
+  mocny_odwar: 1
+  chleb: 4
+  suszone_mieso: 3
+  sol_swiecona: 2
+  gromnica: 2
+  noz: 3
+  toporek: 2
+  ciupaga: 1
+  wilcza_skora: 2
+  wilczy_amulet: 1

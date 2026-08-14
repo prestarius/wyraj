@@ -7,7 +7,7 @@ from pydantic import BaseModel, Field, model_validator
 
 from wyraj.content.paths import data_dir
 
-ITEM_KINDS = ("weapon", "consumable", "trinket")
+ITEM_KINDS = ("weapon", "armor", "consumable", "trinket")
 EFFECTS = ("heal", "feed", "bless", "light")
 
 
@@ -19,6 +19,7 @@ class ItemDef(BaseModel):
     style: str = "white"
     kind: str
     damage: int | None = None  # weapons
+    protection: int | None = None  # armor
     effect: str | None = None  # consumables
     power: int | None = None  # consumables
     spawn_weight: int = Field(default=1, ge=0)
@@ -31,6 +32,8 @@ class ItemDef(BaseModel):
             raise ValueError(f"unknown item kind '{self.kind}'")
         if self.kind == "weapon" and (self.damage is None or self.damage <= 0):
             raise ValueError(f"weapon '{self.key}' needs positive damage")
+        if self.kind == "armor" and (self.protection is None or self.protection <= 0):
+            raise ValueError(f"armor '{self.key}' needs positive protection")
         if self.kind == "consumable":
             if self.effect not in EFFECTS:
                 raise ValueError(f"consumable '{self.key}' needs effect in {EFFECTS}")

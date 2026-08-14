@@ -10,8 +10,17 @@ from textual.containers import Center, Middle
 from textual.screen import ModalScreen, Screen
 from textual.widgets import Static
 
-from wyraj.core.actions import Action, UseItem, WieldItem
-from wyraj.core.components import AI, Health, Inventory, Item, Lore, Position, Wielding
+from wyraj.core.actions import Action, UseItem, WearItem, WieldItem
+from wyraj.core.components import (
+    AI,
+    Health,
+    Inventory,
+    Item,
+    Lore,
+    Position,
+    Wearing,
+    Wielding,
+)
 from wyraj.core.game import Game
 from wyraj.core.systems.movement import level_of
 
@@ -61,12 +70,16 @@ class InventoryScreen(ModalScreen[Action | None]):
             text.append("Nothing but lint and resolve.\n", style="grey58")
         wielding = self.game.world.get(self.game.player, Wielding)
         wielded = wielding.item if wielding else None
-        verbs = {"consumable": "use", "weapon": "wield", "trinket": ""}
+        wearing = self.game.world.get(self.game.player, Wearing)
+        worn = wearing.item if wearing else None
+        verbs = {"consumable": "use", "weapon": "wield", "armor": "wear", "trinket": ""}
         for letter, entity, name, kind in self.entries:
             text.append(f" {letter}", style="bold gold3")
             text.append(f" — {name}")
             if entity == wielded:
                 text.append(" (wielded)", style="grey58")
+            elif entity == worn:
+                text.append(" (worn)", style="grey58")
             elif verbs[kind]:
                 text.append(f"  [{verbs[kind]}]", style="grey42")
             text.append("\n")
@@ -84,6 +97,8 @@ class InventoryScreen(ModalScreen[Action | None]):
                     self.dismiss(UseItem(entity))
                 elif kind == "weapon":
                     self.dismiss(WieldItem(entity))
+                elif kind == "armor":
+                    self.dismiss(WearItem(entity))
                 else:
                     self.dismiss(None)
                 return

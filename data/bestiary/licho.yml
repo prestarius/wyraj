@@ -1,0 +1,19 @@
+licho:
+  name: "licho"
+  glyph: "l"
+  ascii_glyph: "l"
+  style: "wheat4"
+  hp: 4
+  speed: 130
+  damage: 1
+  to_hit: 80
+  behavior: flee
+  spawn_weight: 2
+  epithets: ["the one-eyed", "ill luck on two legs"]
+  forms:
+    en: { plural: "licha" }
+  description: >
+    A small, crooked spirit with a single eye and no good intentions,
+    misfortune made flesh. It does not want to fight you; it wants to
+    follow you home. Folk wisdom is firm on this point: never call the
+    licho, and if you see it — do not chase it. Naturally, you will chase it.

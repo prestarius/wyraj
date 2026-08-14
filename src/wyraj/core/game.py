@@ -10,10 +10,22 @@ import random
 
 from wyraj.content.bestiary import MonsterDef, load_bestiary
 from wyraj.content.items import ItemDef, load_items
-from wyraj.core.actions import Action, Ascend, Descend, Get, Move, UseItem, Wait, WieldItem
+from wyraj.content.loot import load_loot_tables
+from wyraj.core.actions import (
+    Action,
+    Ascend,
+    Descend,
+    Get,
+    Move,
+    UseItem,
+    Wait,
+    WearItem,
+    WieldItem,
+)
 from wyraj.core.components import (
     AI,
     Actor,
+    ArmorStats,
     AttackStatus,
     Consumable,
     Health,
@@ -79,6 +91,7 @@ class Game:
 
         self.bestiary = bestiary if bestiary is not None else load_bestiary()
         self.items_catalog = items_catalog if items_catalog is not None else load_items()
+        self.loot_tables = load_loot_tables()
 
         self.levels[0] = generate_forest(_level_seed(seed, 0))
         floors = self.map.floor_tiles()
@@ -134,13 +147,20 @@ class Game:
             chosen = level_rng.choices(defs, weights=weights)[0]
             self.spawn_monster(chosen, x, y, depth)
 
-        item_defs = sorted(self.items_catalog.values(), key=lambda d: d.key)
-        item_weights = [d.spawn_weight for d in item_defs]
+        table = self.loot_tables.get(biome)
+        if table is not None:
+            item_keys = sorted(table.weights)
+            item_weights = [table.weights[k] for k in item_keys]
+            item_count = table.items_for_depth(depth)
+        else:
+            item_keys = sorted(self.items_catalog)
+            item_weights = [self.items_catalog[k].spawn_weight for k in item_keys]
+            item_count = ITEM_COUNT
         item_candidates = [t for t in floors if t != avoid]
-        item_spots = level_rng.sample(item_candidates, min(ITEM_COUNT, len(item_candidates)))
+        item_spots = level_rng.sample(item_candidates, min(item_count, len(item_candidates)))
         for x, y in item_spots:
-            chosen_item = level_rng.choices(item_defs, weights=item_weights)[0]
-            self.spawn_item(chosen_item, x, y, depth)
+            chosen_key = level_rng.choices(item_keys, weights=item_weights)[0]
+            self.spawn_item(self.items_catalog[chosen_key], x, y, depth)
 
     def _ensure_level(self, depth: int) -> None:
         if depth in self.levels:
@@ -164,6 +184,8 @@ class Game:
         )
         if definition.kind == "weapon" and definition.damage is not None:
             self.world.add(entity, WeaponStats(damage=definition.damage))
+        if definition.kind == "armor" and definition.protection is not None:
+            self.world.add(entity, ArmorStats(protection=definition.protection))
         if definition.kind == "consumable" and definition.effect and definition.power:
             self.world.add(entity, Consumable(effect=definition.effect, power=definition.power))
         return entity
@@ -254,6 +276,8 @@ class Game:
                 items.use_item(self.world, self.bus, self.player, item)
             case WieldItem(item=item):
                 items.wield(self.world, self.bus, self.player, item)
+            case WearItem(item=item):
+                items.wear(self.world, self.bus, self.player, item)
             case Wait():
                 pass
 

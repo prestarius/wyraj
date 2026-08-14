@@ -14,6 +14,7 @@ from wyraj.core.events import (
     ItemPickedUp,
     ItemUsed,
     ItemWielded,
+    ItemWorn,
     LevelChanged,
     LightExtinguished,
     LoreDiscovered,
@@ -60,6 +61,8 @@ def fixture_event(event_key: str, subkey: str | None) -> GameEvent:
         return ItemUsed(actor=PLAYER, item=ODWAR, effect=subkey, power=8)
     if event_key == "item_wielded":
         return ItemWielded(actor=PLAYER, item=CIUPAGA)
+    if event_key == "item_worn":
+        return ItemWorn(actor=PLAYER, item=EntityRef(entity=5, key="kaftan", name="quilted kaftan"))
     if event_key == "hunger_changed":
         assert subkey is not None
         return HungerChanged(actor=PLAYER, band=subkey)

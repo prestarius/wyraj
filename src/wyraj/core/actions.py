@@ -42,3 +42,8 @@ class UseItem(Action):
 @dataclass(frozen=True)
 class WieldItem(Action):
     item: int  # entity id from the actor's inventory
+
+
+@dataclass(frozen=True)
+class WearItem(Action):
+    item: int  # entity id from the actor's inventory

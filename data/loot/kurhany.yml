@@ -1,0 +1,12 @@
+count: 6
+count_per_depth: 1
+weights:
+  odwar: 2
+  mocny_odwar: 2
+  sol_swiecona: 4
+  gromnica: 4
+  chleb: 1
+  toporek: 1
+  ciupaga: 2
+  kaftan: 2
+  wilczy_amulet: 1
