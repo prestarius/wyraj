@@ -23,60 +23,51 @@ EntityMoved(actor=EntityRef(entity=1, key='player', name='you', is_player=True),
 TurnEnded(turn=13)
 TurnEnded(turn=14)
 EntityMoved(actor=EntityRef(entity=1, key='player', name='you', is_player=True), from_pos=(21, 31), to_pos=(22, 30))
-TurnEnded(turn=15)
-NARRATE: The bies rakes you with crooked claws; pain flares hot along your ribs.
 AttackResolved(attacker=EntityRef(entity=5, key='bies', name='bies', is_player=False), defender=EntityRef(entity=1, key='player', name='you', is_player=True), weapon=None, damage=3, outcome=<Outcome.HIT: 'hit'>, defender_hp_frac=0.85)
-TurnEnded(turn=16)
 NARRATE: The bies rakes you with crooked claws; pain flares hot along your ribs.
+TurnEnded(turn=15)
 AttackResolved(attacker=EntityRef(entity=5, key='bies', name='bies', is_player=False), defender=EntityRef(entity=1, key='player', name='you', is_player=True), weapon=None, damage=3, outcome=<Outcome.HIT: 'hit'>, defender_hp_frac=0.7)
-NARRATE: Your blow bites into the bies; it recoils with a wet hiss.
+NARRATE: The bies slams into you, and you taste blood and old leaves.
+TurnEnded(turn=16)
 AttackResolved(attacker=EntityRef(entity=1, key='player', name='you', is_player=True), defender=EntityRef(entity=5, key='bies', name='bies', is_player=False), weapon=None, damage=4, outcome=<Outcome.HIT: 'hit'>, defender_hp_frac=0.5)
-TurnEnded(turn=17)
-NARRATE: It comes at you low and fast, but you are faster, this once.
 AttackResolved(attacker=EntityRef(entity=5, key='bies', name='bies', is_player=False), defender=EntityRef(entity=1, key='player', name='you', is_player=True), weapon=None, damage=0, outcome=<Outcome.MISS: 'miss'>, defender_hp_frac=0.7)
+NARRATE: Your blow bites into the bies; it recoils with a wet hiss. It comes at you low and fast, but you are faster, this once.
+TurnEnded(turn=17)
 EntityMoved(actor=EntityRef(entity=1, key='player', name='you', is_player=True), from_pos=(22, 30), to_pos=(23, 30))
 TurnEnded(turn=18)
 EntityMoved(actor=EntityRef(entity=1, key='player', name='you', is_player=True), from_pos=(23, 30), to_pos=(24, 29))
-TurnEnded(turn=19)
-NARRATE: The bies rakes you with crooked claws; pain flares hot along your ribs.
 AttackResolved(attacker=EntityRef(entity=2, key='bies', name='bies', is_player=False), defender=EntityRef(entity=1, key='player', name='you', is_player=True), weapon=None, damage=3, outcome=<Outcome.HIT: 'hit'>, defender_hp_frac=0.55)
-NARRATE: The bies lunges — you twist away, its claws snapping shut on nothing.
 AttackResolved(attacker=EntityRef(entity=3, key='bies', name='bies', is_player=False), defender=EntityRef(entity=1, key='player', name='you', is_player=True), weapon=None, damage=0, outcome=<Outcome.MISS: 'miss'>, defender_hp_frac=0.55)
-NARRATE: You drive it back a step, your arm ringing with the force of the blow.
+NARRATE: The bies rakes you with crooked claws; pain flares hot along your ribs. The bies circles and comes at you again, patient as winter.
+TurnEnded(turn=19)
 AttackResolved(attacker=EntityRef(entity=1, key='player', name='you', is_player=True), defender=EntityRef(entity=2, key='bies', name='bies', is_player=False), weapon=None, damage=4, outcome=<Outcome.HIT: 'hit'>, defender_hp_frac=0.5)
-TurnEnded(turn=20)
-NARRATE: The bies lunges — you twist away, its claws snapping shut on nothing.
 AttackResolved(attacker=EntityRef(entity=2, key='bies', name='bies', is_player=False), defender=EntityRef(entity=1, key='player', name='you', is_player=True), weapon=None, damage=0, outcome=<Outcome.MISS: 'miss'>, defender_hp_frac=0.55)
-NARRATE: The bies rakes you with crooked claws; pain flares hot along your ribs.
 AttackResolved(attacker=EntityRef(entity=3, key='bies', name='bies', is_player=False), defender=EntityRef(entity=1, key='player', name='you', is_player=True), weapon=None, damage=3, outcome=<Outcome.HIT: 'hit'>, defender_hp_frac=0.4)
-NARRATE: The bies rakes you with crooked claws; pain flares hot along your ribs.
 AttackResolved(attacker=EntityRef(entity=5, key='bies', name='bies', is_player=False), defender=EntityRef(entity=1, key='player', name='you', is_player=True), weapon=None, damage=3, outcome=<Outcome.HIT: 'hit'>, defender_hp_frac=0.25)
-NARRATE: Your blow bites into the bies; it recoils with a wet hiss.
+NARRATE: You drive it back a step, your arm ringing with the force of the blow. The bies circles and comes at you again, patient as winter. The bies slams into you, and you taste blood and old leaves. The bies tears at you, and the world swims grey at the edges.
+TurnEnded(turn=20)
 AttackResolved(attacker=EntityRef(entity=1, key='player', name='you', is_player=True), defender=EntityRef(entity=3, key='bies', name='bies', is_player=False), weapon=None, damage=4, outcome=<Outcome.HIT: 'hit'>, defender_hp_frac=0.5)
+NARRATE: Your blow bites into the bies; it recoils with a wet hiss.
 TurnEnded(turn=21)
-NARRATE: Your last blow lands with a crack. The bies folds into the moss and is still.
 AttackResolved(attacker=EntityRef(entity=1, key='player', name='you', is_player=True), defender=EntityRef(entity=5, key='bies', name='bies', is_player=False), weapon=None, damage=4, outcome=<Outcome.KILL: 'kill'>, defender_hp_frac=0.0)
 EntityDied(entity=EntityRef(entity=5, key='bies', name='bies', is_player=False))
-TurnEnded(turn=22)
-NARRATE: It comes at you low and fast, but you are faster, this once.
 AttackResolved(attacker=EntityRef(entity=2, key='bies', name='bies', is_player=False), defender=EntityRef(entity=1, key='player', name='you', is_player=True), weapon=None, damage=0, outcome=<Outcome.MISS: 'miss'>, defender_hp_frac=0.25)
-NARRATE: The bies slams into you, and you taste blood and old leaves.
 AttackResolved(attacker=EntityRef(entity=3, key='bies', name='bies', is_player=False), defender=EntityRef(entity=1, key='player', name='you', is_player=True), weapon=None, damage=3, outcome=<Outcome.HIT: 'hit'>, defender_hp_frac=0.1)
+NARRATE: Your last blow lands with a crack. The bies folds into the moss and is still. The bies circles and comes at you again, patient as winter. The bies tears at you, and the world swims grey at the edges.
+TurnEnded(turn=22)
 EntityMoved(actor=EntityRef(entity=1, key='player', name='you', is_player=True), from_pos=(24, 29), to_pos=(25, 29))
+AttackResolved(attacker=EntityRef(entity=3, key='bies', name='bies', is_player=False), defender=EntityRef(entity=1, key='player', name='you', is_player=True), weapon=None, damage=0, outcome=<Outcome.MISS: 'miss'>, defender_hp_frac=0.1)
+NARRATE: The bies circles and comes at you again, patient as winter.
 TurnEnded(turn=23)
-NARRATE: It comes at you low and fast, but you are faster, this once.
-AttackResolved(attacker=EntityRef(entity=3, key='bies', name='bies', is_player=False), defender=EntityRef(entity=1, key='player', name='you', is_player=True), weapon=None, damage=0, outcome=<Outcome.MISS: 'miss'>, defender_hp_frac=0.1)
-TurnEnded(turn=24)
-NARRATE: The bies lunges — you twist away, its claws snapping shut on nothing.
 AttackResolved(attacker=EntityRef(entity=2, key='bies', name='bies', is_player=False), defender=EntityRef(entity=1, key='player', name='you', is_player=True), weapon=None, damage=0, outcome=<Outcome.MISS: 'miss'>, defender_hp_frac=0.1)
-NARRATE: The bies lunges — you twist away, its claws snapping shut on nothing.
 AttackResolved(attacker=EntityRef(entity=3, key='bies', name='bies', is_player=False), defender=EntityRef(entity=1, key='player', name='you', is_player=True), weapon=None, damage=0, outcome=<Outcome.MISS: 'miss'>, defender_hp_frac=0.1)
+NARRATE: The bies circles and comes at you again, patient as winter. And again.
+TurnEnded(turn=24)
 EntityMoved(actor=EntityRef(entity=1, key='player', name='you', is_player=True), from_pos=(25, 29), to_pos=(26, 28))
 TurnEnded(turn=25)
 EntityMoved(actor=EntityRef(entity=1, key='player', name='you', is_player=True), from_pos=(26, 28), to_pos=(26, 27))
-TurnEnded(turn=26)
-NARRATE: The bies bears you down into the cold moss. The last thing you hear is its breathing.
 AttackResolved(attacker=EntityRef(entity=2, key='bies', name='bies', is_player=False), defender=EntityRef(entity=1, key='player', name='you', is_player=True), weapon=None, damage=3, outcome=<Outcome.KILL: 'kill'>, defender_hp_frac=0.0)
-NARRATE: Darkness closes over you. Somewhere above the canopy, a bird takes wing toward Wyraj.
 EntityDied(entity=EntityRef(entity=1, key='player', name='you', is_player=True))
+NARRATE: The bies bears you down into the cold moss. The last thing you hear is its breathing. Darkness closes over you. Somewhere above the canopy, a bird takes wing toward Wyraj.
+TurnEnded(turn=26)
 END turn=26 game_over=True

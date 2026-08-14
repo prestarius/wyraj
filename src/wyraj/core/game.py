@@ -101,11 +101,13 @@ class Game:
         if self.game_over:
             return
         self._apply_player_action(action)
-        self.scheduler.spend(self.player)
-        self.turn += 1
-        self.bus.publish(TurnEnded(self.turn))
         self._update_player_fov()
+        self.scheduler.spend(self.player)
         self._advance_until_player_turn()
+        self.turn += 1
+        # TurnEnded closes the whole round (player + monsters) so the
+        # narration TurnComposer can flush a complete paragraph.
+        self.bus.publish(TurnEnded(self.turn))
 
     def _apply_player_action(self, action: Action) -> None:
         match action:

@@ -79,12 +79,16 @@ def test_unknown_event_is_silent() -> None:
     assert narrator.compose(moved) == []
 
 
-def test_engine_collects_lines_and_notifies_sinks() -> None:
+def test_engine_flushes_paragraph_on_turn_end() -> None:
+    from wyraj.core.events import TurnEnded
+
     bus = EventBus()
     engine = NarrationEngine(bus, TemplateNarrator(load_pack("en"), random.Random(1), REGISTRY))
     received: list[NarrationLine] = []
     engine.add_sink(received.append)
     bus.publish(fixture_event("attack_resolved", "enemy_hit"))
+    assert engine.lines == []  # buffered until the turn closes
+    bus.publish(TurnEnded(1))
     assert len(engine.lines) == 1
     assert received == engine.lines
     assert "you" in received[0].text.lower() or "bies" in received[0].text.lower()

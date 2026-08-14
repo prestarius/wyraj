@@ -11,6 +11,7 @@ from textual.widgets import Footer, RichLog
 
 from wyraj.core.actions import Action, Move, Wait
 from wyraj.core.game import Game
+from wyraj.narration.context import ContextEnricher
 from wyraj.narration.engine import NarrationEngine, NarrationLine
 from wyraj.narration.forms import build_form_registry
 from wyraj.narration.templates import TemplateNarrator, load_pack
@@ -49,7 +50,8 @@ class WyrajApp(App[None]):
         self.use_ascii = use_ascii
         registry = build_form_registry(self.game.bestiary)
         narrator = TemplateNarrator(load_pack("en"), self.game.rng.narration, registry)
-        self.narration = NarrationEngine(self.game.bus, narrator)
+        enricher = ContextEnricher(self.game)
+        self.narration = NarrationEngine(self.game.bus, narrator, enricher=enricher.enrich)
         self.narration.add_sink(self._on_narration)
 
     def compose(self) -> ComposeResult:
