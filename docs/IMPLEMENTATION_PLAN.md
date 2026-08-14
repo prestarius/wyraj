@@ -105,7 +105,8 @@ Goal: `uv run wyraj --seed 42` is a completable-by-dying game; golden-run test r
 - US 4.1 — Bagna biome + village hub (rest, trade v0, rumor lines)
 - US 4.2 — Character creation (Wygnaniec / Zielarka / Najemnik)
 - US 4.3 — Morgue files + run history (SQLite), `--ascii`, config file
-- US 4.4 — Docs polish (README GIF, CONTENT.md, NARRATION.md), license, CoC, issue templates → **publish; re-verify + register PyPI name first**
+- US 4.4 — Docs polish (README GIF, CONTENT.md, NARRATION.md), CoC, issue templates → **publish; re-verify + register PyPI name first**
+- US 4.5 — Licensing rollout (decided 2026-08-14): `LICENSE` = AGPL-3.0 for code, `data/LICENSE` = CC-BY-SA 4.0 for content, `CLA.md` + CLA-assistant (or DCO-style) flow for contributors; license headers/metadata in `pyproject.toml`
 
 ## Epic 5 — M4: Polski
 
@@ -124,7 +125,7 @@ Goal: `uv run wyraj --seed 42` is a completable-by-dying game; golden-run test r
 
 | # | Decision | Needed by | Spec recommendation |
 |---|---|---|---|
-| 2 | License MIT vs AGPL | M3 publish | MIT |
+| 2 | ~~License~~ — **RESOLVED 2026-08-14: AGPL-3.0 (code) + CC-BY-SA (data), with CLA** (US 4.5) | M3 publish | — |
 | 3 | Overworld vs pure descent | post-M5 | descent + hub for now |
 | 4 | Fear/mood: mechanic vs narration-only | M3 | narration-only until M3 |
 | 5 | Portrait art direction | US 2.6 | prototype both in M1 |

@@ -3,6 +3,7 @@ name = "wyraj"
 version = "0.0.0"
 description = "Wyraj — a narrated roguelike set in Slavic dark fantasy."
 readme = "README.md"
+license = "AGPL-3.0-or-later"
 requires-python = ">=3.12"
 dependencies = [
     "textual>=8.2",
