@@ -9,6 +9,7 @@ wilk:
   to_hit: 70
   behavior: approach
   spawn_weight: 4
+  biomes: [puszcza]
   epithets: ["grey brother", "shadow of the treeline"]
   forms:
     en: { plural: "wilki" }

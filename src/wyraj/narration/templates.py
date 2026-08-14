@@ -31,6 +31,7 @@ from wyraj.core.events import (
     ItemPickedUp,
     ItemUsed,
     ItemWielded,
+    LevelChanged,
     LoreDiscovered,
     MoveBlocked,
     StarvationHit,
@@ -75,6 +76,8 @@ def rule_key(event: GameEvent) -> RuleKey:
             return "starvation_hit", None
         case LoreDiscovered():
             return "lore_discovered", event.entity.key
+        case LevelChanged():
+            return "level_changed", event.direction
         case _:
             name = type(event).__name__
             snake = re.sub(r"(?<!^)(?=[A-Z])", "_", name).lower()

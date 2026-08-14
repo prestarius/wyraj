@@ -6,11 +6,15 @@ from textual.widgets import Static
 from wyraj.core.components import Health, Hunger, Item, Lore, Position, Renderable, Wielding
 from wyraj.core.game import Game
 from wyraj.core.map import Tile
+from wyraj.core.systems.movement import level_of
 from wyraj.ui.portrait import hp_band, render_portrait
 
-# (unicode, ascii) glyphs per terrain
-TREE_GLYPHS = ("♣", "#")
+# (unicode, ascii) glyphs per terrain, keyed by biome
+WALL_GLYPHS = {"puszcza": ("♣", "#"), "kurhany": ("▒", "#")}
+WALL_STYLES = {"puszcza": "dark_green", "kurhany": "grey39"}
 FLOOR_GLYPHS = ("·", ".")
+STAIRS_DOWN_GLYPHS = (">", ">")
+STAIRS_UP_GLYPHS = ("<", "<")
 
 
 class MapView(Static):
@@ -19,25 +23,35 @@ class MapView(Static):
         self.game = game
         self.use_ascii = use_ascii
 
+    def _terrain_glyph(self, tile: Tile) -> str:
+        glyph_index = 1 if self.use_ascii else 0
+        biome = self.game.map.biome
+        if tile is Tile.WALL:
+            return WALL_GLYPHS.get(biome, WALL_GLYPHS["puszcza"])[glyph_index]
+        if tile is Tile.STAIRS_DOWN:
+            return STAIRS_DOWN_GLYPHS[glyph_index]
+        if tile is Tile.STAIRS_UP:
+            return STAIRS_UP_GLYPHS[glyph_index]
+        return FLOOR_GLYPHS[glyph_index]
+
     def render(self) -> Text:
         game = self.game
-        glyph_index = 1 if self.use_ascii else 0
-        tree = TREE_GLYPHS[glyph_index]
-        floor = FLOOR_GLYPHS[glyph_index]
+        wall_style = WALL_STYLES.get(game.map.biome, "dark_green")
 
         # Items first, creatures second — creatures draw on top.
         entities: dict[tuple[int, int], Renderable] = {}
         for entity, (pos, renderable) in game.world.query(Position, Renderable):
-            if not game.world.has(entity, Health):
+            if level_of(game.world, entity) == game.depth and not game.world.has(entity, Health):
                 entities[(pos.x, pos.y)] = renderable
         for entity, (pos, renderable) in game.world.query(Position, Renderable):
-            if game.world.has(entity, Health):
+            if level_of(game.world, entity) == game.depth and game.world.has(entity, Health):
                 entities[(pos.x, pos.y)] = renderable
 
         text = Text()
         for y in range(game.map.height):
             for x in range(game.map.width):
                 cell = (x, y)
+                tile = game.map.tiles[y][x]
                 if cell in game.map.visible:
                     renderable = entities.get(cell)
                     if renderable is not None:
@@ -47,13 +61,14 @@ class MapView(Static):
                             else renderable.glyph
                         )
                         text.append(glyph, style=renderable.style)
-                    elif game.map.tiles[y][x] is Tile.WALL:
-                        text.append(tree, style="dark_green")
+                    elif tile is Tile.WALL:
+                        text.append(self._terrain_glyph(tile), style=wall_style)
+                    elif tile in (Tile.STAIRS_DOWN, Tile.STAIRS_UP):
+                        text.append(self._terrain_glyph(tile), style="bold gold3")
                     else:
-                        text.append(floor, style="grey58")
+                        text.append(self._terrain_glyph(tile), style="grey58")
                 elif cell in game.map.explored:
-                    terrain = tree if game.map.tiles[y][x] is Tile.WALL else floor
-                    text.append(terrain, style="grey23")
+                    text.append(self._terrain_glyph(tile), style="grey23")
                 else:
                     text.append(" ")
             if y < game.map.height - 1:
@@ -83,6 +98,8 @@ class CharacterPanel(Static):
         )
         text.append("\n\n")
         text.append(" Wędrowiec\n", style="bold")
+        place = "Puszcza" if game.depth == 0 else f"Kurhan, poziom {game.depth}"
+        text.append(f" {place}\n", style="grey58")
         text.append(f" Turn {game.turn}\n\n", style="grey58")
         text.append(" HP ")
         bar_width = 14

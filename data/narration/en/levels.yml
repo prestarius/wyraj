@@ -1,0 +1,13 @@
+level_changed:
+  down:
+    - weight: 2
+      importance: high
+      en: "You climb down into the barrow dark. The air is old here — earth, cold wax, and something underneath both."
+    - weight: 1
+      importance: high
+      en: "Stone steps, cut before anyone now living was born, take you down under the mound. The daylight does not follow."
+  up:
+    - weight: 2
+      en: "You climb back toward the living air, and the weight of the earth slides off your shoulders."
+    - weight: 1
+      en: "Up the worn steps, out from under the mound. Even the grey sky of the puszcza feels generous now."

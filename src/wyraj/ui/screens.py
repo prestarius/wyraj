@@ -13,6 +13,7 @@ from textual.widgets import Static
 from wyraj.core.actions import Action, UseItem, WieldItem
 from wyraj.core.components import AI, Health, Inventory, Item, Lore, Position, Wielding
 from wyraj.core.game import Game
+from wyraj.core.systems.movement import level_of
 
 
 class DeathScreen(Screen[None]):
@@ -115,7 +116,9 @@ class ExamineScreen(ModalScreen[None]):
         text = Text()
         text.append("— What you see —\n\n", style="bold")
         seen_something = False
-        for _entity, (_ai, lore, pos, health) in game.world.query(AI, Lore, Position, Health):
+        for entity, (_ai, lore, pos, health) in game.world.query(AI, Lore, Position, Health):
+            if level_of(game.world, entity) != game.depth:
+                continue
             if (pos.x, pos.y) not in game.map.visible:
                 continue
             seen_something = True
@@ -125,7 +128,9 @@ class ExamineScreen(ModalScreen[None]):
             text.append(f" ({_hp_word(health)})\n", style="grey58")
             if lore.description:
                 text.append(f"   {lore.description.strip()}\n\n", style="grey66")
-        for _entity, (_item, lore, pos) in game.world.query(Item, Lore, Position):
+        for entity, (_item, lore, pos) in game.world.query(Item, Lore, Position):
+            if level_of(game.world, entity) != game.depth:
+                continue
             if (pos.x, pos.y) not in game.map.visible:
                 continue
             seen_something = True

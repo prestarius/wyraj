@@ -25,6 +25,16 @@ class Get(Action):
 
 
 @dataclass(frozen=True)
+class Descend(Action):
+    """Take stairs down (must be standing on them)."""
+
+
+@dataclass(frozen=True)
+class Ascend(Action):
+    """Take stairs up (must be standing on them)."""
+
+
+@dataclass(frozen=True)
 class UseItem(Action):
     item: int  # entity id from the actor's inventory
 

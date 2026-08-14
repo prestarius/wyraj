@@ -97,6 +97,12 @@ class StarvationHit(GameEvent):
 
 
 @dataclass(frozen=True)
+class LevelChanged(GameEvent):
+    depth: int  # level arrived at
+    direction: str  # "down" | "up"
+
+
+@dataclass(frozen=True)
 class LoreDiscovered(GameEvent):
     """First time the player lays eyes on a kind of creature."""
 

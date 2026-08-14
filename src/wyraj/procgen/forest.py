@@ -32,7 +32,11 @@ def generate_forest(
     tiles = [
         [Tile.WALL if walls[y][x] else Tile.FLOOR for x in range(width)] for y in range(height)
     ]
-    return GameMap(tiles)
+    # A single barrow entrance leads down into the kurhany.
+    floors = [(x, y) for y in range(height) for x in range(width) if tiles[y][x] is Tile.FLOOR]
+    bx, by = rng.choice(floors)
+    tiles[by][bx] = Tile.STAIRS_DOWN
+    return GameMap(tiles, biome="puszcza")
 
 
 def _is_border(x: int, y: int, width: int, height: int) -> bool:
