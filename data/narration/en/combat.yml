@@ -1,0 +1,49 @@
+attack_resolved:
+  player_hit:
+    - weight: 3
+      en: "Your blow bites into the {defender.name}; it recoils with a wet hiss."
+    - weight: 2
+      en: "You strike true. The {defender.name} shudders, black blood beading where you cut."
+    - weight: 1
+      en: "You drive it back a step, your arm ringing with the force of the blow."
+  player_miss:
+    - weight: 3
+      en: "You swing wide; the {defender.name} sways aside like a branch in wind."
+    - weight: 1
+      en: "Your strike finds only cold air, and the {defender.name} grins."
+  player_kill:
+    - weight: 2
+      importance: high
+      en: "Your last blow lands with a crack. The {defender.name} folds into the moss and is still."
+    - weight: 1
+      importance: high
+      en: "The {defender.name} comes apart under your strike, and the forest is quieter for it."
+  enemy_hit:
+    - weight: 3
+      en: "The {attacker.name} rakes you with crooked claws; pain flares hot along your ribs."
+    - weight: 2
+      en: "The {attacker.name} slams into you, and you taste blood and old leaves."
+  enemy_miss:
+    - weight: 3
+      en: "The {attacker.name} lunges — you twist away, its claws snapping shut on nothing."
+    - weight: 1
+      en: "It comes at you low and fast, but you are faster, this once."
+  enemy_kill:
+    - weight: 1
+      importance: high
+      en: "The {attacker.name} bears you down into the cold moss. The last thing you hear is its breathing."
+
+entity_died:
+  player:
+    - weight: 1
+      importance: high
+      en: "Darkness closes over you. Somewhere above the canopy, a bird takes wing toward Wyraj."
+  enemy: []
+
+move_blocked:
+  player:
+    - weight: 2
+      en: "The trees stand shoulder to shoulder here; there is no way through."
+    - weight: 1
+      en: "You push against bark and thorn. The puszcza does not yield."
+  enemy: []
