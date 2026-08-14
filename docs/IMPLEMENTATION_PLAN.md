@@ -128,4 +128,4 @@ Goal: `uv run wyraj --seed 42` is a completable-by-dying game; golden-run test r
 | 2 | ~~License~~ — **RESOLVED 2026-08-14: AGPL-3.0 (code) + CC-BY-SA (data), with CLA** (US 4.5) | M3 publish | — |
 | 3 | Overworld vs pure descent | post-M5 | descent + hub for now |
 | 4 | Fear/mood: mechanic vs narration-only | M3 | narration-only until M3 |
-| 5 | Portrait art direction | US 2.6 | prototype both in M1 |
+| 5 | Portrait art direction | US 2.6 | **prototyped in M1** — compare `--portrait half` vs `--portrait box`, Maciek picks; winner graduates to YAML layers |

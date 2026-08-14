@@ -48,10 +48,11 @@ class WyrajApp(App[None]):
         Binding("c", "codex", "Codex"),
     ]
 
-    def __init__(self, seed: int, use_ascii: bool = False) -> None:
+    def __init__(self, seed: int, use_ascii: bool = False, portrait_style: str = "half") -> None:
         super().__init__()
         self.game = Game(seed)
         self.use_ascii = use_ascii
+        self.portrait_style = portrait_style
         registry = build_form_registry({**self.game.bestiary, **self.game.items_catalog})
         narrator = TemplateNarrator(load_pack("en"), self.game.rng.narration, registry)
         enricher = ContextEnricher(self.game)
@@ -61,7 +62,7 @@ class WyrajApp(App[None]):
     def compose(self) -> ComposeResult:
         with Horizontal(id="top"):
             yield MapView(self.game, use_ascii=self.use_ascii)
-            yield CharacterPanel(self.game)
+            yield CharacterPanel(self.game, portrait_style=self.portrait_style)
         yield RichLog(id="narrative", wrap=True)
         yield Footer()
 
