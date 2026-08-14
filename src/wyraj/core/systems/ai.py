@@ -8,10 +8,10 @@
 
 import random
 
-from wyraj.core.components import AI, Health, Lore, Player, Position
+from wyraj.core.components import AI, Health, Lore, Player, Position, Swimmer
 from wyraj.core.ecs import Entity, World
 from wyraj.core.events import EventBus
-from wyraj.core.map import GameMap
+from wyraj.core.map import GameMap, Tile
 from wyraj.core.systems.combat import attack
 from wyraj.core.systems.movement import blocking_entity_at, level_of
 
@@ -32,7 +32,12 @@ def _step(world: World, game_map: GameMap, entity: Entity, dx: int, dy: int) -> 
     pos = world.expect(entity, Position)
     nx, ny = pos.x + dx, pos.y + dy
     depth = level_of(world, entity)
-    if game_map.is_walkable(nx, ny) and blocking_entity_at(world, nx, ny, depth) is None:
+    passable = game_map.is_walkable(nx, ny) or (
+        game_map.in_bounds(nx, ny)
+        and game_map.tiles[ny][nx] is Tile.WATER
+        and world.has(entity, Swimmer)
+    )
+    if passable and blocking_entity_at(world, nx, ny, depth) is None:
         world.add(entity, Position(nx, ny))
         return True
     return False

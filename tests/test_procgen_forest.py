@@ -24,7 +24,7 @@ def test_borders_are_walls() -> None:
 
 def test_floor_is_one_connected_cavern() -> None:
     m = generate_forest(42)
-    floors = set(m.floor_tiles())
+    floors = {(x, y) for y in range(m.height) for x in range(m.width) if m.is_walkable(x, y)}
     assert len(floors) > 100, "map should be mostly playable space"
     start = next(iter(floors))
     reached = set()

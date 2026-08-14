@@ -1,7 +1,7 @@
 import itertools
 import random
 
-from wyraj.core.components import AI, Health, Position
+from wyraj.core.components import AI, Health, OnLevel, Position
 from wyraj.core.events import AttackResolved, EntityRef, Outcome
 from wyraj.core.game import Game
 from wyraj.narration.context import ContextEnricher
@@ -35,8 +35,10 @@ def test_hp_band_tags() -> None:
 
 def test_unseen_attacker_tag() -> None:
     game = Game(seed=42)
+    game._ensure_level(1)
     enricher = ContextEnricher(game)
     bies = game.world.entities_with(AI)[0]
+    game.world.add(bies, OnLevel(0))
     ref = EntityRef(entity=bies, key="bies", name="bies")
 
     hidden = next((x, y) for x, y in game.map.floor_tiles() if (x, y) not in game.map.visible)

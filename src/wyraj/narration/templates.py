@@ -29,6 +29,7 @@ from wyraj.core.events import (
     GameEvent,
     HungerChanged,
     ItemPickedUp,
+    ItemTraded,
     ItemUsed,
     ItemWielded,
     ItemWorn,
@@ -36,10 +37,12 @@ from wyraj.core.events import (
     LightExtinguished,
     LoreDiscovered,
     MoveBlocked,
+    Rested,
     StarvationHit,
     StatusApplied,
     StatusExpired,
     StatusTick,
+    TalkedTo,
 )
 from wyraj.narration.engine import NarrationLine
 from wyraj.narration.forms import FormRegistry
@@ -93,6 +96,12 @@ def rule_key(event: GameEvent) -> RuleKey:
             return "status_expired", event.kind
         case LightExtinguished():
             return "light_extinguished", None
+        case TalkedTo():
+            return "talked_to", event.role
+        case Rested():
+            return "rested", None
+        case ItemTraded():
+            return "item_traded", None
         case _:
             name = type(event).__name__
             snake = re.sub(r"(?<!^)(?=[A-Z])", "_", name).lower()

@@ -25,6 +25,18 @@ class Get(Action):
 
 
 @dataclass(frozen=True)
+class Rest(Action):
+    """Sleep it off — only in the safety of the wieś."""
+
+
+@dataclass(frozen=True)
+class TradeItems(Action):
+    trader: int  # trader entity
+    give: int  # item entity from the player's inventory
+    take: int  # item entity from the trader's stock
+
+
+@dataclass(frozen=True)
 class Descend(Action):
     """Take stairs down (must be standing on them)."""
 

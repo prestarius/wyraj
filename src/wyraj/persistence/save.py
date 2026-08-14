@@ -23,7 +23,13 @@ from wyraj.core.scheduler import TurnScheduler
 
 SAVE_VERSION = 1
 
-_TILE_TO_CHAR = {Tile.WALL: "#", Tile.FLOOR: ".", Tile.STAIRS_DOWN: ">", Tile.STAIRS_UP: "<"}
+_TILE_TO_CHAR = {
+    Tile.WALL: "#",
+    Tile.FLOOR: ".",
+    Tile.WATER: "~",
+    Tile.STAIRS_DOWN: ">",
+    Tile.STAIRS_UP: "<",
+}
 _CHAR_TO_TILE = {c: t for t, c in _TILE_TO_CHAR.items()}
 
 _COMPONENT_TYPES: dict[str, type[Any]] = {

@@ -51,6 +51,18 @@ class AI:
 
 
 @dataclass(frozen=True)
+class Villager:
+    """A friendly NPC; bumping talks instead of attacking."""
+
+    role: str  # "innkeeper" | "trader" | "gossip"
+
+
+@dataclass(frozen=True)
+class Swimmer:
+    """Can cross open water (utopce are at home there)."""
+
+
+@dataclass(frozen=True)
 class StoryHook:
     """A narrative seed placed by procgen; discovered on first sight."""
 

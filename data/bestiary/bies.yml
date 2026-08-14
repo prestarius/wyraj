@@ -10,6 +10,7 @@ bies:
   behavior: approach
   attack_status: { kind: fear, chance: 20, duration: 4, power: 15 }
   spawn_weight: 3
+  biomes: [puszcza, bagna, kurhany]
   epithets: ["the unclean one", "spirit of the thicket"]
   forms:
     en: { plural: "biesy" }

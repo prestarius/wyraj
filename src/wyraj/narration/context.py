@@ -13,7 +13,7 @@ the event actually occurred, not the state at end-of-turn flush.
 
 from dataclasses import dataclass, field
 
-from wyraj.core.components import Health, LightSource, Position
+from wyraj.core.components import Health, Position
 from wyraj.core.events import AttackResolved, GameEvent
 from wyraj.core.game import Game
 from wyraj.narration.templates import RuleKey, rule_key
@@ -44,7 +44,7 @@ class ContextEnricher:
                 tags.add("player_bloodied")
             else:
                 tags.add("player_healthy")
-        if self.game.depth > 0 and self.game.world.get(self.game.player, LightSource) is None:
+        if self.game.in_darkness:
             tags.add("darkness")
         return tags
 

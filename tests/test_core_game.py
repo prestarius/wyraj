@@ -1,5 +1,5 @@
 from wyraj.core.actions import Move, Wait
-from wyraj.core.components import AI, Health, Position
+from wyraj.core.components import AI, Health, OnLevel, Position
 from wyraj.core.events import GameEvent
 from wyraj.core.game import Game
 
@@ -9,6 +9,8 @@ def test_game_boots_deterministically() -> None:
     b = Game(seed=42)
     assert a.map.tiles == b.map.tiles
     assert a.world.expect(a.player, Position) == b.world.expect(b.player, Position)
+    a._ensure_level(1)
+    b._ensure_level(1)
     monsters_a = [a.world.expect(e, Position) for e in a.world.entities_with(AI)]
     monsters_b = [b.world.expect(e, Position) for e in b.world.entities_with(AI)]
     assert monsters_a == monsters_b
@@ -33,9 +35,11 @@ def test_scripted_run_same_event_log() -> None:
 
 def test_surrounded_player_eventually_dies() -> None:
     game = Game(seed=42)
-    # Teleport a bies right next to the player and let it feast.
+    # Pull a forest monster into the village, right next to the player.
+    game._ensure_level(1)
     ppos = game.world.expect(game.player, Position)
     bies = game.world.entities_with(AI)[0]
+    game.world.add(bies, OnLevel(0))
     game.world.add(bies, Position(ppos.x + 1, ppos.y))
     for _ in range(200):
         if game.game_over:

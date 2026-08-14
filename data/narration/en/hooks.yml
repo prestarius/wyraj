@@ -23,3 +23,15 @@ lore_discovered:
     - weight: 1
       importance: high
       en: "A wall of old signs runs along the passage — spirals, sun-wheels, tally rows older than letters. The newest mark was cut today."
+  zatopiony_krzyz:
+    - weight: 1
+      importance: high
+      en: "A roadside cross leans out of the black water at a drowned man's angle. There was a path here once, and somewhere at its end, a village."
+  chata_ptasznika:
+    - weight: 1
+      importance: high
+      en: "A fowler's hut stands on tarred stilts above the ooze. The door is barred — from the outside."
+  bledne_ogniki:
+    - weight: 1
+      importance: high
+      en: "Pale lights sway over the pools ahead, always a few steps further on. They would very much like you to follow."

@@ -9,7 +9,7 @@ wilk:
   to_hit: 70
   behavior: pack
   spawn_weight: 4
-  biomes: [puszcza]
+  biomes: [puszcza, bagna]
   epithets: ["grey brother", "shadow of the treeline"]
   forms:
     en: { plural: "wilki" }
