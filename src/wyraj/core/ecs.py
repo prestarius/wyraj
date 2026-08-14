@@ -70,3 +70,23 @@ class World:
 
     def entities_with(self, *component_types: type[Any]) -> list[Entity]:
         return [entity for entity, _ in self.query(*component_types)]
+
+    # -- persistence support -------------------------------------------------
+
+    @property
+    def next_id(self) -> Entity:
+        return self._next_id
+
+    def all_entities(self) -> list[Entity]:
+        return sorted(self._alive)
+
+    def components_of(self, entity: Entity) -> list[Any]:
+        found = [store[entity] for store in self._components.values() if entity in store]
+        return sorted(found, key=lambda c: type(c).__name__)
+
+    def restore_entity(self, entity: Entity, components: list[Any]) -> None:
+        """Recreate an entity under its original id (save-game loading)."""
+        self._alive.add(entity)
+        self._next_id = max(self._next_id, entity + 1)
+        for component in components:
+            self._components.setdefault(type(component), {})[entity] = component

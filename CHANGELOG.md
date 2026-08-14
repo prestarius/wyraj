@@ -2,6 +2,26 @@
 
 All notable changes to Wyraj. Format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.2-m2] — 2026-08-14 — Depth & Danger
+
+### Added
+- Multi-level descent: BSP kurhany crypts under the puszcza, stairs,
+  in-run level persistence, frozen off-level actors, lazy deterministic
+  per-level generation (pure function of seed and depth).
+- Status effects: bleeding and grave-rot poison (damage over time), fear
+  and blessing (to-hit modifiers); inflicted by strzyga/martwiak/bies
+  attacks from bestiary data; blessed salt now blesses.
+- Lighting: crypts are dark (short FOV); the gromnica burns as a real
+  light source and the `darkness` narration context goes live.
+- Loot tables per biome; armor slot (wolfskin cloak, quilted kaftan) with
+  full-absorb GRAZE outcome; AI behaviors: pack wilki with flanking bonus,
+  ambusher strzyga, fleeing licho (new monster).
+- Story hooks v1: three discoverable narrative seeds per biome with
+  one-shot first-sight narration.
+- Save/load: single gzip-JSON slot, RNG streams restored bit-exactly,
+  save consumed on load and deleted on death (permadeath honored);
+  `s` saves and quits, plain `wyraj` continues a saved run.
+
 ## [0.1-m1] — 2026-08-14 — It Reads Like a Story
 
 ### Added

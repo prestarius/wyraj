@@ -18,9 +18,13 @@ def main() -> None:
 
     seed = args.seed if args.seed is not None else secrets.randbelow(2**31)
 
+    from wyraj.persistence.save import has_save, load_game
     from wyraj.ui.app import WyrajApp
 
-    WyrajApp(seed=seed, use_ascii=args.ascii, portrait_style=args.portrait).run()
+    # A saved run continues unless the player explicitly asks for a new seed.
+    game = load_game() if args.seed is None and has_save() else None
+
+    WyrajApp(seed=seed, use_ascii=args.ascii, portrait_style=args.portrait, game=game).run()
 
 
 if __name__ == "__main__":

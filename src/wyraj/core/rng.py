@@ -23,6 +23,12 @@ class RngStreams:
             name: random.Random(_derive(master_seed, name)) for name in STREAM_NAMES
         }
 
+    def get_states(self) -> dict[str, object]:
+        return {name: stream.getstate() for name, stream in self._streams.items()}
+
+    def set_state(self, name: str, state: tuple[int, tuple[int, ...], float | None]) -> None:
+        self._streams[name].setstate(state)
+
     @property
     def worldgen(self) -> random.Random:
         return self._streams["worldgen"]

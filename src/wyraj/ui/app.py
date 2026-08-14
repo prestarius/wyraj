@@ -15,6 +15,7 @@ from wyraj.narration.context import ContextEnricher
 from wyraj.narration.engine import NarrationEngine, NarrationLine
 from wyraj.narration.forms import build_form_registry
 from wyraj.narration.templates import TemplateNarrator, load_pack
+from wyraj.persistence.save import delete_save, save_game
 from wyraj.ui.screens import CodexScreen, DeathScreen, ExamineScreen, InventoryScreen
 from wyraj.ui.widgets import CharacterPanel, MapView
 
@@ -46,11 +47,18 @@ class WyrajApp(App[None]):
         Binding("i", "inventory", "Inventory"),
         Binding("x", "examine", "Examine"),
         Binding("c", "codex", "Codex"),
+        Binding("s", "save_quit", "Save+Quit"),
     ]
 
-    def __init__(self, seed: int, use_ascii: bool = False, portrait_style: str = "half") -> None:
+    def __init__(
+        self,
+        seed: int,
+        use_ascii: bool = False,
+        portrait_style: str = "half",
+        game: Game | None = None,
+    ) -> None:
         super().__init__()
-        self.game = Game(seed)
+        self.game = game if game is not None else Game(seed)
         self.use_ascii = use_ascii
         self.portrait_style = portrait_style
         registry = build_form_registry({**self.game.bestiary, **self.game.items_catalog})
@@ -98,6 +106,11 @@ class WyrajApp(App[None]):
     def action_get(self) -> None:
         self._play(Get())
 
+    def action_save_quit(self) -> None:
+        if not self.game.game_over:
+            save_game(self.game)
+        self.exit()
+
     def action_examine(self) -> None:
         self.push_screen(ExamineScreen(self.game))
 
@@ -118,4 +131,5 @@ class WyrajApp(App[None]):
         self.query_one(MapView).refresh()
         self.query_one(CharacterPanel).refresh()
         if self.game.game_over:
+            delete_save()  # permadeath: the run is over
             self.push_screen(DeathScreen(seed=self.game.seed, turn=self.game.turn))
