@@ -3,6 +3,7 @@
 from dataclasses import replace
 
 from wyraj.core.components import (
+    ArmorStats,
     Consumable,
     Health,
     Hunger,
@@ -12,10 +13,18 @@ from wyraj.core.components import (
     OnLevel,
     Position,
     StatusEffect,
+    Wearing,
     Wielding,
 )
 from wyraj.core.ecs import Entity, World
-from wyraj.core.events import EventBus, HungerChanged, ItemPickedUp, ItemUsed, ItemWielded
+from wyraj.core.events import (
+    EventBus,
+    HungerChanged,
+    ItemPickedUp,
+    ItemUsed,
+    ItemWielded,
+    ItemWorn,
+)
 from wyraj.core.refs import ref_for
 from wyraj.core.systems.movement import level_of
 from wyraj.core.systems.status import apply_status
@@ -90,6 +99,19 @@ def use_item(world: World, bus: EventBus, actor: Entity, item: Entity) -> bool:
 def wield(world: World, bus: EventBus, actor: Entity, item: Entity) -> None:
     world.add(actor, Wielding(item=item))
     bus.publish(ItemWielded(actor=ref_for(world, actor), item=ref_for(world, item)))
+
+
+def wear(world: World, bus: EventBus, actor: Entity, item: Entity) -> None:
+    world.add(actor, Wearing(item=item))
+    bus.publish(ItemWorn(actor=ref_for(world, actor), item=ref_for(world, item)))
+
+
+def protection_of(world: World, actor: Entity) -> int:
+    wearing = world.get(actor, Wearing)
+    if wearing is None or wearing.item is None:
+        return 0
+    stats = world.get(wearing.item, ArmorStats)
+    return stats.protection if stats is not None else 0
 
 
 def _remove_from_inventory(world: World, actor: Entity, item: Entity) -> None:

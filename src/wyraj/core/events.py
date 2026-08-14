@@ -84,6 +84,12 @@ class ItemWielded(GameEvent):
 
 
 @dataclass(frozen=True)
+class ItemWorn(GameEvent):
+    actor: EntityRef
+    item: EntityRef
+
+
+@dataclass(frozen=True)
 class HungerChanged(GameEvent):
     actor: EntityRef
     band: str  # "sated" | "hungry" | "starving"

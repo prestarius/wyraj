@@ -7,7 +7,7 @@ wilk:
   speed: 120
   damage: 2
   to_hit: 70
-  behavior: approach
+  behavior: pack
   spawn_weight: 4
   biomes: [puszcza]
   epithets: ["grey brother", "shadow of the treeline"]

@@ -83,6 +83,16 @@ class Wielding:
 
 
 @dataclass(frozen=True)
+class ArmorStats:
+    protection: int
+
+
+@dataclass(frozen=True)
+class Wearing:
+    item: int | None = None  # entity id of the worn armor
+
+
+@dataclass(frozen=True)
 class StatusEffect:
     kind: str  # "bleeding" | "poison" | "fear" | "blessing"
     duration: int  # turns remaining

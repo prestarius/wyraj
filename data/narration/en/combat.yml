@@ -42,6 +42,14 @@ attack_resolved:
     - weight: 4
       tags: [again]
       en: "{attacker.name.Def} circles and comes at you again, patient as winter."
+  player_graze:
+    - weight: 1
+      en: "Your blow lands, but skitters off {defender.name.def} without biting."
+  enemy_graze:
+    - weight: 2
+      en: "{attacker.name.Def} strikes true, but the blow spends itself in the layers of your armor."
+    - weight: 1
+      en: "Claws catch and drag across your armor; you feel the pressure, not the pain."
   enemy_kill:
     - weight: 1
       importance: high

@@ -12,6 +12,7 @@ from wyraj.core.components import (
     Position,
     Renderable,
     StatusEffects,
+    Wearing,
     Wielding,
 )
 from wyraj.core.game import Game
@@ -130,6 +131,12 @@ class CharacterPanel(Static):
             lore = game.world.get(wielding.item, Lore)
             if lore is not None:
                 text.append(f" Wields: {lore.name}\n", style="grey66")
+
+        wearing = game.world.get(game.player, Wearing)
+        if wearing is not None and wearing.item is not None:
+            armor_lore = game.world.get(wearing.item, Lore)
+            if armor_lore is not None:
+                text.append(f" Wears: {armor_lore.name}\n", style="grey66")
 
         statuses = game.world.get(game.player, StatusEffects)
         if statuses is not None and statuses.effects:

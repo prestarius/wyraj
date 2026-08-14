@@ -29,6 +29,12 @@ item_used:
       importance: high
       en: "Flame takes the wick of {item.name.def}, and the barrow dark peels back from the blessed light."
 
+item_worn:
+  - weight: 2
+    en: "You shrug into {item.name.def}; it settles over your shoulders like an old argument won."
+  - weight: 1
+    en: "You pull on {item.name.def}. Whatever comes, there is one more layer between you and it."
+
 item_wielded:
   - weight: 2
     en: "You take up {item.name.def}; its weight settles into your grip like an answer."

@@ -31,6 +31,7 @@ from wyraj.core.events import (
     ItemPickedUp,
     ItemUsed,
     ItemWielded,
+    ItemWorn,
     LevelChanged,
     LightExtinguished,
     LoreDiscovered,
@@ -74,6 +75,8 @@ def rule_key(event: GameEvent) -> RuleKey:
             return "item_used", event.effect
         case ItemWielded():
             return "item_wielded", None
+        case ItemWorn():
+            return "item_worn", None
         case HungerChanged():
             return "hunger_changed", event.band
         case StarvationHit():
