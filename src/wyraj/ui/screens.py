@@ -18,6 +18,7 @@ from wyraj.core.components import (
     Item,
     Lore,
     Position,
+    StoryHook,
     Wearing,
     Wielding,
 )
@@ -151,6 +152,15 @@ class ExamineScreen(ModalScreen[None]):
             seen_something = True
             text.append(f" {lore.name}", style="gold3")
             text.append(" lies here.\n", style="grey58")
+        for entity, (_hook, lore, pos) in game.world.query(StoryHook, Lore, Position):
+            if level_of(game.world, entity) != game.depth:
+                continue
+            if (pos.x, pos.y) not in game.map.visible:
+                continue
+            seen_something = True
+            text.append(f" {lore.name}\n", style="bold medium_purple3")
+            if lore.description:
+                text.append(f"   {lore.description.strip()}\n\n", style="grey66")
         if not seen_something:
             text.append("Only trees, and the spaces between them.\n", style="grey58")
         text.append("\nEsc to close.", style="grey42")

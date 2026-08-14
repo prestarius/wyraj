@@ -9,6 +9,7 @@ import hashlib
 import random
 
 from wyraj.content.bestiary import MonsterDef, load_bestiary
+from wyraj.content.hooks import HookDef, load_hooks
 from wyraj.content.items import ItemDef, load_items
 from wyraj.content.loot import load_loot_tables
 from wyraj.core.actions import (
@@ -40,6 +41,7 @@ from wyraj.core.components import (
     Position,
     Renderable,
     StatusEffects,
+    StoryHook,
     WeaponStats,
     Wielding,
 )
@@ -92,6 +94,7 @@ class Game:
         self.bestiary = bestiary if bestiary is not None else load_bestiary()
         self.items_catalog = items_catalog if items_catalog is not None else load_items()
         self.loot_tables = load_loot_tables()
+        self.hooks_catalog = load_hooks()
 
         self.levels[0] = generate_forest(_level_seed(seed, 0))
         floors = self.map.floor_tiles()
@@ -161,6 +164,28 @@ class Game:
         for x, y in item_spots:
             chosen_key = level_rng.choices(item_keys, weights=item_weights)[0]
             self.spawn_item(self.items_catalog[chosen_key], x, y, depth)
+
+        hook_defs = [
+            h for h in sorted(self.hooks_catalog.values(), key=lambda h: h.key) if biome in h.biomes
+        ]
+        taken = set(spots) | set(item_spots)
+        hook_candidates = [t for t in floors if t not in taken and t != avoid]
+        hook_spots = level_rng.sample(hook_candidates, min(len(hook_defs), len(hook_candidates)))
+        for definition, (x, y) in zip(hook_defs, hook_spots, strict=False):
+            self.spawn_hook(definition, x, y, depth)
+
+    def spawn_hook(self, definition: HookDef, x: int, y: int, depth: int = 0) -> Entity:
+        return self.world.create(
+            Position(x, y),
+            OnLevel(depth),
+            Renderable(
+                glyph=definition.glyph,
+                style=definition.style,
+                ascii_glyph=definition.ascii_glyph,
+            ),
+            StoryHook(key=definition.key),
+            Lore(key=definition.key, name=definition.name, description=definition.description),
+        )
 
     def _ensure_level(self, depth: int) -> None:
         if depth in self.levels:
@@ -315,7 +340,10 @@ class Game:
         self._discover_visible()
 
     def _discover_visible(self) -> None:
-        for entity, (_ai, lore, pos) in self.world.query(AI, Lore, Position):
+        discoverable = list(self.world.query(AI, Lore, Position)) + [
+            (e, (h, lore, pos)) for e, (h, lore, pos) in self.world.query(StoryHook, Lore, Position)
+        ]
+        for entity, (_marker, lore, pos) in discoverable:
             if movement.level_of(self.world, entity) != self.depth:
                 continue
             if (pos.x, pos.y) in self.map.visible and lore.key not in self.codex_seen:

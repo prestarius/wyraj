@@ -1,0 +1,35 @@
+kapliczka:
+  name: "ransacked chapel of Perun"
+  glyph: "†"
+  ascii_glyph: "+"
+  style: "grey78"
+  biomes: [puszcza]
+  forms:
+    en: { proper: false, article: "a" }
+  description: >
+    A wooden chapel no larger than a granary, its door torn from the hinges
+    and its thunder-marks scored through by claws. Whoever did this feared
+    the old god enough to hate him. The offering bowl is licked clean.
+
+umarly_wedrowiec:
+  name: "dead traveler"
+  glyph: "&"
+  ascii_glyph: "&"
+  style: "grey62"
+  biomes: [puszcza]
+  description: >
+    He sits against an oak as if resting, three weeks too still for it. His
+    boots are gone. In his coat, a water-swollen journal: the last legible
+    line reads only — "the birds have stopped again, God have mercy".
+
+drzewo_szeptow:
+  name: "whisper-tree"
+  glyph: "Ψ"
+  ascii_glyph: "Y"
+  style: "medium_purple3"
+  biomes: [puszcza]
+  description: >
+    A lightning-split linden hung with faded ribbons, coins nailed under the
+    bark, a child's shirt tied to a branch. People bring their questions
+    here. If you stand still long enough, something under the bark answers —
+    which is why the wise bring their questions and leave before the reply.
