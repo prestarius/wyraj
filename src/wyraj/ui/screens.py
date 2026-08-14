@@ -29,17 +29,29 @@ from wyraj.core.systems.movement import level_of
 class DeathScreen(Screen[None]):
     BINDINGS: ClassVar = [("q", "quit_app", "Quit")]
 
-    def __init__(self, seed: int, turn: int) -> None:
+    def __init__(
+        self,
+        seed: int,
+        turn: int,
+        cause: str | None = None,
+        morgue_path: str | None = None,
+    ) -> None:
         super().__init__()
         self.seed = seed
         self.turn = turn
+        self.cause = cause
+        self.morgue_path = morgue_path
 
     def compose(self) -> ComposeResult:
         text = Text(justify="center")
         text.append("Your soul takes wing toward Wyraj.\n\n", style="bold red3")
+        if self.cause:
+            text.append(f"{self.cause.capitalize()}.\n", style="grey74")
         text.append(f"You lasted {self.turn} turns.\n", style="grey74")
-        text.append(f"Seed: {self.seed}\n\n", style="grey58")
-        text.append("Press q to quit.", style="grey42")
+        text.append(f"Seed: {self.seed}\n", style="grey58")
+        if self.morgue_path:
+            text.append(f"Morgue: {self.morgue_path}\n", style="grey42")
+        text.append("\nPress q to quit.", style="grey42")
         with Middle(), Center():
             yield Static(text)
 

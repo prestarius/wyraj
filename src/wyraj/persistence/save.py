@@ -8,7 +8,6 @@ streams are restored bit-exactly.
 
 import gzip
 import json
-import os
 from dataclasses import asdict, fields
 from pathlib import Path
 from typing import Any
@@ -16,10 +15,12 @@ from typing import Any
 from wyraj.core import components as components_module
 from wyraj.core.components import StatusEffect, StatusEffects
 from wyraj.core.ecs import Entity
+from wyraj.core.events import AttackResolved, StarvationHit, StatusTick
 from wyraj.core.game import Game
 from wyraj.core.map import GameMap, Tile
 from wyraj.core.rng import STREAM_NAMES, RngStreams
 from wyraj.core.scheduler import TurnScheduler
+from wyraj.persistence.paths import wyraj_home
 
 SAVE_VERSION = 2
 
@@ -40,9 +41,7 @@ _COMPONENT_TYPES: dict[str, type[Any]] = {
 
 
 def save_path() -> Path:
-    home = os.environ.get("WYRAJ_HOME")
-    base = Path(home) if home else Path.home() / ".wyraj"
-    return base / "save.json.gz"
+    return wyraj_home() / "save.json.gz"
 
 
 def has_save(path: Path | None = None) -> bool:
@@ -98,6 +97,7 @@ def save_game(game: Game, path: Path | None = None) -> Path:
         "game_over": game.game_over,
         "codex_seen": sorted(game.codex_seen),
         "origin": game.origin.key,
+        "max_depth_reached": game.max_depth_reached,
         "player": game.player,
         "rng": game.rng.get_states(),
         "levels": {str(depth): _encode_map(m) for depth, m in game.levels.items()},
@@ -127,6 +127,8 @@ def load_game(path: Path | None = None) -> Game | None:
     game.depth = payload["depth"]
     game.game_over = payload["game_over"]
     game.codex_seen = set(payload["codex_seen"])
+    game.max_depth_reached = payload.get("max_depth_reached", game.depth)
+    game.death_cause = None
     game.player = payload["player"]
 
     game.rng = RngStreams(game.seed)
@@ -153,6 +155,9 @@ def load_game(path: Path | None = None) -> Game | None:
 
     game.world = World()
     game.bus = EventBus()
+    game.bus.subscribe(AttackResolved, game._track_kill_cause)
+    game.bus.subscribe(StarvationHit, game._track_starvation_cause)
+    game.bus.subscribe(StatusTick, game._track_dot_cause)
     for entity_str, component_dicts in payload["entities"].items():
         entity: Entity = int(entity_str)
         game.world.restore_entity(entity, [_decode_component(dict(c)) for c in component_dicts])

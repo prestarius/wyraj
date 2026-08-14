@@ -54,11 +54,15 @@ from wyraj.core.components import (
 )
 from wyraj.core.ecs import Entity, World
 from wyraj.core.events import (
+    AttackResolved,
     EventBus,
     ItemTraded,
     LevelChanged,
     LoreDiscovered,
+    Outcome,
     Rested,
+    StarvationHit,
+    StatusTick,
     TalkedTo,
     TurnEnded,
 )
@@ -110,7 +114,12 @@ class Game:
         self.game_over = False
         self.codex_seen: set[str] = set()
         self.depth = 0
+        self.max_depth_reached = 0
+        self.death_cause: str | None = None
         self.levels: dict[int, GameMap] = {}
+        self.bus.subscribe(AttackResolved, self._track_kill_cause)
+        self.bus.subscribe(StarvationHit, self._track_starvation_cause)
+        self.bus.subscribe(StatusTick, self._track_dot_cause)
 
         self.bestiary = bestiary if bestiary is not None else load_bestiary()
         self.items_catalog = items_catalog if items_catalog is not None else load_items()
@@ -345,6 +354,7 @@ class Game:
         if arrival is None:  # defensive: generators always place stairs
             arrival = target_map.floor_tiles()[0]
         self.depth = new_depth
+        self.max_depth_reached = max(self.max_depth_reached, new_depth)
         self.world.add(self.player, OnLevel(new_depth))
         self.world.add(self.player, Position(*arrival))
         self.bus.publish(LevelChanged(depth=new_depth, direction=direction))
@@ -454,6 +464,19 @@ class Game:
                 got=ref_for(self.world, take),
             )
         )
+
+    def _track_kill_cause(self, event: AttackResolved) -> None:
+        if event.defender.is_player and event.outcome is Outcome.KILL:
+            self.death_cause = f"slain by {event.attacker.name}"
+
+    def _track_starvation_cause(self, event: StarvationHit) -> None:
+        if event.actor.is_player and event.hp_frac <= 0:
+            self.death_cause = "starved, far from any table"
+
+    def _track_dot_cause(self, event: StatusTick) -> None:
+        if event.actor.is_player and event.hp_frac <= 0:
+            causes = {"bleeding": "bled out drop by drop", "poison": "taken by grave-rot"}
+            self.death_cause = causes.get(event.kind, f"succumbed to {event.kind}")
 
     @property
     def in_darkness(self) -> bool:
