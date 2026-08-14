@@ -31,6 +31,7 @@ from wyraj.core.events import (
     ItemPickedUp,
     ItemUsed,
     ItemWielded,
+    LoreDiscovered,
     MoveBlocked,
     StarvationHit,
 )
@@ -72,6 +73,8 @@ def rule_key(event: GameEvent) -> RuleKey:
             return "hunger_changed", event.band
         case StarvationHit():
             return "starvation_hit", None
+        case LoreDiscovered():
+            return "lore_discovered", event.entity.key
         case _:
             name = type(event).__name__
             snake = re.sub(r"(?<!^)(?=[A-Z])", "_", name).lower()
@@ -135,7 +138,12 @@ class TemplateNarrator:
 
     def compose(self, event: GameEvent, tags: frozenset[str] = NO_TAGS) -> list[NarrationLine]:
         key = rule_key(event)
-        variants = self.pack.rules.get(key)
+        # Fallback chain: exact subkey → "default" subkey → bare rule.
+        variants = (
+            self.pack.rules.get(key)
+            or self.pack.rules.get((key[0], "default"))
+            or self.pack.rules.get((key[0], None))
+        )
         if not variants:
             return []  # no rule = deliberately silent (e.g. routine movement)
         chosen = self._pick(key, variants, tags)

@@ -97,6 +97,13 @@ class StarvationHit(GameEvent):
 
 
 @dataclass(frozen=True)
+class LoreDiscovered(GameEvent):
+    """First time the player lays eyes on a kind of creature."""
+
+    entity: EntityRef
+
+
+@dataclass(frozen=True)
 class TurnEnded(GameEvent):
     turn: int
 

@@ -25,8 +25,9 @@ from wyraj.core.components import (
     Wielding,
 )
 from wyraj.core.ecs import Entity, World
-from wyraj.core.events import EventBus, TurnEnded
+from wyraj.core.events import EventBus, LoreDiscovered, TurnEnded
 from wyraj.core.map import GameMap
+from wyraj.core.refs import ref_for
 from wyraj.core.rng import RngStreams
 from wyraj.core.scheduler import TurnScheduler
 from wyraj.core.systems import ai, combat, hunger, items, movement
@@ -57,6 +58,7 @@ class Game:
         self.bus = EventBus()
         self.turn = 0
         self.game_over = False
+        self.codex_seen: set[str] = set()
 
         self.map: GameMap = generate_forest(self.rng.worldgen.getrandbits(32))
         self.bestiary = bestiary if bestiary is not None else load_bestiary()
@@ -192,3 +194,10 @@ class Game:
     def _update_player_fov(self) -> None:
         pos = self.world.expect(self.player, Position)
         self.map.update_fov((pos.x, pos.y), FOV_RADIUS)
+        self._discover_visible()
+
+    def _discover_visible(self) -> None:
+        for entity, (_ai, lore, pos) in self.world.query(AI, Lore, Position):
+            if (pos.x, pos.y) in self.map.visible and lore.key not in self.codex_seen:
+                self.codex_seen.add(lore.key)
+                self.bus.publish(LoreDiscovered(entity=ref_for(self.world, entity)))
