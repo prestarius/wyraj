@@ -31,3 +31,11 @@ uv run mypy             # typecheck (strict on core/ and narration/)
 
 See `docs/WYRAJ_PROJECT.md` for the full project specification and
 `docs/IMPLEMENTATION_PLAN.md` for the roadmap.
+
+## License
+
+- **Code:** [AGPL-3.0-or-later](LICENSE)
+- **Game content** (everything under `data/` — bestiary, items, narration,
+  lore): [CC BY-SA 4.0](data/LICENSE)
+- Contributions require agreeing to the [CLA](CLA.md) — see
+  [CONTRIBUTING.md](CONTRIBUTING.md).
