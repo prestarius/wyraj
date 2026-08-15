@@ -14,6 +14,7 @@ bies:
   epithets: ["the unclean one", "spirit of the thicket"]
   forms:
     en: { plural: "biesy" }
+    pl: { mian: "bies", dop: "biesa", cel: "biesowi", bier: "biesa", narz: "biesem", miej: "biesie", plural: "biesy" }
   description: >
     A crooked thing of the deep puszcza, neither beast nor man. The old
     people would not say its name after dark; they called it only "the one

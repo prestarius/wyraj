@@ -19,6 +19,18 @@ class OriginDef(BaseModel):
     starting_items: list[str] = []
     intro: str = ""
     description: str = ""
+    title_pl: str = ""
+    intro_pl: str = ""
+    description_pl: str = ""
+
+    def title_for(self, lang: str) -> str:
+        return self.title_pl if lang == "pl" and self.title_pl else self.title
+
+    def intro_for(self, lang: str) -> str:
+        return self.intro_pl if lang == "pl" and self.intro_pl else self.intro
+
+    def description_for(self, lang: str) -> str:
+        return self.description_pl if lang == "pl" and self.description_pl else self.description
 
 
 def load_origins(root: Path | None = None) -> dict[str, OriginDef]:

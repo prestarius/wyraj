@@ -14,6 +14,7 @@ martwiak:
   epithets: ["the unburied", "cold clay that walks"]
   forms:
     en: { plural: "martwiaki" }
+    pl: { mian: "martwiak", dop: "martwiaka", cel: "martwiakowi", bier: "martwiaka", narz: "martwiakiem", miej: "martwiaku", plural: "martwiaki" }
   description: >
     A dead man the earth refused — buried without rites, or dug up by
     something, or never buried at all. It does not hunger and does not

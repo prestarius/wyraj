@@ -20,6 +20,7 @@ from wyraj.narration.templates import TemplateNarrator, load_pack
 from wyraj.persistence.history import record_run
 from wyraj.persistence.morgue import write_morgue
 from wyraj.persistence.save import delete_save, save_game
+from wyraj.ui.i18n import t
 from wyraj.ui.screens import (
     CodexScreen,
     DeathScreen,
@@ -68,13 +69,20 @@ class WyrajApp(App[None]):
         portrait_style: str = "box",
         game: Game | None = None,
         origin: str = "wygnaniec",
+        lang: str = "en",
     ) -> None:
         super().__init__()
         self.game = game if game is not None else Game(seed, origin=origin)
         self.use_ascii = use_ascii
         self.portrait_style = portrait_style
-        registry = build_form_registry({**self.game.bestiary, **self.game.items_catalog})
-        narrator = TemplateNarrator(load_pack("en"), self.game.rng.narration, registry)
+        self.lang = lang
+        registry = build_form_registry(
+            {**self.game.bestiary, **self.game.items_catalog, **self.game.hooks_catalog}, lang
+        )
+        fallback = load_pack("en") if lang != "en" else None
+        narrator = TemplateNarrator(
+            load_pack(lang), self.game.rng.narration, registry, fallback_pack=fallback
+        )
         enricher = ContextEnricher(self.game)
         self.narration = NarrationEngine(self.game.bus, narrator, enricher=enricher.enrich)
         self.narration.add_sink(self._on_narration)
@@ -89,15 +97,9 @@ class WyrajApp(App[None]):
 
     def on_mount(self) -> None:
         log = self.query_one(RichLog)
-        intro = self.game.origin.intro.strip().replace("\n", " ")
+        intro = self.game.origin.intro_for(self.lang).strip().replace("\n", " ")
         log.write(Text(intro, style="italic grey74"))
-        log.write(
-            Text(
-                "The wieś is behind you the moment you stop looking at it. "
-                "Somewhere between the trees, something is already awake.",
-                style="italic grey58",
-            )
-        )
+        log.write(Text(t("intro_second"), style="italic grey58"))
 
     def _on_narration(self, line: NarrationLine) -> None:
         if self.is_running:

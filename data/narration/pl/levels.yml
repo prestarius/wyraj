@@ -1,0 +1,13 @@
+level_changed:
+  down:
+    - weight: 2
+      importance: high
+      pl: "Schodzisz w kurhanową ciemność. Powietrze jest tu stare — ziemia, zimny wosk i coś jeszcze pod spodem."
+    - weight: 1
+      importance: high
+      pl: "Kamienne stopnie, ciosane zanim ktokolwiek z żywych przyszedł na świat, prowadzą cię w dół pod kopiec. Światło dnia nie idzie za tobą."
+  up:
+    - weight: 2
+      pl: "Wspinasz się z powrotem ku żywemu powietrzu, a ciężar ziemi zsuwa się z twoich ramion."
+    - weight: 1
+      pl: "Po wytartych stopniach w górę, spod kopca. Nawet szare niebo nad puszczą wydaje się teraz hojne."

@@ -30,6 +30,9 @@ def main() -> None:
         default=None,
         help="skip character creation and start as this origin",
     )
+    parser.add_argument(
+        "--lang", choices=["en", "pl"], default=None, help="game language (default: en)"
+    )
     parser.add_argument("--history", action="store_true", help="show recent runs and exit")
     args = parser.parse_args()
 
@@ -57,6 +60,12 @@ def main() -> None:
         )
     if args.origin is None and config.get("origin"):
         args.origin = config["origin"]
+    if args.lang is None:
+        args.lang = config.get("lang") if config.get("lang") in ("en", "pl") else "en"
+
+    from wyraj.ui.i18n import set_language
+
+    set_language(args.lang)
 
     seed = args.seed if args.seed is not None else secrets.randbelow(2**31)
 
@@ -79,6 +88,7 @@ def main() -> None:
         portrait_style=args.portrait,
         game=game,
         origin=origin or "wygnaniec",
+        lang=args.lang,
     ).run()
 
 

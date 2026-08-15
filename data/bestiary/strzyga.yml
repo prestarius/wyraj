@@ -13,6 +13,7 @@ strzyga:
   epithets: ["the twice-souled", "she of the two rows of teeth"]
   forms:
     en: { plural: "strzygi", pronoun_subj: "she", pronoun_obj: "her", pronoun_poss: "her" }
+    pl: { mian: "strzyga", dop: "strzygi", cel: "strzydze", bier: "strzygę", narz: "strzygą", miej: "strzydze", plural: "strzygi", pronoun_subj: "ona", pronoun_obj: "ją", pronoun_poss: "jej" }
   description: >
     Born with two souls and buried with one, the strzyga comes back for
     what she is owed. Two rows of teeth, eyes that catch lamplight like a

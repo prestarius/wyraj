@@ -18,6 +18,7 @@ from wyraj.core.components import (
 from wyraj.core.game import Game
 from wyraj.core.map import Tile
 from wyraj.core.systems.movement import level_of
+from wyraj.ui.i18n import current_language, t
 from wyraj.ui.portrait import hp_band, render_portrait
 
 # (unicode, ascii) glyphs per terrain, keyed by biome
@@ -123,11 +124,13 @@ class CharacterPanel(Static):
             render_portrait(self.portrait_style, hp_band(health.fraction), self._weapon_key())
         )
         text.append("\n\n")
-        text.append(f" {game.origin.name}, {game.origin.title}\n", style="bold")
-        places = {0: "Wieś", 1: "Puszcza", 2: "Bagna"}
-        place = places.get(game.depth, f"Kurhan, poziom {game.depth - 2}")
+        text.append(
+            f" {game.origin.name}, {game.origin.title_for(current_language())}\n", style="bold"
+        )
+        places = {0: t("place_wies"), 1: t("place_puszcza"), 2: t("place_bagna")}
+        place = places.get(game.depth, t("place_kurhan", n=game.depth - 2))
         text.append(f" {place}\n", style="grey58")
-        text.append(f" Turn {game.turn}\n\n", style="grey58")
+        text.append(f" {t('turn', n=game.turn)}\n\n", style="grey58")
         text.append(" HP ")
         bar_width = 14
         filled = round(health.fraction * bar_width)
@@ -140,19 +143,19 @@ class CharacterPanel(Static):
         hunger = game.world.get(game.player, Hunger)
         if hunger is not None:
             band_styles = {"sated": "grey58", "hungry": "yellow", "starving": "bold red"}
-            text.append(f"\n {hunger.band.capitalize()}\n", style=band_styles[hunger.band])
+            text.append(f"\n {t('hunger_' + hunger.band)}\n", style=band_styles[hunger.band])
 
         wielding = game.world.get(game.player, Wielding)
         if wielding is not None and wielding.item is not None:
             lore = game.world.get(wielding.item, Lore)
             if lore is not None:
-                text.append(f" Wields: {lore.name}\n", style="grey66")
+                text.append(f" {t('wields', name=lore.name)}\n", style="grey66")
 
         wearing = game.world.get(game.player, Wearing)
         if wearing is not None and wearing.item is not None:
             armor_lore = game.world.get(wearing.item, Lore)
             if armor_lore is not None:
-                text.append(f" Wears: {armor_lore.name}\n", style="grey66")
+                text.append(f" {t('wears', name=armor_lore.name)}\n", style="grey66")
 
         statuses = game.world.get(game.player, StatusEffects)
         if statuses is not None and statuses.effects:
@@ -165,9 +168,10 @@ class CharacterPanel(Static):
             text.append("\n")
             for effect in statuses.effects:
                 style = status_styles.get(effect.kind, "grey66")
-                text.append(f" {effect.kind} ({effect.duration})\n", style=style)
+                label = t("status_" + effect.kind)
+                text.append(f" {label} ({effect.duration})\n", style=style)
 
         light = game.world.get(game.player, LightSource)
         if light is not None:
-            text.append(f"\n Gromnica: {light.turns}\n", style="light_goldenrod2")
+            text.append(f"\n {t('gromnica_meter', n=light.turns)}\n", style="light_goldenrod2")
         return text

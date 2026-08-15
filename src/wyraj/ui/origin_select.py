@@ -9,6 +9,7 @@ from textual.containers import Center, Middle
 from textual.widgets import Static
 
 from wyraj.content.origins import OriginDef
+from wyraj.ui.i18n import current_language, t
 
 
 class OriginApp(App[str]):
@@ -32,15 +33,16 @@ class OriginApp(App[str]):
 
     def _render_menu(self) -> Text:
         text = Text()
-        text.append("WYRAJ\n", style="bold red3")
-        text.append("Choose who walks into the puszcza:\n\n", style="grey74")
+        lang = current_language()
+        text.append(t("origin_title") + "\n", style="bold red3")
+        text.append(t("origin_prompt") + "\n\n", style="grey74")
         for i, origin in enumerate(self.origins):
             marker = "▶ " if i == self.index else "  "
             style = "bold gold3" if i == self.index else "grey62"
-            text.append(f"{marker}{i + 1}. {origin.name}, {origin.title}\n", style=style)
+            text.append(f"{marker}{i + 1}. {origin.name}, {origin.title_for(lang)}\n", style=style)
         chosen = self.origins[self.index]
-        text.append(f"\n{chosen.description.strip()}\n", style="grey66")
-        text.append("\n↑/↓ or 1-3 to choose, Enter to begin.", style="grey42")
+        text.append(f"\n{chosen.description_for(lang).strip()}\n", style="grey66")
+        text.append("\n" + t("origin_hint"), style="grey42")
         return text
 
     def _refresh_menu(self) -> None:

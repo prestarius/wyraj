@@ -13,6 +13,7 @@ licho:
   epithets: ["the one-eyed", "ill luck on two legs"]
   forms:
     en: { plural: "licha" }
+    pl: { mian: "licho", dop: "licha", cel: "lichu", bier: "licho", narz: "lichem", miej: "lichu", plural: "licha", pronoun_subj: "ono", pronoun_obj: "je", pronoun_poss: "jego" }
   description: >
     A small, crooked spirit with a single eye and no good intentions,
     misfortune made flesh. It does not want to fight you; it wants to

@@ -66,21 +66,44 @@ class NameForms(BaseModel):
                 raise KeyError(f"unknown pronoun form '{which}'")
 
 
-PLAYER_FORMS = NameForms(
-    name="you",
-    proper=True,
-    pronoun_subj="you",
-    pronoun_obj="you",
-    pronoun_poss="your",
-)
+PLAYER_FORMS_BY_LANG = {
+    "en": NameForms(
+        name="you",
+        proper=True,
+        pronoun_subj="you",
+        pronoun_obj="you",
+        pronoun_poss="your",
+    ),
+    "pl": NameForms(
+        name="ty",
+        proper=True,
+        pronoun_subj="ty",
+        pronoun_obj="cię",
+        pronoun_poss="twój",
+        **{
+            "mian": "ty",
+            "dop": "ciebie",
+            "cel": "tobie",
+            "bier": "ciebie",
+            "narz": "tobą",
+            "miej": "tobie",
+        },
+    ),
+}
+PLAYER_FORMS = PLAYER_FORMS_BY_LANG["en"]
 
 
 def build_form_registry(content: Mapping[str, "HasForms"], lang: str = "en") -> "FormRegistry":
-    """Build a registry from content definitions (bestiary now, items later)."""
+    """Build a registry from content definitions (bestiary, items, hooks)."""
     registry = FormRegistry(lang)
     for key, definition in content.items():
         overrides: dict[str, Any] = dict(definition.forms.get(lang, {}))
-        registry.register(key, NameForms(name=definition.name, **overrides))
+        if lang != "en":
+            # Articleless languages: the base name is the nominative (mian),
+            # and def/indef must not glue English articles on.
+            overrides.setdefault("name", overrides.get("mian", definition.name))
+            overrides.setdefault("proper", True)
+        registry.register(key, NameForms(name=overrides.pop("name", definition.name), **overrides))
     return registry
 
 
@@ -92,7 +115,8 @@ class HasForms(Protocol):
 class FormRegistry:
     def __init__(self, lang: str = "en") -> None:
         self.lang = lang
-        self._entries: dict[str, NameForms] = {"player": PLAYER_FORMS}
+        player = PLAYER_FORMS_BY_LANG.get(lang, PLAYER_FORMS_BY_LANG["en"])
+        self._entries: dict[str, NameForms] = {"player": player}
 
     def register(self, key: str, forms: NameForms) -> None:
         self._entries[key] = forms

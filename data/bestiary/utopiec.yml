@@ -15,6 +15,7 @@ utopiec:
   epithets: ["the drowned one", "he who waits under the reeds"]
   forms:
     en: { article: "an", plural: "utopce" }
+    pl: { mian: "utopiec", dop: "utopca", cel: "utopcowi", bier: "utopca", narz: "utopcem", miej: "utopcu", plural: "utopce" }
   description: >
     The soul of a drowned man, swollen and green-slick, that pulls the
     living down to keep it company. It is strongest in the water and it

@@ -2,6 +2,19 @@
 
 All notable changes to Wyraj. Format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.4-m4] — 2026-08-15 — Polski
+
+### Added
+- Native Polish narration packs (`data/narration/pl/`) with full rule
+  parity to English, authored as original prose — not translations.
+- Case-form tables (mian/dop/cel/bier/narz/miej) for every monster and
+  item; the strzyga is *ona*, the player declines as *ty/ciebie/tobą*;
+  per-rule English fallback if a PL rule is ever missing.
+- `--lang pl` (also a `lang:` config key); UI catalog in
+  `data/locale/{en,pl}.yml` covering panel, screens, death, trade, and
+  character creation; Polish origin intros and descriptions.
+- Blog draft: docs/blog/grammar-aware-narration.md.
+
 ## [0.3-m3] — 2026-08-15 — Public Release Cut
 
 ### Added

@@ -1,0 +1,37 @@
+lore_discovered:
+  kapliczka:
+    - weight: 1
+      importance: high
+      pl: "Między drzewami stoi splądrowana kapliczka Peruna, drzwi wyrwane, gromowe znaki przeorane pazurami. Ktoś nienawidził starego boga na tyle, by odwiedzić go w domu."
+  umarly_wedrowiec:
+    - weight: 1
+      importance: high
+      pl: "Umarły wędrowiec siedzi oparty o dąb, jakby tylko przysiadł odpocząć. Puszcza była dla niego cierpliwa. Coś zabrało mu buty."
+  drzewo_szeptow:
+    - weight: 1
+      importance: high
+      pl: "Przed tobą wyrasta drzewo szeptów — wstążki, wbite w korę monety i dziecięca koszulina na gałęzi. Powietrze wokół wstrzymuje oddech."
+  rozkopany_grob:
+    - weight: 1
+      importance: high
+      pl: "Przy ścieżce zieje rozkopany grób — płyta odsunięta od spodu. Złota nikt nie tknął. To, co wyszło, chciało czegoś innego."
+  misa_ofiarna:
+    - weight: 1
+      importance: high
+      pl: "W półmroku stoi kamienna misa ofiarna, wygładzona tysiącem lat zapłaty. Ofiara w niej jest świeża."
+  sciana_znakow:
+    - weight: 1
+      importance: high
+      pl: "Wzdłuż korytarza ciągnie się ściana starych znaków — spirale, słoneczne koła, rzędy nacięć starsze od liter. Najnowsze nacięcie zrobiono dzisiaj."
+  zatopiony_krzyz:
+    - weight: 1
+      importance: high
+      pl: "Przydrożny krzyż wychyla się z czarnej wody pod kątem topielca. Była tu kiedyś droga, a na jej końcu wieś."
+  chata_ptasznika:
+    - weight: 1
+      importance: high
+      pl: "Chata ptasznika stoi na smołowanych palach nad mułem. Drzwi zaparte — od zewnątrz."
+  bledne_ogniki:
+    - weight: 1
+      importance: high
+      pl: "Nad rozlewiskami kołyszą się blade światełka, zawsze o kilka kroków dalej. Bardzo by chciały, żebyś poszedł za nimi."
