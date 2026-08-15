@@ -57,6 +57,11 @@ class UpgradeStash(Action):
 
 
 @dataclass(frozen=True)
+class MakeOffering(Action):
+    god: str  # "perun" | "weles"
+
+
+@dataclass(frozen=True)
 class Descend(Action):
     """Take stairs down (must be standing on them)."""
 

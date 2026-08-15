@@ -47,7 +47,9 @@ from wyraj.core.events import (
     LightExtinguished,
     LoreDiscovered,
     MoveBlocked,
+    OfferingMade,
     Rested,
+    ShrineVisited,
     StarvationHit,
     StashDeposited,
     StashUpgraded,
@@ -142,6 +144,10 @@ def rule_key(event: GameEvent) -> RuleKey:
             return "crane_refused", event.reason
         case CraneReturn():
             return "crane_return", None
+        case ShrineVisited():
+            return "shrine_visited", event.god
+        case OfferingMade():
+            return "offering_made", event.god
         case _:
             name = type(event).__name__
             snake = re.sub(r"(?<!^)(?=[A-Z])", "_", name).lower()

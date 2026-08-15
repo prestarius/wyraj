@@ -81,3 +81,15 @@ class DziadShop(BaseModel):
 def load_dziad_shop(root: Path | None = None) -> DziadShop:
     raw = yaml.safe_load(((root or data_dir()) / "economy" / "shop_dziad.yml").read_text()) or {}
     return DziadShop(**raw)
+
+
+class Offering(BaseModel):
+    cost: int = Field(gt=0)
+    kind: str
+    duration: int = Field(gt=0)
+    power: int = Field(ge=0)
+
+
+def load_offerings(root: Path | None = None) -> dict[str, Offering]:
+    raw = yaml.safe_load(((root or data_dir()) / "economy" / "offerings.yml").read_text()) or {}
+    return {god: Offering(**spec) for god, spec in raw.items()}

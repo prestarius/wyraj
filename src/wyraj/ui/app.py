@@ -11,7 +11,7 @@ from textual.containers import Horizontal
 from textual.widgets import Footer, RichLog
 
 from wyraj.core.actions import Action, Ascend, Descend, Get, Move, Rest, Wait
-from wyraj.core.events import StashOpened, TalkedTo
+from wyraj.core.events import ShrineVisited, StashOpened, TalkedTo
 from wyraj.core.game import Game
 from wyraj.narration.context import ContextEnricher
 from wyraj.narration.engine import NarrationEngine, NarrationLine
@@ -27,6 +27,7 @@ from wyraj.ui.screens import (
     DeathScreen,
     ExamineScreen,
     InventoryScreen,
+    ShrineScreen,
     StashScreen,
     TradeScreen,
 )
@@ -100,6 +101,7 @@ class WyrajApp(App[None]):
         self.narration.add_sink(self._on_narration)
         self.game.bus.subscribe(TalkedTo, self._on_talked_to)
         self.game.bus.subscribe(StashOpened, self._on_stash_opened)
+        self.game.bus.subscribe(ShrineVisited, self._on_shrine_visited)
 
     def compose(self) -> ComposeResult:
         with Horizontal(id="top"):
@@ -150,6 +152,16 @@ class WyrajApp(App[None]):
                 self.call_after_refresh(self.push_screen, StashScreen(self.game), on_result)
 
         self.call_after_refresh(self.push_screen, StashScreen(self.game), on_result)
+
+    def _on_shrine_visited(self, event: ShrineVisited) -> None:
+        if not self.is_running:
+            return
+
+        def on_result(action: Action | None) -> None:
+            if action is not None:
+                self._play(action)
+
+        self.call_after_refresh(self.push_screen, ShrineScreen(self.game, event.god), on_result)
 
     def _on_talked_to(self, event: TalkedTo) -> None:
         if event.role in ("trader", "dziad_wedrowny") and self.is_running:

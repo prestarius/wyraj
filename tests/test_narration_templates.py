@@ -30,8 +30,10 @@ from wyraj.core.events import (
     LightExtinguished,
     LoreDiscovered,
     MoveBlocked,
+    OfferingMade,
     Outcome,
     Rested,
+    ShrineVisited,
     StarvationHit,
     StashDeposited,
     StashUpgraded,
@@ -137,6 +139,12 @@ def fixture_event(event_key: str, subkey: str | None) -> GameEvent:
         return CraneRefused(actor=PLAYER, reason=subkey)
     if event_key == "crane_return":
         return CraneReturn(actor=PLAYER, depth=4)
+    if event_key == "shrine_visited":
+        assert subkey is not None
+        return ShrineVisited(actor=PLAYER, god=subkey)
+    if event_key == "offering_made":
+        assert subkey is not None
+        return OfferingMade(actor=PLAYER, god=subkey, cost=15)
     raise AssertionError(f"no fixture for pack rule {event_key}/{subkey}")
 
 

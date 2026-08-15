@@ -10,7 +10,13 @@ import random
 from typing import ClassVar
 
 from wyraj.content.bestiary import MonsterDef, load_bestiary
-from wyraj.content.economy import load_drops, load_dziad_shop, load_prices, load_village_shop
+from wyraj.content.economy import (
+    load_drops,
+    load_dziad_shop,
+    load_offerings,
+    load_prices,
+    load_village_shop,
+)
 from wyraj.content.hooks import HookDef, load_hooks
 from wyraj.content.items import ItemDef, load_items
 from wyraj.content.loot import load_loot_tables
@@ -22,6 +28,7 @@ from wyraj.core.actions import (
     DepositItem,
     Descend,
     Get,
+    MakeOffering,
     Move,
     Rest,
     SellItem,
@@ -56,6 +63,7 @@ from wyraj.core.components import (
     Renderable,
     Shrine,
     StashChest,
+    StatusEffect,
     StatusEffects,
     StoryHook,
     Swimmer,
@@ -83,6 +91,7 @@ from wyraj.core.events import (
     LevelChanged,
     LoreDiscovered,
     MetaTransaction,
+    OfferingMade,
     Outcome,
     Rested,
     ShrineVisited,
@@ -166,6 +175,7 @@ class Game:
         self.meta = meta if meta is not None else MetaState()
         self.meta_autosave = meta_autosave
         self.dziad_shop = load_dziad_shop()
+        self.offerings = load_offerings()
         self.dziad_seen_this_run = False
         self.dziad_met_this_run = False
         self.dziad_traded_this_run = False
@@ -531,6 +541,8 @@ class Game:
                         ),
                     )
                     self.bus.publish(Rested(actor=ref_for(self.world, self.player)))
+            case MakeOffering(god=god):
+                self._make_offering(god)
             case DepositItem(item=item):
                 self._deposit(item)
             case WithdrawStash(index=index):
@@ -595,6 +607,13 @@ class Game:
 
     # ------------------------------------------------------------------ economy
 
+    def _drop_luck(self, chance: int) -> int:
+        kinds = status.active_kinds(self.world, self.player)
+        favor = kinds.get("weles_favor")
+        if favor is not None:
+            return min(100, round(chance * (1 + favor.power / 100)))
+        return chance
+
     def _on_monster_died(self, event: EntityDied) -> None:
         if event.entity.is_player or event.position is None:
             return
@@ -602,12 +621,14 @@ class Game:
         if spec is None:
             return
         x, y = event.position
-        if spec.denary is not None and self.rng.loot.randint(1, 100) <= spec.denary.chance:
+        if spec.denary is not None and self.rng.loot.randint(1, 100) <= self._drop_luck(
+            spec.denary.chance
+        ):
             amount = self.rng.loot.randint(spec.denary.min, spec.denary.max)
             if amount > 0:
                 self.spawn_coins(amount, x, y, event.depth)
         for trophy in spec.trophies:
-            if self.rng.loot.randint(1, 100) <= trophy.chance:
+            if self.rng.loot.randint(1, 100) <= self._drop_luck(trophy.chance):
                 self.spawn_item(self.items_catalog[trophy.item], x, y, event.depth)
 
     def spawn_coins(self, amount: int, x: int, y: int, depth: int) -> Entity:
@@ -817,6 +838,25 @@ class Game:
         self.world.add(self.player, OnLevel(mark_depth))
         self.world.add(self.player, Position(mark_pos.x, mark_pos.y))
         self.bus.publish(CraneReturn(actor=ref_for(self.world, self.player), depth=mark_depth))
+
+    def _make_offering(self, god: str) -> None:
+        spec = self.offerings.get(god)
+        if spec is None or self.depth != 0:
+            return
+        if self.meta.currency.denary < spec.cost:
+            return
+        self.meta.currency.denary -= spec.cost
+        self.bus.publish(MetaTransaction(kind="offering", detail=f"{god}:-{spec.cost}"))
+        self._save_meta()
+        status.apply_status(
+            self.world,
+            self.bus,
+            self.player,
+            StatusEffect(kind=spec.kind, duration=spec.duration, power=spec.power),
+        )
+        self.bus.publish(
+            OfferingMade(actor=ref_for(self.world, self.player), god=god, cost=spec.cost)
+        )
 
     def _interactable_at(self, x: int, y: int) -> tuple[str, Entity] | None:
         for entity, (pos, _chest) in self.world.query(Position, StashChest):

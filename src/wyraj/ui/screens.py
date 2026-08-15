@@ -14,6 +14,7 @@ from wyraj.core.actions import (
     Action,
     BuyItem,
     DepositItem,
+    MakeOffering,
     SellItem,
     UpgradeStash,
     UseItem,
@@ -210,6 +211,39 @@ class TradeScreen(ModalScreen[Action | None]):
             if event.key == letter:
                 self.dismiss(SellItem(trader=self.trader, item=entity))
                 return
+
+    def action_close(self) -> None:
+        self.dismiss(None)
+
+
+class ShrineScreen(ModalScreen[Action | None]):
+    """Offer denary for a run-scoped favor; escape leaves the god waiting."""
+
+    BINDINGS: ClassVar = [("escape", "close", "Close")]
+
+    def __init__(self, game: Game, god: str) -> None:
+        super().__init__()
+        self.game = game
+        self.god = god
+
+    def compose(self) -> ComposeResult:
+        game = self.game
+        spec = game.offerings.get(self.god)
+        text = Text()
+        text.append(t(f"shrine_title_{self.god}") + "\n\n", style="bold")
+        if spec is not None:
+            if game.meta.currency.denary >= spec.cost:
+                text.append(t("shrine_offer", cost=spec.cost) + "\n", style="gold3")
+            else:
+                text.append(t("shrine_broke") + "\n", style="grey42")
+        text.append("\n" + t("esc_close"), style="grey42")
+        with Middle(), Center():
+            yield Static(text)
+
+    def on_key(self, event: events.Key) -> None:
+        event.stop()
+        if event.key == "o":
+            self.dismiss(MakeOffering(god=self.god))
 
     def action_close(self) -> None:
         self.dismiss(None)

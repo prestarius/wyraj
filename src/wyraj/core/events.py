@@ -217,6 +217,13 @@ class DziadRecognized(GameEvent):
 
 
 @dataclass(frozen=True)
+class OfferingMade(GameEvent):
+    actor: EntityRef
+    god: str
+    cost: int
+
+
+@dataclass(frozen=True)
 class TalkedTo(GameEvent):
     villager: EntityRef
     role: str

@@ -1,0 +1,21 @@
+shrine_visited:
+  perun:
+    - weight: 2
+      en: "The shrine of Perun: an oak post scarred by lightning, iron nails driven in rows. The air smells faintly of storms that haven't happened yet."
+    - weight: 1
+      en: "Perun's post watches the sky the way a soldier watches a road. An offering would not go unnoticed."
+  weles:
+    - weight: 2
+      en: "The shrine of Weles sits low and half in shadow, wound with wool and old horns. The god of the underworld keeps his door here — and his ledger."
+    - weight: 1
+      en: "Coins, horns, and a saucer of milk gone sour: Weles collects quietly. He is said to pay attention to those who pay."
+
+offering_made:
+  perun:
+    - weight: 1
+      importance: high
+      en: "You lay {cost} denary at Perun's post. Far off, on a clear day, something rumbles — and your hands feel steadier already."
+  weles:
+    - weight: 1
+      importance: high
+      en: "You leave {cost} denary in Weles's bowl. The shadow under the shrine deepens approvingly. The earth will be more generous with its dead."
