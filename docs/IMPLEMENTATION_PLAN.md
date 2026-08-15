@@ -119,9 +119,9 @@ Goal: `uv run wyraj --seed 42` is a completable-by-dying game; golden-run test r
 - ~~US 6.1~~ — `LLMNarrator` behind `--narrator llm` (Ollama-first, OpenRouter alternative; timeout → template fallback; cosmetic-only contract)
 - ~~US 6.2~~ — Style-guide prompt + per-run latency/fallback stats; comparison blog skeleton awaiting LLM captures (`docs/blog/ai-narrator-comparison.md`)
 
-## Epic 7 — M6: Powroty (meta-progression) *(spec: `WYRAJ_M6_POWROTY.md`; stories mirror its implementation order; break down to tasks at milestone start)*
+## Epic 7 — M6: Powroty (meta-progression) — **DONE 2026-08-15 (v0.6-m6)** *(spec: `WYRAJ_M6_POWROTY.md`)*
 
-Prerequisite per spec: M5 landed. Branch `feat/m6-powroty`, each story keeps `main` playable.
+All nine stories landed on `feat/m6-powroty`. Meta path is `~/.wyraj/meta.yml` (WYRAJ_HOME-aware) rather than XDG, matching existing persistence. Deferred per decisions: item wear dormant, gambling → M7, depth shrines, curse-cleansing UI.
 
 - US 7.1 — Meta-persistence layer: versioned `meta.yml` (pydantic), HMAC tamper flag (`edited: true`, no punishment), unknown-field preservation, migrations, atomic writes, `MetaTransaction` events
 - US 7.2 — Economy core: denary + trophy drop tables (lore-gated: beasts drop trophies, coins need a narrative excuse), buy/sell replacing barter v0, `data/economy/*` knobs

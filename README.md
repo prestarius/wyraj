@@ -23,6 +23,10 @@ leszy, strzyga, utopiec, bies, licho.
 - **Deterministic to the bone.** Same seed, same run — golden-transcript
   tested. Saves restore RNG streams bit-exactly and are consumed on load;
   permadeath writes you a morgue file.
+- **Powroty: what was carried to Wyraj comes back.** Everything on the
+  body is lost — but the skrzynia keeps its heirlooms, silver banks in
+  the wieś, the codex remembers what killed you, an uncanny dziad in the
+  depths remembers *you*, and some deaths unlock new beginnings.
 - **Fully bilingual.** `--lang pl` switches to natively authored Polish
   narration — real case declension (*strzygę, strzygą, strzydze*) via
   per-noun form tables, never machine-mapped from English.
@@ -61,8 +65,8 @@ Docs: [architecture](docs/ARCHITECTURE.md) ·
 [contributing](CONTRIBUTING.md)
 
 Full design spec: `docs/WYRAJ_PROJECT.md`; roadmap:
-`docs/IMPLEMENTATION_PLAN.md`. Next milestone: **M6 "Powroty"** — light
-meta-progression (`docs/WYRAJ_M6_POWROTY.md`).
+`docs/IMPLEMENTATION_PLAN.md`; meta-progression spec:
+`docs/WYRAJ_M6_POWROTY.md`.
 
 ## License
 
