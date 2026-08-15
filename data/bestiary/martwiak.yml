@@ -15,6 +15,7 @@ martwiak:
   forms:
     en: { plural: "martwiaki" }
     pl: { mian: "martwiak", dop: "martwiaka", cel: "martwiakowi", bier: "martwiaka", narz: "martwiakiem", miej: "martwiaku", plural: "martwiaki" }
+  weakness: "Blessed salt burns it like a brand; a blessing on your hands does the same work."
   description: >
     A dead man the earth refused — buried without rites, or dug up by
     something, or never buried at all. It does not hunger and does not

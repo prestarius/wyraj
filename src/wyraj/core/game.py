@@ -153,7 +153,7 @@ class Game:
         self.bus = EventBus()
         self.turn = 0
         self.game_over = False
-        self.codex_seen: set[str] = set()
+        self.codex_seen: set[str] = set()  # seeded from meta after content loads
         self.depth = 0
         self.max_depth_reached = 0
         self.death_cause: str | None = None
@@ -176,6 +176,10 @@ class Game:
         self.meta_autosave = meta_autosave
         self.dziad_shop = load_dziad_shop()
         self.offerings = load_offerings()
+        # Knowledge survives death (M6 §8.1): pre-known kinds are not
+        # re-discovered, and their entries open at their earned tier.
+        self.codex_seen |= set(self.meta.codex.known)
+        self.bus.subscribe(LoreDiscovered, self._on_lore_discovered)
         self.dziad_seen_this_run = False
         self.dziad_met_this_run = False
         self.dziad_traded_this_run = False
@@ -607,6 +611,21 @@ class Game:
 
     # ------------------------------------------------------------------ economy
 
+    CODEX_TIERS = ("unknown", "glimpsed", "partial", "full")
+
+    def codex_tier(self, key: str) -> str:
+        return self.meta.codex.known.get(key, "unknown")
+
+    def _raise_codex_tier(self, key: str, tier: str) -> None:
+        current = self.CODEX_TIERS.index(self.codex_tier(key))
+        if self.CODEX_TIERS.index(tier) > current:
+            self.meta.codex.known[key] = tier
+            self.bus.publish(MetaTransaction(kind="codex", detail=f"{key}:{tier}"))
+
+    def _on_lore_discovered(self, event: LoreDiscovered) -> None:
+        if event.entity.key in self.bestiary:
+            self._raise_codex_tier(event.entity.key, "glimpsed")
+
     def _drop_luck(self, chance: int) -> int:
         kinds = status.active_kinds(self.world, self.player)
         favor = kinds.get("weles_favor")
@@ -615,7 +634,14 @@ class Game:
         return chance
 
     def _on_monster_died(self, event: EntityDied) -> None:
-        if event.entity.is_player or event.position is None:
+        if event.entity.is_player:
+            return
+        if event.entity.key in self.bestiary:
+            counter = f"kills_{event.entity.key}"
+            kills = self.meta.achievements.get(counter, 0) + 1
+            self.meta.achievements[counter] = kills
+            self._raise_codex_tier(event.entity.key, "full" if kills >= 3 else "partial")
+        if event.position is None:
             return
         spec = self.drops.get(event.entity.key)
         if spec is None:

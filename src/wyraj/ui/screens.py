@@ -382,20 +382,47 @@ class CodexScreen(ModalScreen[None]):
         super().__init__()
         self.game = game
 
+    def _trophy_line(self, key: str) -> str:
+        game = self.game
+        spec = game.drops.get(key)
+        if spec is None:
+            return ""
+        parts = []
+        if spec.denary is not None:
+            parts.append(t("codex_carries_silver"))
+        for trophy in spec.trophies:
+            definition = game.items_catalog.get(trophy.item)
+            if definition is not None:
+                parts.append(f"{definition.name} ({game.sell_price_for(trophy.item)})")
+        return ", ".join(parts)
+
     def compose(self) -> ComposeResult:
         game = self.game
         text = Text()
         text.append(t("codex_title") + "\n\n", style="bold")
         for key in sorted(game.bestiary):
             definition = game.bestiary[key]
-            if key in game.codex_seen:
-                text.append(f" {definition.name}", style="bold")
-                if definition.epithets:
-                    text.append(f" — {', '.join(definition.epithets)}", style="italic grey58")
-                text.append("\n")
-                text.append(f"   {definition.description.strip()}\n\n", style="grey66")
-            else:
+            tier = game.codex_tier(key)
+            if tier == "unknown":
                 text.append(" " + t("codex_unseen") + "\n\n", style="grey30")
+                continue
+            text.append(f" {definition.name}", style="bold")
+            text.append(f"  [{t('codex_tier_' + tier)}]", style="grey42")
+            if definition.epithets:
+                text.append(f" — {', '.join(definition.epithets)}", style="italic grey58")
+            text.append("\n")
+            if tier in ("partial", "full"):
+                trophies = self._trophy_line(key)
+                if trophies:
+                    text.append(f"   {t('codex_trophies')}: {trophies}\n", style="gold3")
+            if tier == "full":
+                if definition.weakness:
+                    text.append(
+                        f"   {t('codex_weakness')}: {definition.weakness}\n",
+                        style="medium_purple3",
+                    )
+                text.append(f"   {definition.description.strip()}\n", style="grey66")
+            text.append("\n")
         text.append(t("esc_close"), style="grey42")
         with Middle(), Center():
             yield Static(text)
