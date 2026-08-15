@@ -42,6 +42,21 @@ class SellItem(Action):
 
 
 @dataclass(frozen=True)
+class DepositItem(Action):
+    item: int  # item entity from the player's inventory
+
+
+@dataclass(frozen=True)
+class WithdrawStash(Action):
+    index: int  # slot index in the meta stash
+
+
+@dataclass(frozen=True)
+class UpgradeStash(Action):
+    pass
+
+
+@dataclass(frozen=True)
 class Descend(Action):
     """Take stairs down (must be standing on them)."""
 

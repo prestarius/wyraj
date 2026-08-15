@@ -70,6 +70,21 @@ class ItemMemory:
 
 
 @dataclass(frozen=True)
+class StashChest:
+    """The skrzynia — the one thing in the world that outlives you."""
+
+
+@dataclass(frozen=True)
+class Perch:
+    """Żerdź: where the cranes set you down, and pick you up again."""
+
+
+@dataclass(frozen=True)
+class Shrine:
+    god: str  # "perun" | "weles"
+
+
+@dataclass(frozen=True)
 class Villager:
     """A friendly NPC; bumping talks instead of attacking."""
 

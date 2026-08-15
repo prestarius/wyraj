@@ -1,0 +1,26 @@
+stash_deposited:
+  - weight: 2
+    pl: "Kładziesz {item.name.bier} do skrzyni i żelazne wieko opada. Cokolwiek się teraz stanie, to jedno jest bezpieczne."
+  - weight: 1
+    pl: "{item.name.Mian} trafia do skrzyni, między rzeczy, które przeżyły swoich właścicieli."
+
+stash_withdrawn:
+  own:
+    - weight: 1
+      pl: "Zabierasz {item.name.bier} ze skrzyni. Dobrze się naczekał."
+  heirloom:
+    - weight: 1
+      importance: high
+      pl: "Wyjmujesz ze skrzyni {item.name.bier}. Należał do kogoś, kto wyszedł z tej wsi i już nie wrócił."
+
+stash_upgraded:
+  - weight: 1
+    pl: "Cieśla dokłada do skrzyni nową przegrodę — {slots} miejsc, a wieko cięższe niż kiedykolwiek. Kosztowało {price} denarów i nie były to pieniądze na targi."
+
+heirloom_wielded:
+  - weight: 2
+    importance: high
+    pl: "{item.name.Mian} układa się w twojej dłoni — i pamięta rękę, która nie jest już twoja."
+  - weight: 1
+    importance: high
+    pl: "Przez chwilę {item.name.mian} sam trzyma równowagę, tak jak trzymał ją dla tego przed tobą."

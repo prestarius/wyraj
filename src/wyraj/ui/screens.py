@@ -10,7 +10,17 @@ from textual.containers import Center, Middle
 from textual.screen import ModalScreen, Screen
 from textual.widgets import Static
 
-from wyraj.core.actions import Action, BuyItem, SellItem, UseItem, WearItem, WieldItem
+from wyraj.core.actions import (
+    Action,
+    BuyItem,
+    DepositItem,
+    SellItem,
+    UpgradeStash,
+    UseItem,
+    WearItem,
+    WieldItem,
+    WithdrawStash,
+)
 from wyraj.core.components import (
     AI,
     Health,
@@ -195,6 +205,77 @@ class TradeScreen(ModalScreen[Action | None]):
         for letter, entity, _name, _key in self.mine:
             if event.key == letter:
                 self.dismiss(SellItem(trader=self.trader, item=entity))
+                return
+
+    def action_close(self) -> None:
+        self.dismiss(None)
+
+
+class StashScreen(ModalScreen[Action | None]):
+    """The skrzynia: a-z deposits from your pack, A-Z withdraws, 'u' upgrades."""
+
+    BINDINGS: ClassVar = [("escape", "close", "Close")]
+
+    def __init__(self, game: Game) -> None:
+        super().__init__()
+        self.game = game
+        player_inv = game.world.get(game.player, Inventory) or Inventory()
+        self.mine: list[tuple[str, int, str]] = []
+        for letter, entity in zip(string.ascii_lowercase, player_inv.items, strict=False):
+            lore = game.world.get(entity, Lore)
+            self.mine.append((letter, entity, lore.name if lore else "something"))
+        self.stashed: list[tuple[str, int, str]] = []
+        for i, (letter, stashed) in enumerate(
+            zip(string.ascii_uppercase, game.meta.stash.items, strict=False)
+        ):
+            definition = game.items_catalog.get(stashed.item_id)
+            name = definition.name if definition else stashed.item_id
+            label = f"{name} x{stashed.count}" if stashed.count > 1 else name
+            self.stashed.append((letter, i, label))
+
+    def compose(self) -> ComposeResult:
+        game = self.game
+        meta = game.meta
+        text = Text()
+        text.append(t("stash_title") + "\n", style="bold")
+        text.append(
+            t("stash_slots", used=len(meta.stash.items), total=meta.stash.slots_total) + "\n\n",
+            style="grey58",
+        )
+        text.append(t("stash_stored") + "\n", style="grey58")
+        if not self.stashed:
+            text.append(" " + t("stash_empty") + "\n", style="grey42")
+        for letter, _i, label in self.stashed:
+            text.append(f" {letter}", style="bold cyan")
+            text.append(f" — {label}\n")
+        text.append("\n" + t("stash_carrying") + "\n", style="grey58")
+        if not self.mine:
+            text.append(" " + t("pack_empty") + "\n", style="grey42")
+        for letter, _entity, name in self.mine:
+            text.append(f" {letter}", style="bold gold3")
+            text.append(f" — {name}\n")
+        upgrades = game.prices.stash_upgrades
+        step = (meta.stash.slots_total - 4) // 2
+        if step < len(upgrades) and meta.stash.slots_total < 10:
+            text.append("\n" + t("stash_upgrade_offer", price=upgrades[step]) + "\n", style="gold3")
+        text.append("\n" + t("esc_close"), style="grey42")
+        with Middle(), Center():
+            yield Static(text)
+
+    def on_key(self, event: events.Key) -> None:
+        event.stop()
+        if event.key == "escape":
+            return
+        if event.key == "u":
+            self.dismiss(UpgradeStash())
+            return
+        for letter, entity, _name in self.mine:
+            if event.key == letter:
+                self.dismiss(DepositItem(item=entity))
+                return
+        for letter, index, _label in self.stashed:
+            if event.key == letter:
+                self.dismiss(WithdrawStash(index=index))
                 return
 
     def action_close(self) -> None:

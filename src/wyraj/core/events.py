@@ -140,6 +140,40 @@ class MetaTransaction(GameEvent):
 
 
 @dataclass(frozen=True)
+class StashOpened(GameEvent):
+    actor: EntityRef
+
+
+@dataclass(frozen=True)
+class StashDeposited(GameEvent):
+    item: EntityRef
+
+
+@dataclass(frozen=True)
+class StashWithdrawn(GameEvent):
+    item: EntityRef
+    heirloom: bool = False
+
+
+@dataclass(frozen=True)
+class StashUpgraded(GameEvent):
+    slots: int
+    price: int
+
+
+@dataclass(frozen=True)
+class HeirloomWielded(GameEvent):
+    actor: EntityRef
+    item: EntityRef
+
+
+@dataclass(frozen=True)
+class ShrineVisited(GameEvent):
+    actor: EntityRef
+    god: str
+
+
+@dataclass(frozen=True)
 class TalkedTo(GameEvent):
     villager: EntityRef
     role: str

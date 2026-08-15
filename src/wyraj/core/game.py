@@ -19,15 +19,18 @@ from wyraj.core.actions import (
     Action,
     Ascend,
     BuyItem,
+    DepositItem,
     Descend,
     Get,
     Move,
     Rest,
     SellItem,
+    UpgradeStash,
     UseItem,
     Wait,
     WearItem,
     WieldItem,
+    WithdrawStash,
 )
 from wyraj.core.components import (
     AI,
@@ -40,14 +43,18 @@ from wyraj.core.components import (
     Hunger,
     Inventory,
     Item,
+    ItemMemory,
     LightSource,
     Lore,
     Melee,
     OnLevel,
+    Perch,
     Player,
     Position,
     Purse,
     Renderable,
+    Shrine,
+    StashChest,
     StatusEffects,
     StoryHook,
     Swimmer,
@@ -70,7 +77,12 @@ from wyraj.core.events import (
     MetaTransaction,
     Outcome,
     Rested,
+    ShrineVisited,
     StarvationHit,
+    StashDeposited,
+    StashOpened,
+    StashUpgraded,
+    StashWithdrawn,
     StatusTick,
     TalkedTo,
     TurnEnded,
@@ -80,7 +92,7 @@ from wyraj.core.refs import ref_for
 from wyraj.core.rng import RngStreams
 from wyraj.core.scheduler import TurnScheduler
 from wyraj.core.systems import ai, combat, hunger, items, movement, status
-from wyraj.persistence.meta import MetaState, save_meta
+from wyraj.persistence.meta import MetaState, StashedItem, save_meta
 from wyraj.procgen.bagna import generate_bagna
 from wyraj.procgen.forest import generate_forest
 from wyraj.procgen.kurhany import generate_kurhan
@@ -165,6 +177,8 @@ class Game:
 
         for role, vx, vy in layout.npc_posts:
             self.spawn_villager(role, vx, vy)
+        for kind, sx, sy in layout.special_posts:
+            self._spawn_special(kind, sx, sy)
 
         self.scheduler = TurnScheduler(self.world)
         self.map.update_fov((px, py), FOV_RADIUS)
@@ -207,6 +221,39 @@ class Game:
                     stock += [self.spawn_stock_item(entry.item) for _ in range(entry.count)]
             self.world.add(entity, Inventory(items=tuple(stock)))
         return entity
+
+    def _spawn_special(self, kind: str, x: int, y: int) -> Entity:
+        base = [Position(x, y), OnLevel(0)]
+        if kind == "skrzynia":
+            return self.world.create(
+                *base,
+                Renderable(glyph="▣", style="gold3", ascii_glyph="8"),
+                StashChest(),
+                Lore(key="skrzynia", name="the skrzynia"),
+            )
+        if kind == "perch":
+            return self.world.create(
+                *base,
+                Renderable(glyph="⊥", style="grey66", ascii_glyph="T"),
+                Perch(),
+                Lore(key="zerdz", name="the żerdź"),
+            )
+        god = kind.removeprefix("shrine_")
+        glyph = "Λ" if god == "perun" else "Ω"
+        return self.world.create(
+            *base,
+            Renderable(
+                glyph=glyph,
+                style="light_goldenrod2",
+                ascii_glyph="^" if god == "perun" else "O",
+            ),
+            Shrine(god=god),
+            Lore(key=f"shrine_{god}", name=f"shrine of {god.capitalize()}"),
+        )
+
+    @property
+    def run_tag(self) -> str:
+        return f"run-{self.seed}"
 
     def spawn_stock_item(self, item_key: str) -> Entity:
         """Spawn an item with no position — it lives in someone's pack."""
@@ -413,6 +460,19 @@ class Game:
             case Move(dx=dx, dy=dy):
                 pos = self.world.expect(self.player, Position)
                 target = movement.blocking_entity_at(self.world, pos.x + dx, pos.y + dy, self.depth)
+                interact = self._interactable_at(pos.x + dx, pos.y + dy)
+                if interact is not None:
+                    kind, _entity_i = interact
+                    if kind == "skrzynia":
+                        self.bus.publish(StashOpened(actor=ref_for(self.world, self.player)))
+                    elif kind.startswith("shrine_"):
+                        self.bus.publish(
+                            ShrineVisited(
+                                actor=ref_for(self.world, self.player),
+                                god=kind.removeprefix("shrine_"),
+                            )
+                        )
+                    return
                 if target is not None and target != self.player:
                     villager = self.world.get(target, Villager)
                     if villager is not None:
@@ -436,6 +496,12 @@ class Game:
                         ),
                     )
                     self.bus.publish(Rested(actor=ref_for(self.world, self.player)))
+            case DepositItem(item=item):
+                self._deposit(item)
+            case WithdrawStash(index=index):
+                self._withdraw(index)
+            case UpgradeStash():
+                self._upgrade_stash()
             case BuyItem(trader=trader, item=item):
                 self._buy(trader, item)
             case SellItem(trader=trader, item=item):
@@ -618,6 +684,84 @@ class Game:
                 price=price,
             )
         )
+
+    def _interactable_at(self, x: int, y: int) -> tuple[str, Entity] | None:
+        for entity, (pos, _chest) in self.world.query(Position, StashChest):
+            if (pos.x, pos.y) == (x, y) and movement.level_of(self.world, entity) == self.depth:
+                return ("skrzynia", entity)
+        for entity, (pos, shrine) in self.world.query(Position, Shrine):
+            if (pos.x, pos.y) == (x, y) and movement.level_of(self.world, entity) == self.depth:
+                return (f"shrine_{shrine.god}", entity)
+        return None
+
+    STACKABLE_KINDS = ("consumable", "trophy")
+
+    def stash_is_full(self) -> bool:
+        return len(self.meta.stash.items) >= self.meta.stash.slots_total
+
+    def _deposit(self, item: Entity) -> None:
+        inventory = self.world.get(self.player, Inventory) or Inventory()
+        item_c = self.world.get(item, Item)
+        if item not in inventory.items or item_c is None:
+            return
+        stacked = False
+        if item_c.kind in self.STACKABLE_KINDS:
+            for stashed in self.meta.stash.items:
+                if stashed.item_id == item_c.key:
+                    stashed.count += 1
+                    stacked = True
+                    break
+        if not stacked:
+            if self.stash_is_full():
+                return
+            self.meta.stash.items.append(
+                StashedItem(item_id=item_c.key, instance={"memory_tag": self.run_tag})
+            )
+        item_ref = ref_for(self.world, item)
+        self.world.add(self.player, Inventory(items=tuple(i for i in inventory.items if i != item)))
+        wielding = self.world.get(self.player, Wielding)
+        if wielding is not None and wielding.item == item:
+            self.world.add(self.player, Wielding(item=None))
+        wearing = self.world.get(self.player, Wearing)
+        if wearing is not None and wearing.item == item:
+            self.world.add(self.player, Wearing(item=None))
+        self.world.destroy(item)
+        self.bus.publish(StashDeposited(item=item_ref))
+        self.bus.publish(MetaTransaction(kind="stash_deposit", detail=item_c.key))
+        self._save_meta()
+
+    def _withdraw(self, index: int) -> None:
+        if not (0 <= index < len(self.meta.stash.items)):
+            return
+        stashed = self.meta.stash.items[index]
+        if stashed.count > 1:
+            stashed.count -= 1
+        else:
+            self.meta.stash.items.pop(index)
+        entity = self.spawn_stock_item(stashed.item_id)
+        tag = str(stashed.instance.get("memory_tag", ""))
+        heirloom = bool(tag) and tag != self.run_tag
+        if heirloom:
+            self.world.add(entity, ItemMemory(memory_tag=tag))
+        inventory = self.world.get(self.player, Inventory) or Inventory()
+        self.world.add(self.player, Inventory(items=(*inventory.items, entity)))
+        self.bus.publish(StashWithdrawn(item=ref_for(self.world, entity), heirloom=heirloom))
+        self.bus.publish(MetaTransaction(kind="stash_withdraw", detail=stashed.item_id))
+        self._save_meta()
+
+    def _upgrade_stash(self) -> None:
+        upgrades = self.prices.stash_upgrades
+        step = (self.meta.stash.slots_total - 4) // 2
+        if step >= len(upgrades) or self.meta.stash.slots_total >= 10:
+            return
+        price = upgrades[step]
+        if self.meta.currency.denary < price:
+            return
+        self.meta.currency.denary -= price
+        self.meta.stash.slots_total += 2
+        self.bus.publish(StashUpgraded(slots=self.meta.stash.slots_total, price=price))
+        self.bus.publish(MetaTransaction(kind="stash_upgrade", detail=str(price)))
+        self._save_meta()
 
     def _mark_dziad_trade(self, trader: Entity) -> None:
         villager = self.world.get(trader, Villager)

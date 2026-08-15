@@ -11,7 +11,7 @@ from textual.containers import Horizontal
 from textual.widgets import Footer, RichLog
 
 from wyraj.core.actions import Action, Ascend, Descend, Get, Move, Rest, Wait
-from wyraj.core.events import TalkedTo
+from wyraj.core.events import StashOpened, TalkedTo
 from wyraj.core.game import Game
 from wyraj.narration.context import ContextEnricher
 from wyraj.narration.engine import NarrationEngine, NarrationLine
@@ -27,6 +27,7 @@ from wyraj.ui.screens import (
     DeathScreen,
     ExamineScreen,
     InventoryScreen,
+    StashScreen,
     TradeScreen,
 )
 from wyraj.ui.widgets import CharacterPanel, MapView
@@ -98,6 +99,7 @@ class WyrajApp(App[None]):
         self.narration = NarrationEngine(self.game.bus, narrator, enricher=enricher.enrich)
         self.narration.add_sink(self._on_narration)
         self.game.bus.subscribe(TalkedTo, self._on_talked_to)
+        self.game.bus.subscribe(StashOpened, self._on_stash_opened)
 
     def compose(self) -> ComposeResult:
         with Horizontal(id="top"):
@@ -136,6 +138,18 @@ class WyrajApp(App[None]):
 
     def action_rest(self) -> None:
         self._play(Rest())
+
+    def _on_stash_opened(self, event: StashOpened) -> None:
+        if not self.is_running:
+            return
+
+        def on_result(action: Action | None) -> None:
+            if action is not None:
+                self._play(action)
+                # Re-open so multi-item stashing is one visit, not many bumps.
+                self.call_after_refresh(self.push_screen, StashScreen(self.game), on_result)
+
+        self.call_after_refresh(self.push_screen, StashScreen(self.game), on_result)
 
     def _on_talked_to(self, event: TalkedTo) -> None:
         if event.role == "trader" and self.is_running:

@@ -12,6 +12,7 @@ from wyraj.core.events import (
     EntityRef,
     EventBus,
     GameEvent,
+    HeirloomWielded,
     HungerChanged,
     ItemBought,
     ItemPickedUp,
@@ -26,6 +27,9 @@ from wyraj.core.events import (
     Outcome,
     Rested,
     StarvationHit,
+    StashDeposited,
+    StashUpgraded,
+    StashWithdrawn,
     StatusApplied,
     StatusExpired,
     StatusTick,
@@ -105,6 +109,14 @@ def fixture_event(event_key: str, subkey: str | None) -> GameEvent:
         return CoinsPicked(actor=PLAYER, amount=7, purse_total=21)
     if event_key == "coins_banked":
         return CoinsBanked(amount=21, wallet_total=140)
+    if event_key == "stash_deposited":
+        return StashDeposited(item=CIUPAGA)
+    if event_key == "stash_withdrawn":
+        return StashWithdrawn(item=CIUPAGA, heirloom=subkey == "heirloom")
+    if event_key == "stash_upgraded":
+        return StashUpgraded(slots=6, price=120)
+    if event_key == "heirloom_wielded":
+        return HeirloomWielded(actor=PLAYER, item=CIUPAGA)
     raise AssertionError(f"no fixture for pack rule {event_key}/{subkey}")
 
 

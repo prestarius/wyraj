@@ -29,6 +29,7 @@ from wyraj.core.events import (
     EntityDied,
     EntityRef,
     GameEvent,
+    HeirloomWielded,
     HungerChanged,
     ItemBought,
     ItemPickedUp,
@@ -42,6 +43,9 @@ from wyraj.core.events import (
     MoveBlocked,
     Rested,
     StarvationHit,
+    StashDeposited,
+    StashUpgraded,
+    StashWithdrawn,
     StatusApplied,
     StatusExpired,
     StatusTick,
@@ -112,6 +116,14 @@ def rule_key(event: GameEvent) -> RuleKey:
             return "coins_picked", None
         case CoinsBanked():
             return "coins_banked", None
+        case StashDeposited():
+            return "stash_deposited", None
+        case StashWithdrawn():
+            return "stash_withdrawn", "heirloom" if event.heirloom else "own"
+        case StashUpgraded():
+            return "stash_upgraded", None
+        case HeirloomWielded():
+            return "heirloom_wielded", None
         case _:
             name = type(event).__name__
             snake = re.sub(r"(?<!^)(?=[A-Z])", "_", name).lower()

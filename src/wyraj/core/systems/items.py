@@ -9,6 +9,7 @@ from wyraj.core.components import (
     Hunger,
     Inventory,
     Item,
+    ItemMemory,
     LightSource,
     OnLevel,
     Position,
@@ -19,6 +20,7 @@ from wyraj.core.components import (
 from wyraj.core.ecs import Entity, World
 from wyraj.core.events import (
     EventBus,
+    HeirloomWielded,
     HungerChanged,
     ItemPickedUp,
     ItemUsed,
@@ -99,6 +101,11 @@ def use_item(world: World, bus: EventBus, actor: Entity, item: Entity) -> bool:
 def wield(world: World, bus: EventBus, actor: Entity, item: Entity) -> None:
     world.add(actor, Wielding(item=item))
     bus.publish(ItemWielded(actor=ref_for(world, actor), item=ref_for(world, item)))
+    memory = world.get(item, ItemMemory)
+    if memory is not None:
+        # The blade remembers — once per withdrawal.
+        world.remove(item, ItemMemory)
+        bus.publish(HeirloomWielded(actor=ref_for(world, actor), item=ref_for(world, item)))
 
 
 def wear(world: World, bus: EventBus, actor: Entity, item: Entity) -> None:
