@@ -9,7 +9,7 @@ Each story lists a **Verify** step — the story is done when it passes.
 
 ---
 
-## Epic 1 — M0: Walking Skeleton
+## Epic 1 — M0: Walking Skeleton — **DONE 2026-08-14 (v0.0-m0)**
 
 Goal: `uv run wyraj --seed 42` is a completable-by-dying game; golden-run test replays it; CI green.
 
@@ -61,7 +61,7 @@ Goal: `uv run wyraj --seed 42` is a completable-by-dying game; golden-run test r
 
 ---
 
-## Epic 2 — M1: It Reads Like a Story
+## Epic 2 — M1: It Reads Like a Story — **DONE 2026-08-14 (v0.1-m1)**
 
 ### US 2.1 — ContextEnricher
 - 2.1.1 — HP bands (healthy/bloodied/dying), light/darkness, visibility ("something unseen")
@@ -92,7 +92,7 @@ Goal: `uv run wyraj --seed 42` is a completable-by-dying game; golden-run test r
 
 ---
 
-## Epic 3 — M2: Depth & Danger *(stories only — break down at milestone start)*
+## Epic 3 — M2: Depth & Danger — **DONE 2026-08-14 (v0.2-m2)**
 
 - US 3.1 — Multi-level descent: kurhany BSP crypts, stairs, in-run level persistence
 - US 3.2 — Status effects (bleeding, fear, poison, blessing) + lighting/light sources
@@ -100,7 +100,7 @@ Goal: `uv run wyraj --seed 42` is a completable-by-dying game; golden-run test r
 - US 3.4 — Loot tables, equipment slots, AI behaviors (pack wolves, ambusher strzyga, fleeing licho)
 - US 3.5 — Story hooks v1 (3 hook types per biome)
 
-## Epic 4 — M3: Public Release Cut
+## Epic 4 — M3: Public Release Cut — **DONE 2026-08-15 (v0.3-m3)**
 
 - US 4.1 — Bagna biome + village hub (rest, trade v0, rumor lines)
 - US 4.2 — Character creation (Wygnaniec / Zielarka / Najemnik)
@@ -108,7 +108,7 @@ Goal: `uv run wyraj --seed 42` is a completable-by-dying game; golden-run test r
 - ~~US 4.4~~ — **DONE** docs polish (screenshot, CONTENT/NARRATION/ARCHITECTURE), CoC, issue templates. **Publish step awaits Prestarius: create GitHub repo + push. (No PyPI release — decided 2026-08-15.)**
 - ~~US 4.5~~ — **DONE** (2026-08-15): AGPL-3.0 `LICENSE`, CC-BY-SA 4.0 `data/LICENSE`, `CLA.md`, CONTRIBUTING flow
 
-## Epic 5 — M4: Polski
+## Epic 5 — M4: Polski — **DONE 2026-08-15 (v0.4-m4)**
 
 - US 5.1 — PL narration packs authored natively; case-resolution exercised for real
 - US 5.2 — `--lang pl` + UI catalog PL
@@ -149,8 +149,8 @@ Deviation note: intro content lives under `data/intro/{en,pl}/` rather than `dat
 | # | Decision | Needed by | Spec recommendation |
 |---|---|---|---|
 | 2 | ~~License~~ — **RESOLVED 2026-08-14: AGPL-3.0 (code) + CC-BY-SA (data), with CLA** (US 4.5) | M3 publish | — |
-| 3 | Overworld vs pure descent | post-M5 | descent + hub for now |
-| 4 | Fear/mood: mechanic vs narration-only | M3 | narration-only until M3 |
+| 3 | Overworld vs pure descent | post-M5 | **still open** — descent + hub shipped |
+| 4 | Fear/mood | — | shipped as a status effect (bies) + narration tags; no separate meter |
 | 6 | M6: feather consumed on interrupted channel? | US 7.6 | spec default: consumed (harsh) |
 | 7 | M6: heirloom item wear/curse risk | US 7.3 | spec default: dormant (`meta.item_wear: false`) |
 | 8 | M6: dziad gambling minigame | US 7.5 | spec default: defer (flag off) — likely M7 |

@@ -9,52 +9,80 @@ leszy, strzyga, utopiec, bies, licho.
 
 ![Wyraj screenshot](docs/screenshot.svg)
 
+**Status:** pre-alpha. Milestones M0–M6 plus the intro ("Próg") are
+complete: the full loop — village, forest, marsh, three crypt levels,
+death, and what survives it — is playable in English and Polish.
+
 ## What makes it different
 
-- **Read the log like a story.** Events carry facts; a template narration
-  engine with context tags (wounds, darkness, recency) composes each turn
-  into a paragraph of prose. Meet a strzyga and you'll know it.
-- **Slavic folklore played straight** — bestiary, remedies (odwar,
-  gromnica, sól święcona), story hooks, and village rumors, all data-driven
-  YAML.
-- **A world with a shape:** the wieś (rest, barter, rumors) → the puszcza →
-  the bagna, where utopce swim → three levels of kurhany crypts, dark
-  unless your thunder-candle burns.
-- **Deterministic to the bone.** Same seed, same run — golden-transcript
-  tested. Saves restore RNG streams bit-exactly and are consumed on load;
-  permadeath writes you a morgue file.
-- **Powroty: what was carried to Wyraj comes back.** Everything on the
-  body is lost — but the skrzynia keeps its heirlooms, silver banks in
-  the wieś, the codex remembers what killed you, an uncanny dziad in the
-  depths remembers *you*, and some deaths unlock new beginnings.
+- **Read the log like a story.** Events carry facts; a deterministic
+  template engine with context tags (wounds, darkness, recency) composes
+  each turn into one paragraph of prose. Meeting a strzyga is an *event*:
+  "Lamplight eyes catch yours through the branches. A strzyga — and she
+  has already counted your nights."
+- **Slavic folklore played straight.** Bestiary with per-creature
+  folklore and weaknesses, folk remedies (odwar, gromnica, sól święcona),
+  story hooks, village rumors, shrines of Perun and Weles — all
+  data-driven YAML under `data/`.
+- **A world with a shape.** The wieś (rest, trade, the skrzynia) → the
+  puszcza → the bagna, where utopce swim → three kurhany crypt levels,
+  dark unless your thunder-candle burns. Somewhere below, a wandering
+  dziad sells at cruel prices and remembers you across deaths.
+- **Permadeath with heirlooms — "Powroty".** Everything on the body is
+  lost, always. But the chest keeps what you stored, silver banks in the
+  village, the codex keeps what your deaths taught you, and some deaths
+  unlock new origins ("die to the strzyga three times…"). Carry-over is
+  heirlooms, not a savings account — a 50-run simulation enforces it.
+- **Crane flight.** No teleports: hold a crane feather under open sky,
+  stand still for six turns while nothing watches, and a wedge of birds
+  carries you home. In the crypts, only where the ceiling has collapsed.
+- **An intro worth reading.** Title screen under drifting cranes, a paged
+  typewriter prologue that differs by origin, and a whisper system that
+  teaches the game diegetically — one dim aside per first encounter,
+  once per profile, and never a tutorial popup.
 - **Fully bilingual.** `--lang pl` switches to natively authored Polish
   narration — real case declension (*strzygę, strzygą, strzydze*) via
   per-noun form tables, never machine-mapped from English.
+- **Deterministic to the bone.** Same seed + same meta-state + same
+  inputs = same run, golden-transcript tested. Saves restore RNG streams
+  bit-exactly and are consumed on load.
+- **Optional AI narrator.** `--narrator llm` lets a local Ollama model
+  rephrase the template prose under a strict fact-grounding contract,
+  falling back to templates on any timeout. Off by default; the game is
+  fully playable offline.
 
 ## Play
 
 ```sh
 uv sync
 uv run wyraj                 # title screen: new journey, continue, codex, morgue
-uv run wyraj --seed 42       # deterministic fresh run
+uv run wyraj --seed 42       # skip the ceremony: straight into a seeded run
+uv run wyraj --lang pl       # cała narracja po polsku
 uv run wyraj --origin zielarka
-uv run wyraj --lang pl        # cała narracja po polsku
 uv run wyraj --history       # your past deaths, remembered
 uv run wyraj --ascii         # CP437-safe glyphs
 uv run wyraj --portrait half # halfblock portrait (default: box-drawing)
-uv run wyraj --narrator llm  # optional local-LLM narration (Ollama; off by default)
+uv run wyraj --narrator llm  # optional local-LLM narration (Ollama)
 ```
 
-Keys: `hjkl`/`yubn`/arrows move (bump to attack — or to talk, in the
-village), `.` wait, `g` get, `i` inventory, `x` examine, `c` codex,
-`>`/`<` stairs, `r` rest (village), `s` save+quit, `q` quit.
+**Keys:** `hjkl`/`yubn`/arrows move (bump a creature to strike it — or a
+villager, to talk), `.` wait, `g` gather, `i` pack, `x` examine,
+`c` codex, `>`/`<` stairs, `r` rest (village), `?` help, `s` save+quit,
+`q` quit.
 
-Config file: `~/.wyraj/config.yml` (`ascii`, `portrait`, `origin`, `lang`, `narrator`, `llm`).
+**Your files** (all under `~/.wyraj/`, override with `WYRAJ_HOME`):
+
+| File | What it is |
+|---|---|
+| `save.json.gz` | the single run save — consumed on load, deleted on death |
+| `meta.yml` | what survives death: stash, silver, codex, dziad memory, unlocks. Human-editable by design; edits are flagged, never punished |
+| `history.db`, `morgue/` | every run, remembered |
+| `config.yml` | `ascii`, `portrait`, `origin`, `lang`, `narrator`, `llm`, `hints`, `text_speed` |
 
 ## Develop
 
 ```sh
-uv run pytest              # tests (incl. golden-run transcript)
+uv run pytest              # 200+ tests incl. golden transcript & 50-run meta sim
 uv run ruff check .        # lint
 uv run mypy                # strict on core/ and narration/
 ```
@@ -64,9 +92,10 @@ Docs: [architecture](docs/ARCHITECTURE.md) ·
 [authoring narration](docs/NARRATION.md) ·
 [contributing](CONTRIBUTING.md)
 
-Full design spec: `docs/WYRAJ_PROJECT.md`; roadmap:
-`docs/IMPLEMENTATION_PLAN.md`; meta-progression spec:
-`docs/WYRAJ_M6_POWROTY.md`.
+Design specs: `docs/WYRAJ_PROJECT.md` (core game),
+`docs/WYRAJ_M6_POWROTY.md` (meta-progression),
+`docs/WYRAJ_PROG_SPEC.md` (intro & onboarding);
+roadmap and status: `docs/IMPLEMENTATION_PLAN.md`.
 
 ## License
 

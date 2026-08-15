@@ -43,8 +43,17 @@ back to a `default` subkey, then to a bare rule.
 | `light_extinguished` | —                                              |
 | `lore_discovered`| the creature/hook key (e.g. `strzyga`), or `default` |
 | `level_changed`  | `down`, `up`                                       |
-| `talked_to`      | `innkeeper`, `trader`, `gossip` (rumor pool!)      |
-| `rested` / `item_traded` | —                                          |
+| `talked_to`      | `innkeeper`, `trader`, `gossip` (rumor pool!), `dziad_wedrowny` |
+| `rested`         | —                                                  |
+| `item_bought` / `item_sold` | —                                       |
+| `coins_picked` / `coins_banked` | —                                   |
+| `stash_deposited` / `stash_upgraded` | —                              |
+| `stash_withdrawn`| `own`, `heirloom`                                  |
+| `heirloom_wielded` / `dziad_recognized` | —                           |
+| `crane_summon_started/completed` / `crane_return` | —                 |
+| `crane_summon_interrupted` | `moved`, `damage`                        |
+| `crane_refused`  | `watched`, `no_sky`, `in_village`                  |
+| `shrine_visited` / `offering_made` | `perun`, `weles`                 |
 
 ## Context tags
 
@@ -88,6 +97,13 @@ template narrator in `LLMNarrator` (`narration/llm.py`). Contract:
   log at the end of a run.
 - Golden runs and all tests use templates only — the LLM is garnish, and
   the game is fully playable offline without it.
+
+## What is *not* a grammar pack
+
+Szept hints, the prologue, title taglines, and the help page live under
+`data/intro/` with their own loaders — they are UI/onboarding content,
+not event narration, and the PL/EN parity test does not govern them
+(their own schema tests do). UI chrome strings live in `data/locale/`.
 
 ## Rules of the house
 
