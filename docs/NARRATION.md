@@ -73,6 +73,22 @@ strzyga:
 
 The player's forms are built in ("you"/"your", no article).
 
+## The optional LLM narrator (M5)
+
+`--narrator llm` (or `narrator: llm` in `~/.wyraj/config.yml`) wraps the
+template narrator in `LLMNarrator` (`narration/llm.py`). Contract:
+
+- The deterministic template paragraph is composed first and sent as the
+  DRAFT with the raw event facts; the model may only rephrase, never invent.
+- Strict timeout (`llm.timeout`, default 2.5 s); any error, timeout, or
+  empty reply falls back to the template text. Output capped at 60 words.
+- Backends: `llm.backend: ollama` (default, local, `llm.model`, `llm.url`)
+  or `openrouter` (needs `OPENROUTER_API_KEY`).
+- Per-run stats (turns narrated, fallbacks, average latency) print to the
+  log at the end of a run.
+- Golden runs and all tests use templates only — the LLM is garnish, and
+  the game is fully playable offline without it.
+
 ## Rules of the house
 
 - Every entry must render against test fixtures with no unresolved slots —

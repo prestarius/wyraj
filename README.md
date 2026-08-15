@@ -38,13 +38,14 @@ uv run wyraj --lang pl        # cała narracja po polsku
 uv run wyraj --history       # your past deaths, remembered
 uv run wyraj --ascii         # CP437-safe glyphs
 uv run wyraj --portrait half # halfblock portrait (default: box-drawing)
+uv run wyraj --narrator llm  # optional local-LLM narration (Ollama; off by default)
 ```
 
 Keys: `hjkl`/`yubn`/arrows move (bump to attack — or to talk, in the
 village), `.` wait, `g` get, `i` inventory, `x` examine, `c` codex,
 `>`/`<` stairs, `r` rest (village), `s` save+quit, `q` quit.
 
-Config file: `~/.wyraj/config.yml` (`ascii`, `portrait`, `origin`, `lang`).
+Config file: `~/.wyraj/config.yml` (`ascii`, `portrait`, `origin`, `lang`, `narrator`, `llm`).
 
 ## Develop
 
@@ -60,8 +61,8 @@ Docs: [architecture](docs/ARCHITECTURE.md) ·
 [contributing](CONTRIBUTING.md)
 
 Full design spec: `docs/WYRAJ_PROJECT.md`; roadmap:
-`docs/IMPLEMENTATION_PLAN.md`. Next milestone: **M5 optional AI narrator** (local LLM garnish; the game
-is fully playable offline without it).
+`docs/IMPLEMENTATION_PLAN.md`. Next milestone: **M6 "Powroty"** — light
+meta-progression (`docs/WYRAJ_M6_POWROTY.md`).
 
 ## License
 
