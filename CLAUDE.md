@@ -31,7 +31,7 @@ Python 3.12+, `uv`-managed, Textual TUI. English first; Polish is a first-class 
 - Work milestone by milestone (M0–M5 in the spec); **do not scaffold future milestones early**.
 - After M0, keep `main` playable; feature branches per system.
 - Prefer many small data files over clever engine features; when mechanics and narration quality conflict, narration wins.
-- **Ask Maciek before:** adding dependencies beyond spec §3, changing the event schema, or altering the repo layout.
+- **Ask Prestarius before:** adding dependencies beyond spec §3, changing the event schema, or altering the repo layout.
 - Conventional commits; update CHANGELOG per milestone.
 
 ## Testing strategy

@@ -103,7 +103,7 @@ class MapView(Static):
 
 
 class CharacterPanel(Static):
-    def __init__(self, game: Game, portrait_style: str = "half") -> None:
+    def __init__(self, game: Game, portrait_style: str = "box") -> None:
         super().__init__()
         self.game = game
         self.portrait_style = portrait_style

@@ -1,7 +1,7 @@
 # WYRAJ — Narrated Roguelike Project Specification
 
 > **Status:** Draft v0.1 — foundation spec for Claude Code execution
-> **Author:** Maciek (concept & architecture) / Claude (spec)
+> **Author:** Prestarius (concept & architecture) / Claude (spec)
 > **Visibility:** Private first → public GitHub release after M3
 > **Name:** *WYRAJ* — the Slavic otherworld where souls fly as birds and return in spring; fitting for a permadeath roguelike. Verified Aug 2026: GitHub near-clean (1 unrelated repo), PyPI `wyraj` free. Fallback if ever needed: *Zaswiaty* (0 collisions).
 
@@ -37,7 +37,7 @@ A **narrated roguelike**: ADOM-class systemic depth (procedural world, permadeat
 
 | Concern | Choice | Rationale |
 |---|---|---|
-| Language | Python 3.12+ | Maciek's primary; rapid iteration; Claude Code friendly |
+| Language | Python 3.12+ | Prestarius's primary; rapid iteration; Claude Code friendly |
 | Package/runner | `uv` (`uv run`, `uv sync`) | Established personal convention |
 | TUI framework | **Textual** (latest stable) | Actively maintained, MIT, CSS-like styling, widget system, reactive, testable (`Pilot`); verified Aug 2026 |
 | Rendering | Rich (via Textual) | Colors, styles, Unicode |
@@ -291,7 +291,7 @@ Each milestone = playable, tagged, demo-able.
 ### M4 — Polski
 - PL narration packs authored natively; case-resolution engine exercised for real.
 - `--lang pl`, UI catalog PL.
-- Blog post on stalonczyk.pl: "Grammar-aware narration engine for Polish in a roguelike" (this is genuinely novel content).
+- Blog post: "Grammar-aware narration engine for Polish in a roguelike" (this is genuinely novel content).
 
 ### M5 — AI Narrator (optional mode)
 - `LLMNarrator` behind config flag; Ollama-first, OpenRouter fallback.
@@ -315,10 +315,10 @@ Each milestone = playable, tagged, demo-able.
 - After M0, always keep `main` playable; feature branches per system.
 - Prefer many small data files over clever engine features (pillar 4).
 - When in doubt between mechanics vs. narration quality — narration wins (pillar 1).
-- Ask Maciek before: adding dependencies beyond §3, changing the event schema, altering repo layout.
+- Ask Prestarius before: adding dependencies beyond §3, changing the event schema, altering repo layout.
 - Conventional commits; CHANGELOG updated per milestone.
 
-## 13. Open Decisions (for Maciek)
+## 13. Open Decisions (for Prestarius)
 
 1. ~~**Final name**~~ — **RESOLVED: Wyraj** (GitHub/PyPI verified Aug 2026). Re-verify + register PyPI name just before M3 publish.
 2. **License** — MIT (max reach) vs AGPL (protect against closed forks). Recommendation: MIT for a portfolio flagship.

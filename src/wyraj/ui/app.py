@@ -65,7 +65,7 @@ class WyrajApp(App[None]):
         self,
         seed: int,
         use_ascii: bool = False,
-        portrait_style: str = "half",
+        portrait_style: str = "box",
         game: Game | None = None,
         origin: str = "wygnaniec",
     ) -> None:

@@ -2,12 +2,12 @@
 """Layered, state-reactive character portrait.
 
 Two prototype art directions for open decision #5 (spec §13):
-- "half" — halfblock "pixel" art
-- "box"  — box-drawing line art
+- "box"  — box-drawing line art (default; won decision #5)
+- "half" — halfblock "pixel" art (kept as an option)
 
 Both react to the same layers: base figure → weapon overlay → wound decals
-and an HP-band color wash. Data lives in these structures; once Maciek picks
-a direction, the winning style graduates to YAML layer files.
+and an HP-band color wash. Box-drawing won decision #5 and is the default;
+the halfblock prototype stays available. YAML layer files are a later cleanup.
 Switch at runtime with `wyraj --portrait box|half`.
 """
 
@@ -94,7 +94,7 @@ def _apply(lines: list[list[str]], patches: tuple[Patch, ...]) -> None:
 
 
 def render_portrait(style: str, band: str, weapon_key: str | None) -> Text:
-    art = STYLES.get(style, HALFBLOCK)
+    art = STYLES.get(style, BOXDRAW)
     width = max(len(line) for line in art.lines)
     grid = [list(line.ljust(width)) for line in art.lines]
     if weapon_key is not None:

@@ -36,7 +36,7 @@ uv run wyraj --seed 42       # deterministic fresh run
 uv run wyraj --origin zielarka
 uv run wyraj --history       # your past deaths, remembered
 uv run wyraj --ascii         # CP437-safe glyphs
-uv run wyraj --portrait box  # box-drawing portrait (default: halfblock)
+uv run wyraj --portrait half # halfblock portrait (default: box-drawing)
 ```
 
 Keys: `hjkl`/`yubn`/arrows move (bump to attack — or to talk, in the

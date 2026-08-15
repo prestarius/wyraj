@@ -1,7 +1,7 @@
 # Wyraj Individual Contributor License Agreement
 
 Thank you for your interest in contributing to Wyraj ("the Project"),
-maintained by Maciej Stalonczyk ("the Maintainer").
+maintained by Prestarius ("the Maintainer").
 
 By submitting a contribution (code, content, documentation, or other
 material) to the Project, you accept the following terms:

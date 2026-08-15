@@ -21,8 +21,8 @@ def main() -> None:
     parser.add_argument(
         "--portrait",
         choices=["half", "box"],
-        default="half",
-        help="portrait art direction: halfblock pixels or box-drawing lines",
+        default=None,
+        help="portrait art direction: box-drawing lines (default) or halfblock pixels",
     )
     parser.add_argument(
         "--origin",
@@ -51,8 +51,10 @@ def main() -> None:
     config = _load_config_safely()
     if config.get("ascii") and not args.ascii:
         args.ascii = True
-    if args.portrait == "half" and config.get("portrait") in ("half", "box"):
-        args.portrait = config["portrait"]
+    if args.portrait is None:
+        args.portrait = (
+            config.get("portrait") if config.get("portrait") in ("half", "box") else "box"
+        )
     if args.origin is None and config.get("origin"):
         args.origin = config["origin"]
 
