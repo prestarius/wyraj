@@ -129,6 +129,14 @@ class LightExtinguished(GameEvent):
 
 
 @dataclass(frozen=True)
+class MetaTransaction(GameEvent):
+    """A defined mutation of the persistent meta-state (M6 spec §2.3)."""
+
+    kind: str  # e.g. "bank", "stash_deposit", "purchase", "offering", "death"
+    detail: str = ""
+
+
+@dataclass(frozen=True)
 class TalkedTo(GameEvent):
     villager: EntityRef
     role: str
