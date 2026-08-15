@@ -30,10 +30,35 @@ class Rest(Action):
 
 
 @dataclass(frozen=True)
-class TradeItems(Action):
-    trader: int  # trader entity
-    give: int  # item entity from the player's inventory
-    take: int  # item entity from the trader's stock
+class BuyItem(Action):
+    trader: int  # merchant entity
+    item: int  # item entity from the merchant's stock
+
+
+@dataclass(frozen=True)
+class SellItem(Action):
+    trader: int  # merchant entity
+    item: int  # item entity from the player's inventory
+
+
+@dataclass(frozen=True)
+class DepositItem(Action):
+    item: int  # item entity from the player's inventory
+
+
+@dataclass(frozen=True)
+class WithdrawStash(Action):
+    index: int  # slot index in the meta stash
+
+
+@dataclass(frozen=True)
+class UpgradeStash(Action):
+    pass
+
+
+@dataclass(frozen=True)
+class MakeOffering(Action):
+    god: str  # "perun" | "weles"
 
 
 @dataclass(frozen=True)

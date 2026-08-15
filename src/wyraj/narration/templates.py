@@ -24,12 +24,22 @@ from pydantic import AliasChoices, BaseModel, Field
 from wyraj.content.paths import data_dir
 from wyraj.core.events import (
     AttackResolved,
+    CoinsBanked,
+    CoinsPicked,
+    CraneRefused,
+    CraneReturn,
+    CraneSummonCompleted,
+    CraneSummonInterrupted,
+    CraneSummonStarted,
+    DziadRecognized,
     EntityDied,
     EntityRef,
     GameEvent,
+    HeirloomWielded,
     HungerChanged,
+    ItemBought,
     ItemPickedUp,
-    ItemTraded,
+    ItemSold,
     ItemUsed,
     ItemWielded,
     ItemWorn,
@@ -37,8 +47,13 @@ from wyraj.core.events import (
     LightExtinguished,
     LoreDiscovered,
     MoveBlocked,
+    OfferingMade,
     Rested,
+    ShrineVisited,
     StarvationHit,
+    StashDeposited,
+    StashUpgraded,
+    StashWithdrawn,
     StatusApplied,
     StatusExpired,
     StatusTick,
@@ -101,8 +116,38 @@ def rule_key(event: GameEvent) -> RuleKey:
             return "talked_to", event.role
         case Rested():
             return "rested", None
-        case ItemTraded():
-            return "item_traded", None
+        case ItemBought():
+            return "item_bought", None
+        case ItemSold():
+            return "item_sold", None
+        case CoinsPicked():
+            return "coins_picked", None
+        case CoinsBanked():
+            return "coins_banked", None
+        case StashDeposited():
+            return "stash_deposited", None
+        case StashWithdrawn():
+            return "stash_withdrawn", "heirloom" if event.heirloom else "own"
+        case StashUpgraded():
+            return "stash_upgraded", None
+        case HeirloomWielded():
+            return "heirloom_wielded", None
+        case DziadRecognized():
+            return "dziad_recognized", None
+        case CraneSummonStarted():
+            return "crane_summon_started", None
+        case CraneSummonInterrupted():
+            return "crane_summon_interrupted", event.reason
+        case CraneSummonCompleted():
+            return "crane_summon_completed", None
+        case CraneRefused():
+            return "crane_refused", event.reason
+        case CraneReturn():
+            return "crane_return", None
+        case ShrineVisited():
+            return "shrine_visited", event.god
+        case OfferingMade():
+            return "offering_made", event.god
         case _:
             name = type(event).__name__
             snake = re.sub(r"(?<!^)(?=[A-Z])", "_", name).lower()

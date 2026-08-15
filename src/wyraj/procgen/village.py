@@ -10,7 +10,8 @@ from wyraj.core.map import GameMap, Tile
 
 # '#' hut wall, '.' ground, '>' path into the puszcza,
 # 'K' karczmarka (innkeeper), 'T' handlarz (trader), 'G' dziad (gossip),
-# '@' player start. Letters stand on floor tiles.
+# 'S' skrzynia (stash chest), 'P' żerdź (crane perch),
+# 'R' Perun shrine, 'W' Weles shrine, '@' player start.
 _TEMPLATE = """
 ##############################
 #............................#
@@ -19,12 +20,12 @@ _TEMPLATE = """
 #..#.K.#...#.T.#....#...#....#
 #..#...#...#...#....#.G.#....#
 #..##.##...##.##....##.##....#
-#............................#
-#............................#
+#..........................R#
+#..........................W#
 #.............@..............#
-#............................#
+#........................P...#
 #...######...................#
-#...#....#...................#
+#...#.S..#...................#
 #...#....#..................>#
 #...##.###...................#
 #............................#
@@ -37,9 +38,11 @@ class VillageLayout:
     map: GameMap
     player_start: tuple[int, int]
     npc_posts: tuple[tuple[str, int, int], ...]  # (role, x, y)
+    special_posts: tuple[tuple[str, int, int], ...] = ()  # (kind, x, y)
 
 
 _ROLES = {"K": "innkeeper", "T": "trader", "G": "gossip"}
+_SPECIALS = {"S": "skrzynia", "P": "perch", "R": "shrine_perun", "W": "shrine_weles"}
 
 
 def generate_village() -> VillageLayout:
@@ -48,6 +51,7 @@ def generate_village() -> VillageLayout:
     tiles: list[list[Tile]] = []
     player_start = (1, 1)
     posts: list[tuple[str, int, int]] = []
+    specials: list[tuple[str, int, int]] = []
     for y, row in enumerate(rows):
         tile_row: list[Tile] = []
         for x in range(width):
@@ -62,9 +66,12 @@ def generate_village() -> VillageLayout:
                     player_start = (x, y)
                 elif ch in _ROLES:
                     posts.append((_ROLES[ch], x, y))
+                elif ch in _SPECIALS:
+                    specials.append((_SPECIALS[ch], x, y))
         tiles.append(tile_row)
     return VillageLayout(
         map=GameMap(tiles, biome="wies"),
         player_start=player_start,
         npc_posts=tuple(posts),
+        special_posts=tuple(specials),
     )

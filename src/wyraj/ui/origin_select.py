@@ -22,9 +22,12 @@ class OriginApp(App[str]):
     Screen { background: #0d0f0c; color: #b8b6a9; }
     """
 
-    def __init__(self, origins: dict[str, OriginDef]) -> None:
+    def __init__(self, origins: dict[str, OriginDef], unlocked: list[str] | None = None) -> None:
         super().__init__()
-        self.origins = [origins[k] for k in sorted(origins)]
+        allowed = set(unlocked or [])
+        self.origins = [
+            origins[k] for k in sorted(origins) if origins[k].unlock is None or k in allowed
+        ]
         self.index = 0
 
     def compose(self) -> ComposeResult:

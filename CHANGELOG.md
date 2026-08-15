@@ -2,6 +2,34 @@
 
 All notable changes to Wyraj. Format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.6-m6] — 2026-08-15 — Powroty (meta-progression)
+
+### Added
+- Meta-state (`~/.wyraj/meta.yml`): versioned, HMAC honesty flag (edits
+  load fine, get marked), unknown fields preserved, atomic writes,
+  `MetaTransaction` events at every defined mutation point.
+- Economy: denary carried in an on-body purse (lost with the body),
+  auto-banked in the wieś; lore-gated drops (beasts leave trophies, only
+  the drowned and the buried carry coins), burial hoards, coin shop
+  replacing barter, per-run village stock.
+- The skrzynia: one iron-bound chest whose contents survive death;
+  4→10 slot upgrades; heirlooms remember the hand that owned them.
+- Death integration: achievement counters, morgue meta summary, and
+  origins unlocked by deeds — Strzygobójca (die to her thrice) and
+  Dziadowy Uczeń (dziad reputation 5) — announced on the death screen.
+- The wandering dziad: pity-guaranteed crypt encounters, cruel prices
+  softened by persistent reputation, tiered stock, and recognition that
+  crosses deaths ("You again. Or… no. Someone *like* you.").
+- Crane flight: żurawie pióro starts a 6-turn channel (broken by damage
+  or movement, feather spent regardless), refused under watching eyes or
+  closed sky; kurhany gained collapsed-ceiling shafts; znamię + żerdź
+  make the round trip.
+- Shrines of Perun and Weles: offerings buy run-scoped favors only.
+- Codex knowledge tiers (glimpsed/studied/known) persisting across runs,
+  with trophy values and weakness hints at higher tiers.
+- 50-run shared-meta balance sim guarding the doctrine: heirlooms, not a
+  savings account.
+
 ## [0.5-m5] — 2026-08-15 — AI Narrator (optional)
 
 ### Added

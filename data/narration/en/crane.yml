@@ -1,0 +1,38 @@
+crane_summon_started:
+  - weight: 1
+    importance: high
+    en: "You raise the crane feather to the open sky and hold still. Far above, thin as a scratch on glass, a wedge of birds begins to turn."
+
+crane_summon_interrupted:
+  moved:
+    - weight: 1
+      importance: high
+      en: "You move, and the sky empties. The cranes do not come down for the restless — and the feather is ash on the wind."
+  damage:
+    - weight: 1
+      importance: high
+      en: "Pain breaks your stillness, and the wedge scatters like thrown grain. The feather is spent, and you are still here."
+
+crane_summon_completed:
+  - weight: 2
+    importance: high
+    en: "The cranes come down in a grey spiral, and the ground lets go of you. The world shrinks to a map of itself — and then there is smoke, thatch, the wieś. They set you down by the żerdź and are gone."
+  - weight: 1
+    importance: high
+    en: "Wings everywhere, cold air, the long fall upward. When you can breathe again you are standing at the perch, and somewhere behind you the dark keeps your mark."
+
+crane_refused:
+  watched:
+    - weight: 1
+      en: "The feather trembles and goes still. The cranes will not descend while something watches."
+  no_sky:
+    - weight: 1
+      en: "Stone above you, and stone above that. The feather needs open sky — find a shaft where the ceiling gave way."
+  in_village:
+    - weight: 1
+      en: "The cranes ignore you politely. You are already home."
+
+crane_return:
+  - weight: 1
+    importance: high
+    en: "The żerdź creaks; the wedge folds out of the clouds and takes you the way you came. The znamię burns cold for a moment as you land on it — then fades. The round trip is paid."

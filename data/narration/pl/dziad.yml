@@ -1,0 +1,16 @@
+talked_to:
+  dziad_wedrowny:
+    - weight: 2
+      pl: "Dziad siedzi na wozie, jakby czekał od rana. „Kupujesz? Sprzedajesz? Tu na dole, wędrowcze, tylko te dwie modlitwy bywają wysłuchane.”"
+    - weight: 2
+      pl: "„Głęboko jak na żywą duszę” — zauważa dziad, nie podnosząc wzroku. — „Na ceny jeszcze głębiej. Wszystko kosztuje więcej tak daleko od słońca.”"
+    - weight: 1
+      pl: "Nie pyta, jak tu trafiłeś. Ty nie pytasz, jak on. Wóz między wami to cała rozmowa."
+
+dziad_recognized:
+  - weight: 2
+    importance: high
+    pl: "Dziad mruży oczy i patrzy długo. „Znowu ty. Albo… nie. Ktoś *taki jak* ty.” Nie tłumaczy, a ty odkrywasz, że wcale nie chcesz, żeby tłumaczył."
+  - weight: 1
+    importance: high
+    pl: "„Ptaki przynoszą z powrotem te same twarze” — mówi dziad w przestrzeń, robiąc miejsce na wozie. — „Wyraj jest oszczędny z duszami, które polubił.”"

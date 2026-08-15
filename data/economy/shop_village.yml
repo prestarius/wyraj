@@ -1,0 +1,14 @@
+# Village trader stock, rolled once per run start.
+guaranteed:
+  - { item: chleb, count: 2 }
+  - { item: odwar, count: 1 }
+  - { item: gromnica, count: 1 }
+rolls:
+  - { item: sol_swiecona, chance: 60 }
+  - { item: suszone_mieso, chance: 60 }
+  - { item: toporek, chance: 40 }
+  - { item: wilcza_skora, chance: 40 }
+  - { item: kaftan, chance: 25 }
+  - { item: ciupaga, chance: 20 }
+  - { item: mocny_odwar, chance: 30 }
+  - { item: zurawie_pioro, chance: 45 }   # 0–1 per run (spec §6)

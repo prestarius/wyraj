@@ -15,6 +15,7 @@ bies:
   forms:
     en: { plural: "biesy" }
     pl: { mian: "bies", dop: "biesa", cel: "biesowi", bier: "biesa", narz: "biesem", miej: "biesie", plural: "biesy" }
+  weakness: "Fire and bread-smell unman it; it strikes wide when you hold a lit gromnica."
   description: >
     A crooked thing of the deep puszcza, neither beast nor man. The old
     people would not say its name after dark; they called it only "the one

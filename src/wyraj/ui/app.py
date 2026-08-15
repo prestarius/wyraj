@@ -11,7 +11,7 @@ from textual.containers import Horizontal
 from textual.widgets import Footer, RichLog
 
 from wyraj.core.actions import Action, Ascend, Descend, Get, Move, Rest, Wait
-from wyraj.core.events import TalkedTo
+from wyraj.core.events import ShrineVisited, StashOpened, TalkedTo
 from wyraj.core.game import Game
 from wyraj.narration.context import ContextEnricher
 from wyraj.narration.engine import NarrationEngine, NarrationLine
@@ -27,6 +27,8 @@ from wyraj.ui.screens import (
     DeathScreen,
     ExamineScreen,
     InventoryScreen,
+    ShrineScreen,
+    StashScreen,
     TradeScreen,
 )
 from wyraj.ui.widgets import CharacterPanel, MapView
@@ -98,6 +100,8 @@ class WyrajApp(App[None]):
         self.narration = NarrationEngine(self.game.bus, narrator, enricher=enricher.enrich)
         self.narration.add_sink(self._on_narration)
         self.game.bus.subscribe(TalkedTo, self._on_talked_to)
+        self.game.bus.subscribe(StashOpened, self._on_stash_opened)
+        self.game.bus.subscribe(ShrineVisited, self._on_shrine_visited)
 
     def compose(self) -> ComposeResult:
         with Horizontal(id="top"):
@@ -137,8 +141,30 @@ class WyrajApp(App[None]):
     def action_rest(self) -> None:
         self._play(Rest())
 
+    def _on_stash_opened(self, event: StashOpened) -> None:
+        if not self.is_running:
+            return
+
+        def on_result(action: Action | None) -> None:
+            if action is not None:
+                self._play(action)
+                # Re-open so multi-item stashing is one visit, not many bumps.
+                self.call_after_refresh(self.push_screen, StashScreen(self.game), on_result)
+
+        self.call_after_refresh(self.push_screen, StashScreen(self.game), on_result)
+
+    def _on_shrine_visited(self, event: ShrineVisited) -> None:
+        if not self.is_running:
+            return
+
+        def on_result(action: Action | None) -> None:
+            if action is not None:
+                self._play(action)
+
+        self.call_after_refresh(self.push_screen, ShrineScreen(self.game, event.god), on_result)
+
     def _on_talked_to(self, event: TalkedTo) -> None:
-        if event.role == "trader" and self.is_running:
+        if event.role in ("trader", "dziad_wedrowny") and self.is_running:
 
             def on_result(action: Action | None) -> None:
                 if action is not None:
@@ -178,6 +204,7 @@ class WyrajApp(App[None]):
                 self.query_one(RichLog).write(
                     Text(self.narration.narrator.stats.summary(), style="grey42")
                 )
+            new_origins = self.game.apply_death_to_meta()
             now = datetime.now()
             morgue_path = write_morgue(self.game, when=now)
             record_run(
@@ -188,11 +215,13 @@ class WyrajApp(App[None]):
                 cause=self.game.death_cause or "lost to the forest",
                 when=now,
             )
+            unlock_names = [self.game.origins_catalog[k].name for k in new_origins]
             self.push_screen(
                 DeathScreen(
                     seed=self.game.seed,
                     turn=self.game.turn,
                     cause=self.game.death_cause,
                     morgue_path=str(morgue_path),
+                    unlocked=unlock_names,
                 )
             )

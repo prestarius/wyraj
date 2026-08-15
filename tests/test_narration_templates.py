@@ -6,13 +6,23 @@ from wyraj.content.bestiary import load_bestiary
 from wyraj.content.items import load_items
 from wyraj.core.events import (
     AttackResolved,
+    CoinsBanked,
+    CoinsPicked,
+    CraneRefused,
+    CraneReturn,
+    CraneSummonCompleted,
+    CraneSummonInterrupted,
+    CraneSummonStarted,
+    DziadRecognized,
     EntityDied,
     EntityRef,
     EventBus,
     GameEvent,
+    HeirloomWielded,
     HungerChanged,
+    ItemBought,
     ItemPickedUp,
-    ItemTraded,
+    ItemSold,
     ItemUsed,
     ItemWielded,
     ItemWorn,
@@ -20,9 +30,14 @@ from wyraj.core.events import (
     LightExtinguished,
     LoreDiscovered,
     MoveBlocked,
+    OfferingMade,
     Outcome,
     Rested,
+    ShrineVisited,
     StarvationHit,
+    StashDeposited,
+    StashUpgraded,
+    StashWithdrawn,
     StatusApplied,
     StatusExpired,
     StatusTick,
@@ -94,8 +109,42 @@ def fixture_event(event_key: str, subkey: str | None) -> GameEvent:
         return TalkedTo(villager=villager, role=subkey)
     if event_key == "rested":
         return Rested(actor=PLAYER)
-    if event_key == "item_traded":
-        return ItemTraded(actor=PLAYER, gave=CIUPAGA, got=ODWAR)
+    if event_key == "item_bought":
+        return ItemBought(actor=PLAYER, item=ODWAR, price=18)
+    if event_key == "item_sold":
+        return ItemSold(actor=PLAYER, item=CIUPAGA, price=28)
+    if event_key == "coins_picked":
+        return CoinsPicked(actor=PLAYER, amount=7, purse_total=21)
+    if event_key == "coins_banked":
+        return CoinsBanked(amount=21, wallet_total=140)
+    if event_key == "stash_deposited":
+        return StashDeposited(item=CIUPAGA)
+    if event_key == "stash_withdrawn":
+        return StashWithdrawn(item=CIUPAGA, heirloom=subkey == "heirloom")
+    if event_key == "stash_upgraded":
+        return StashUpgraded(slots=6, price=120)
+    if event_key == "heirloom_wielded":
+        return HeirloomWielded(actor=PLAYER, item=CIUPAGA)
+    if event_key == "dziad_recognized":
+        return DziadRecognized(reputation=4)
+    if event_key == "crane_summon_started":
+        return CraneSummonStarted(actor=PLAYER, turns=6)
+    if event_key == "crane_summon_interrupted":
+        assert subkey is not None
+        return CraneSummonInterrupted(actor=PLAYER, reason=subkey)
+    if event_key == "crane_summon_completed":
+        return CraneSummonCompleted(actor=PLAYER, from_depth=4)
+    if event_key == "crane_refused":
+        assert subkey is not None
+        return CraneRefused(actor=PLAYER, reason=subkey)
+    if event_key == "crane_return":
+        return CraneReturn(actor=PLAYER, depth=4)
+    if event_key == "shrine_visited":
+        assert subkey is not None
+        return ShrineVisited(actor=PLAYER, god=subkey)
+    if event_key == "offering_made":
+        assert subkey is not None
+        return OfferingMade(actor=PLAYER, god=subkey, cost=15)
     raise AssertionError(f"no fixture for pack rule {event_key}/{subkey}")
 
 

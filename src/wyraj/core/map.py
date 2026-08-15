@@ -9,11 +9,12 @@ class Tile(Enum):
     WALL = "wall"  # dense trees / barrow stone / reed thicket, per biome
     FLOOR = "floor"
     WATER = "water"  # open marsh pools: see over, don't walk in (swimmers may)
+    SHAFT = "shaft"  # collapsed crypt ceiling: floor with open sky above
     STAIRS_DOWN = "stairs_down"
     STAIRS_UP = "stairs_up"
 
 
-WALKABLE = {Tile.FLOOR, Tile.STAIRS_DOWN, Tile.STAIRS_UP}
+WALKABLE = {Tile.FLOOR, Tile.SHAFT, Tile.STAIRS_DOWN, Tile.STAIRS_UP}
 
 
 class GameMap:

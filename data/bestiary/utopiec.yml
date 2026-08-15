@@ -16,6 +16,7 @@ utopiec:
   forms:
     en: { article: "an", plural: "utopce" }
     pl: { mian: "utopiec", dop: "utopca", cel: "utopcowi", bier: "utopca", narz: "utopcem", miej: "utopcu", plural: "utopce" }
+  weakness: "On dry moss it is slow — fight it two steps from the waterline, never in the shallows."
   description: >
     The soul of a drowned man, swollen and green-slick, that pulls the
     living down to keep it company. It is strongest in the water and it

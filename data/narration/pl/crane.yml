@@ -1,0 +1,38 @@
+crane_summon_started:
+  - weight: 1
+    importance: high
+    pl: "Unosisz żurawie pióro ku otwartemu niebu i nieruchomiejesz. Wysoko, cienki jak rysa na szkle, klucz ptaków zaczyna zawracać."
+
+crane_summon_interrupted:
+  moved:
+    - weight: 1
+      importance: high
+      pl: "Poruszasz się i niebo pustoszeje. Żurawie nie schodzą po niespokojnych — a pióro jest już popiołem na wietrze."
+  damage:
+    - weight: 1
+      importance: high
+      pl: "Ból łamie twój bezruch i klucz rozsypuje się jak rzucone ziarno. Pióro spalone, a ty wciąż tutaj."
+
+crane_summon_completed:
+  - weight: 2
+    importance: high
+    pl: "Żurawie schodzą szarą spiralą i ziemia cię puszcza. Świat kurczy się do własnej mapy — a potem jest dym, strzecha, wieś. Stawiają cię przy żerdzi i już ich nie ma."
+  - weight: 1
+    importance: high
+    pl: "Skrzydła wszędzie, zimne powietrze, długi upadek w górę. Gdy znów możesz oddychać, stoisz przy żerdzi, a gdzieś za tobą ciemność pilnuje twojego znamienia."
+
+crane_refused:
+  watched:
+    - weight: 1
+      pl: "Pióro drży i nieruchomieje. Żurawie nie zejdą, póki coś patrzy."
+  no_sky:
+    - weight: 1
+      pl: "Kamień nad tobą i kamień nad kamieniem. Pióro potrzebuje otwartego nieba — znajdź szyb, gdzie strop się zapadł."
+  in_village:
+    - weight: 1
+      pl: "Żurawie uprzejmie cię ignorują. Jesteś już w domu."
+
+crane_return:
+  - weight: 1
+    importance: high
+    pl: "Żerdź skrzypi; klucz wyłania się z chmur i niesie cię tam, skąd przyszedłeś. Znamię przez chwilę parzy zimnem, gdy na nim lądujesz — potem gaśnie. Podróż w obie strony opłacona."

@@ -22,6 +22,9 @@ class OriginDef(BaseModel):
     title_pl: str = ""
     intro_pl: str = ""
     description_pl: str = ""
+    # None = always available; else {"type": "achievement"|"dziad_reputation",
+    # "key": <achievement name>, "threshold": int}
+    unlock: dict[str, str | int] | None = None
 
     def title_for(self, lang: str) -> str:
         return self.title_pl if lang == "pl" and self.title_pl else self.title

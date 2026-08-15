@@ -14,6 +14,7 @@ wilk:
   forms:
     en: { plural: "wilki" }
     pl: { mian: "wilk", dop: "wilka", cel: "wilkowi", bier: "wilka", narz: "wilkiem", miej: "wilku", plural: "wilki" }
+  weakness: "One wilk is a coward; kill the packmates beside you and the flanking bites stop landing."
   description: >
     A forest wolf, lean with the hungry months. One alone watches and
     follows and weighs you; the trouble is that a wilk is rarely alone.

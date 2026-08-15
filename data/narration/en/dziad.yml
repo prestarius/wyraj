@@ -1,0 +1,16 @@
+talked_to:
+  dziad_wedrowny:
+    - weight: 2
+      en: "The dziad is sitting on his cart as if he had been waiting since morning. \"Buying? Selling? Down here, wanderer, those are the only two prayers that get answered.\""
+    - weight: 2
+      en: "\"Deep for a living soul,\" the dziad observes, not looking up. \"Deeper for the prices. Everything costs more this far from the sun.\""
+    - weight: 1
+      en: "He does not ask how you got here. You do not ask how he did. The cart between you is the whole conversation."
+
+dziad_recognized:
+  - weight: 2
+    importance: high
+    en: "The dziad squints at you for a long moment. \"You again. Or… no. Someone *like* you.\" He does not explain, and you find you do not want him to."
+  - weight: 1
+    importance: high
+    en: "\"The birds bring the same faces back,\" the dziad says to no one in particular, clearing a space on the cart. \"Wyraj is thrifty with souls it likes.\""

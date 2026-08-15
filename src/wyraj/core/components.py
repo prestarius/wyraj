@@ -51,6 +51,52 @@ class AI:
 
 
 @dataclass(frozen=True)
+class Purse:
+    """Coins on the body — lost with it (M6: banking happens in the wieś)."""
+
+    denary: int = 0
+
+
+@dataclass(frozen=True)
+class CoinPile:
+    amount: int
+
+
+@dataclass(frozen=True)
+class ItemMemory:
+    """Heirloom trace: the run this item last belonged to."""
+
+    memory_tag: str
+
+
+@dataclass(frozen=True)
+class Channeling:
+    """Calling the cranes down: interruptible, turn-counted."""
+
+    turns_left: int
+
+
+@dataclass(frozen=True)
+class Znamie:
+    """The mark the cranes leave where they lifted you."""
+
+
+@dataclass(frozen=True)
+class StashChest:
+    """The skrzynia — the one thing in the world that outlives you."""
+
+
+@dataclass(frozen=True)
+class Perch:
+    """Żerdź: where the cranes set you down, and pick you up again."""
+
+
+@dataclass(frozen=True)
+class Shrine:
+    god: str  # "perun" | "weles"
+
+
+@dataclass(frozen=True)
 class Villager:
     """A friendly NPC; bumping talks instead of attacking."""
 

@@ -61,6 +61,9 @@ class AttackResolved(GameEvent):
 @dataclass(frozen=True)
 class EntityDied(GameEvent):
     entity: EntityRef
+    # Where the body fell (M6 drops); None for positionless deaths.
+    position: tuple[int, int] | None = None
+    depth: int = 0
 
 
 @dataclass(frozen=True)
@@ -129,6 +132,98 @@ class LightExtinguished(GameEvent):
 
 
 @dataclass(frozen=True)
+class MetaTransaction(GameEvent):
+    """A defined mutation of the persistent meta-state (M6 spec §2.3)."""
+
+    kind: str  # e.g. "bank", "stash_deposit", "purchase", "offering", "death"
+    detail: str = ""
+
+
+@dataclass(frozen=True)
+class CraneSummonStarted(GameEvent):
+    actor: EntityRef
+    turns: int
+
+
+@dataclass(frozen=True)
+class CraneSummonInterrupted(GameEvent):
+    actor: EntityRef
+    reason: str  # "moved" | "damage"
+
+
+@dataclass(frozen=True)
+class CraneSummonCompleted(GameEvent):
+    actor: EntityRef
+    from_depth: int
+
+
+@dataclass(frozen=True)
+class CraneRefused(GameEvent):
+    actor: EntityRef
+    reason: str  # "watched" | "no_sky" | "in_village"
+
+
+@dataclass(frozen=True)
+class ZnamiePlaced(GameEvent):
+    depth: int
+    position: tuple[int, int]
+
+
+@dataclass(frozen=True)
+class CraneReturn(GameEvent):
+    actor: EntityRef
+    depth: int
+
+
+@dataclass(frozen=True)
+class StashOpened(GameEvent):
+    actor: EntityRef
+
+
+@dataclass(frozen=True)
+class StashDeposited(GameEvent):
+    item: EntityRef
+
+
+@dataclass(frozen=True)
+class StashWithdrawn(GameEvent):
+    item: EntityRef
+    heirloom: bool = False
+
+
+@dataclass(frozen=True)
+class StashUpgraded(GameEvent):
+    slots: int
+    price: int
+
+
+@dataclass(frozen=True)
+class HeirloomWielded(GameEvent):
+    actor: EntityRef
+    item: EntityRef
+
+
+@dataclass(frozen=True)
+class ShrineVisited(GameEvent):
+    actor: EntityRef
+    god: str
+
+
+@dataclass(frozen=True)
+class DziadRecognized(GameEvent):
+    """The dziad knows this soul — or one very like it (rep ≥ 3)."""
+
+    reputation: int
+
+
+@dataclass(frozen=True)
+class OfferingMade(GameEvent):
+    actor: EntityRef
+    god: str
+    cost: int
+
+
+@dataclass(frozen=True)
 class TalkedTo(GameEvent):
     villager: EntityRef
     role: str
@@ -140,10 +235,30 @@ class Rested(GameEvent):
 
 
 @dataclass(frozen=True)
-class ItemTraded(GameEvent):
+class CoinsPicked(GameEvent):
     actor: EntityRef
-    gave: EntityRef
-    got: EntityRef
+    amount: int
+    purse_total: int
+
+
+@dataclass(frozen=True)
+class CoinsBanked(GameEvent):
+    amount: int
+    wallet_total: int
+
+
+@dataclass(frozen=True)
+class ItemBought(GameEvent):
+    actor: EntityRef
+    item: EntityRef
+    price: int
+
+
+@dataclass(frozen=True)
+class ItemSold(GameEvent):
+    actor: EntityRef
+    item: EntityRef
+    price: int
 
 
 @dataclass(frozen=True)

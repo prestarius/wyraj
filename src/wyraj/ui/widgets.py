@@ -10,6 +10,7 @@ from wyraj.core.components import (
     LightSource,
     Lore,
     Position,
+    Purse,
     Renderable,
     StatusEffects,
     Wearing,
@@ -36,6 +37,7 @@ WALL_STYLES = {
 }
 FLOOR_GLYPHS = ("·", ".")
 WATER_GLYPHS = ("≈", "~")
+SHAFT_GLYPHS = ("◌", "o")
 STAIRS_DOWN_GLYPHS = (">", ">")
 STAIRS_UP_GLYPHS = ("<", "<")
 
@@ -57,6 +59,8 @@ class MapView(Static):
             return STAIRS_UP_GLYPHS[glyph_index]
         if tile is Tile.WATER:
             return WATER_GLYPHS[glyph_index]
+        if tile is Tile.SHAFT:
+            return SHAFT_GLYPHS[glyph_index]
         return FLOOR_GLYPHS[glyph_index]
 
     def render(self) -> Text:
@@ -92,6 +96,8 @@ class MapView(Static):
                         text.append(self._terrain_glyph(tile), style="bold gold3")
                     elif tile is Tile.WATER:
                         text.append(self._terrain_glyph(tile), style="deep_sky_blue4")
+                    elif tile is Tile.SHAFT:
+                        text.append(self._terrain_glyph(tile), style="light_sky_blue3")
                     else:
                         text.append(self._terrain_glyph(tile), style="grey58")
                 elif cell in game.map.explored:
@@ -139,6 +145,11 @@ class CharacterPanel(Static):
         text.append("█" * filled, style=hp_style)
         text.append("░" * (bar_width - filled), style="grey23")
         text.append(f" {health.hp}/{health.max_hp}\n")
+
+        purse = game.world.get(game.player, Purse)
+        if purse is not None:
+            text.append(f"\n {t('purse', n=purse.denary)}\n", style="gold3")
+            text.append(f" {t('banked', n=game.meta.currency.denary)}\n", style="grey58")
 
         hunger = game.world.get(game.player, Hunger)
         if hunger is not None:

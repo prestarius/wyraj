@@ -1,0 +1,26 @@
+stash_deposited:
+  - weight: 2
+    en: "You lay {item.name.def} in the skrzynia and the iron lid falls shut. Whatever happens now, this is safe."
+  - weight: 1
+    en: "{item.name.Def} goes into the chest, among the things that have outlived their owners."
+
+stash_withdrawn:
+  own:
+    - weight: 1
+      en: "You take {item.name.def} back from the skrzynia. It has waited well."
+  heirloom:
+    - weight: 1
+      importance: high
+      en: "You lift {item.name.def} from the chest. It belonged to someone who walked out of this village and did not walk back."
+
+stash_upgraded:
+  - weight: 1
+    en: "The carpenter fits a new tier into the skrzynia — {slots} slots now, and the lid heavier than ever. It cost {price} denary and it was not haggling money."
+
+heirloom_wielded:
+  - weight: 2
+    importance: high
+    en: "{item.name.Def} settles into your grip — and remembers a hand that is no longer yours."
+  - weight: 1
+    importance: high
+    en: "For a moment {item.name.def} balances itself, the way it did for the one before you."

@@ -48,6 +48,8 @@ def to_hit_modifier(world: World, actor: Entity) -> int:
         modifier -= kinds["fear"].power
     if "blessing" in kinds:
         modifier += kinds["blessing"].power
+    if "perun_favor" in kinds:
+        modifier += kinds["perun_favor"].power
     return modifier
 
 

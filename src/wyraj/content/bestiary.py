@@ -33,6 +33,7 @@ class MonsterDef(BaseModel):
     prefers_water: bool = False
     epithets: list[str] = []
     description: str = ""
+    weakness: str = ""  # revealed at codex tier "full"
     # String-form tables per language (spec §7), e.g. {"en": {"plural": "biesy"}}
     forms: dict[str, dict[str, str | bool]] = {}
 

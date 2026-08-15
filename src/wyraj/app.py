@@ -26,9 +26,8 @@ def main() -> None:
     )
     parser.add_argument(
         "--origin",
-        choices=["wygnaniec", "zielarka", "najemnik"],
         default=None,
-        help="skip character creation and start as this origin",
+        help="skip character creation and start as this origin (must be unlocked)",
     )
     parser.add_argument(
         "--lang", choices=["en", "pl"], default=None, help="game language (default: en)"
@@ -86,12 +85,21 @@ def main() -> None:
     # A saved run continues unless the player explicitly asks for a new seed.
     game = load_game() if args.seed is None and has_save() else None
 
+    from wyraj.content.origins import load_origins
+    from wyraj.persistence.meta import load_meta
+
+    origins = load_origins()
+    unlocked = load_meta().unlocks.origins
     origin = args.origin
+    if origin is not None and game is None:
+        definition = origins.get(origin)
+        if definition is None or (definition.unlock is not None and origin not in unlocked):
+            print(f"Origin '{origin}' is not unlocked yet. Something of you must remain first.")
+            return
     if game is None and origin is None:
-        from wyraj.content.origins import load_origins
         from wyraj.ui.origin_select import OriginApp
 
-        origin = OriginApp(load_origins()).run() or "wygnaniec"
+        origin = OriginApp(origins, unlocked=unlocked).run() or "wygnaniec"
 
     WyrajApp(
         seed=seed,

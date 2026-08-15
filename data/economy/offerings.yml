@@ -1,0 +1,11 @@
+# Run-scoped blessings only — never persistent (M6 spec §7). TUNING KNOBS.
+perun:
+  cost: 15
+  kind: perun_favor
+  duration: 150
+  power: 10        # to-hit bonus while the favor lasts
+weles:
+  cost: 15
+  kind: weles_favor
+  duration: 150
+  power: 50        # +50% drop-chance rolls while the favor lasts
