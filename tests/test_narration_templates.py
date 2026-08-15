@@ -6,13 +6,16 @@ from wyraj.content.bestiary import load_bestiary
 from wyraj.content.items import load_items
 from wyraj.core.events import (
     AttackResolved,
+    CoinsBanked,
+    CoinsPicked,
     EntityDied,
     EntityRef,
     EventBus,
     GameEvent,
     HungerChanged,
+    ItemBought,
     ItemPickedUp,
-    ItemTraded,
+    ItemSold,
     ItemUsed,
     ItemWielded,
     ItemWorn,
@@ -94,8 +97,14 @@ def fixture_event(event_key: str, subkey: str | None) -> GameEvent:
         return TalkedTo(villager=villager, role=subkey)
     if event_key == "rested":
         return Rested(actor=PLAYER)
-    if event_key == "item_traded":
-        return ItemTraded(actor=PLAYER, gave=CIUPAGA, got=ODWAR)
+    if event_key == "item_bought":
+        return ItemBought(actor=PLAYER, item=ODWAR, price=18)
+    if event_key == "item_sold":
+        return ItemSold(actor=PLAYER, item=CIUPAGA, price=28)
+    if event_key == "coins_picked":
+        return CoinsPicked(actor=PLAYER, amount=7, purse_total=21)
+    if event_key == "coins_banked":
+        return CoinsBanked(amount=21, wallet_total=140)
     raise AssertionError(f"no fixture for pack rule {event_key}/{subkey}")
 
 

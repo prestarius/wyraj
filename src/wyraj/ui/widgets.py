@@ -10,6 +10,7 @@ from wyraj.core.components import (
     LightSource,
     Lore,
     Position,
+    Purse,
     Renderable,
     StatusEffects,
     Wearing,
@@ -139,6 +140,11 @@ class CharacterPanel(Static):
         text.append("█" * filled, style=hp_style)
         text.append("░" * (bar_width - filled), style="grey23")
         text.append(f" {health.hp}/{health.max_hp}\n")
+
+        purse = game.world.get(game.player, Purse)
+        if purse is not None:
+            text.append(f"\n {t('purse', n=purse.denary)}\n", style="gold3")
+            text.append(f" {t('banked', n=game.meta.currency.denary)}\n", style="grey58")
 
         hunger = game.world.get(game.player, Hunger)
         if hunger is not None:

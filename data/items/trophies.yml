@@ -1,0 +1,64 @@
+wilczy_kiel:
+  name: "wolf fang"
+  glyph: "'"
+  ascii_glyph: "'"
+  style: "grey62"
+  kind: trophy
+  spawn_weight: 0
+  forms:
+    pl: { mian: "wilczy kieł", dop: "wilczego kła", bier: "wilczy kieł", narz: "wilczym kłem", miej: "wilczym kle" }
+  description: >
+    A yellowed fang, hunter's proof. Merchants pay for them; young men pay
+    more, to hang around necks they'd like to keep.
+
+zab_strzygi:
+  name: "strzyga's tooth"
+  glyph: "'"
+  ascii_glyph: "'"
+  style: "red3"
+  kind: trophy
+  spawn_weight: 0
+  forms:
+    pl: { mian: "ząb strzygi", dop: "zęba strzygi", bier: "ząb strzygi", narz: "zębem strzygi", miej: "zębie strzygi" }
+  description: >
+    From the second row. It stays faintly warm, which is why it sells —
+    and why the wise sell it quickly.
+
+pazur_biesa:
+  name: "bies claw"
+  glyph: "'"
+  ascii_glyph: "'"
+  style: "dark_red"
+  kind: trophy
+  spawn_weight: 0
+  forms:
+    pl: { mian: "pazur biesa", dop: "pazura biesa", bier: "pazur biesa", narz: "pazurem biesa", miej: "pazurze biesa" }
+  description: >
+    Crooked as its owner. Ground into powder it is medicine, or poison,
+    depending on the priest you ask.
+
+grobowy_wosk:
+  name: "grave wax"
+  glyph: "*"
+  ascii_glyph: "*"
+  style: "dark_sea_green4"
+  kind: trophy
+  spawn_weight: 0
+  forms:
+    pl: { mian: "grobowy wosk", dop: "grobowego wosku", bier: "grobowy wosk", narz: "grobowym woskiem", miej: "grobowym wosku" }
+  description: >
+    Pale tallow scraped from the unburied. Candle-makers deny buying it.
+    The candles exist all the same.
+
+futro_kuny:
+  name: "marten pelt"
+  glyph: "*"
+  ascii_glyph: "*"
+  style: "tan"
+  kind: trophy
+  spawn_weight: 0
+  forms:
+    pl: { mian: "futro kuny", dop: "futra kuny", bier: "futro kuny", narz: "futrem kuny", miej: "futrze kuny" }
+  description: >
+    Soft, dark, and better than coin in half the villages along the
+    puszcza — kuny were money before money remembered to arrive.

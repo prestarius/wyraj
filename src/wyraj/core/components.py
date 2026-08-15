@@ -51,6 +51,25 @@ class AI:
 
 
 @dataclass(frozen=True)
+class Purse:
+    """Coins on the body — lost with it (M6: banking happens in the wieś)."""
+
+    denary: int = 0
+
+
+@dataclass(frozen=True)
+class CoinPile:
+    amount: int
+
+
+@dataclass(frozen=True)
+class ItemMemory:
+    """Heirloom trace: the run this item last belonged to."""
+
+    memory_tag: str
+
+
+@dataclass(frozen=True)
 class Villager:
     """A friendly NPC; bumping talks instead of attacking."""
 

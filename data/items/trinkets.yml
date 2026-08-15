@@ -27,3 +27,20 @@ wilczy_amulet:
     A yellowed fang on a leather cord, taken — the seller swore — from the
     lead wolf of a winter pack. Whether it wards off wolves or calls to
     them is a matter of some debate.
+
+zurawie_pioro:
+  name: "crane feather"
+  glyph: "/"
+  ascii_glyph: "/"
+  style: "grey93"
+  kind: consumable
+  effect: crane
+  power: 6
+  spawn_weight: 0
+  forms:
+    pl: { mian: "żurawie pióro", dop: "żurawiego pióra", bier: "żurawie pióro", narz: "żurawim piórem", miej: "żurawim piórze" }
+  description: >
+    A long grey flight feather, warm to the touch in any weather. Birds are
+    what pass between this world and Wyraj; hold the feather under open sky
+    and a wedge of cranes will come down for you. They will not land while
+    anything is watching.

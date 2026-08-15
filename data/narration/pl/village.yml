@@ -31,8 +31,26 @@ rested:
   - weight: 1
     pl: "Słoma, dym i pomruk wsi za ścianą — śpisz jak zabity, a w przeciwieństwie do zabitych wstajesz."
 
-item_traded:
+item_bought:
   - weight: 2
-    pl: "Ręka klepie rękę: twój {gave.name.mian} za {got.name.bier}. Handlarz wygląda na zadowolonego, co powinno cię lekko martwić."
+    pl: "Odliczasz {price} denarów i bierzesz {item.name.bier}. Handlarz sprawia, że srebro znika jak u kuglarza."
   - weight: 1
-    pl: "Oddajesz {gave.name.bier} i chowasz {got.name.bier}. Tu, na końcu świata, to się nazywa handel."
+    pl: "{item.name.Mian} zmienia właściciela za {price} denarów. Obie strony udają, że cena była uczciwa."
+
+item_sold:
+  - weight: 2
+    pl: "Handlarz obraca {item.name.bier} dwa razy w palcach, wącha i odlicza {price} denarów."
+  - weight: 1
+    pl: "Twój {item.name.mian} wędruje na wóz za {price} denarów. Ma przed sobą dłuższą drogę niż ty."
+
+coins_picked:
+  - weight: 2
+    pl: "Zbierasz z ziemi {amount} denarów. Srebro nie pamięta właścicieli i to jest w nim najłaskawsze."
+  - weight: 1
+    pl: "{amount} denarów, zimnych i uczciwych, wpada do sakiewki."
+
+coins_banked:
+  - weight: 2
+    pl: "Odliczasz {amount} denarów do karczemnej skrzyni. Cokolwiek las ci teraz zabierze, tego nie zabierze."
+  - weight: 1
+    pl: "Srebro chowa się za żelazne wieko Dobravy — {amount} denarów, o które puszcza nie ma już prawa się spierać."

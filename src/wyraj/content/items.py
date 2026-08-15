@@ -7,8 +7,8 @@ from pydantic import BaseModel, Field, model_validator
 
 from wyraj.content.paths import data_dir
 
-ITEM_KINDS = ("weapon", "armor", "consumable", "trinket")
-EFFECTS = ("heal", "feed", "bless", "light")
+ITEM_KINDS = ("weapon", "armor", "consumable", "trinket", "trophy")
+EFFECTS = ("heal", "feed", "bless", "light", "crane")
 
 
 class ItemDef(BaseModel):

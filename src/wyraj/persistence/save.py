@@ -98,6 +98,7 @@ def save_game(game: Game, path: Path | None = None) -> Path:
         "codex_seen": sorted(game.codex_seen),
         "origin": game.origin.key,
         "max_depth_reached": game.max_depth_reached,
+        "dziad_traded_this_run": getattr(game, "dziad_traded_this_run", False),
         "player": game.player,
         "rng": game.rng.get_states(),
         "levels": {str(depth): _encode_map(m) for depth, m in game.levels.items()},
@@ -137,12 +138,14 @@ def load_game(path: Path | None = None) -> Game | None:
         game.rng.set_state(name, (version, tuple(internal), gauss))
 
     from wyraj.content.bestiary import load_bestiary
+    from wyraj.content.economy import load_drops, load_prices, load_village_shop
     from wyraj.content.hooks import load_hooks
     from wyraj.content.items import load_items
     from wyraj.content.loot import load_loot_tables
     from wyraj.content.origins import load_origins
     from wyraj.core.ecs import World
     from wyraj.core.events import EventBus
+    from wyraj.persistence.meta import load_meta
 
     game.bestiary = load_bestiary()
     game.items_catalog = load_items()
@@ -150,6 +153,12 @@ def load_game(path: Path | None = None) -> Game | None:
     game.hooks_catalog = load_hooks()
     game.origins_catalog = load_origins()
     game.origin = game.origins_catalog[payload.get("origin", "wygnaniec")]
+    game.drops = load_drops()
+    game.prices = load_prices()
+    game.village_shop = load_village_shop()
+    game.meta = load_meta()
+    game.meta_autosave = True
+    game.dziad_traded_this_run = payload.get("dziad_traded_this_run", False)
 
     game.levels = {int(d): _decode_map(m) for d, m in payload["levels"].items()}
 
@@ -158,6 +167,9 @@ def load_game(path: Path | None = None) -> Game | None:
     game.bus.subscribe(AttackResolved, game._track_kill_cause)
     game.bus.subscribe(StarvationHit, game._track_starvation_cause)
     game.bus.subscribe(StatusTick, game._track_dot_cause)
+    from wyraj.core.events import EntityDied
+
+    game.bus.subscribe(EntityDied, game._on_monster_died)
     for entity_str, component_dicts in payload["entities"].items():
         entity: Entity = int(entity_str)
         game.world.restore_entity(entity, [_decode_component(dict(c)) for c in component_dicts])

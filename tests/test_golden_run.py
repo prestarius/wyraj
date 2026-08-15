@@ -46,11 +46,26 @@ def produce_transcript() -> str:
     lines: list[str] = []
     game.bus.subscribe_all(lambda e: lines.append(repr(e)))
     narration.add_sink(lambda line: lines.append(f"NARRATE: {line.text}"))
-    for action in build_script():
+    script = build_script()
+    for action in script[:20]:
         if game.game_over:
             break
         game.step(action)
-    lines.append(f"END turn={game.turn} game_over={game.game_over}")
+    # Leave the safe wieś: place the wanderer on the path and take it.
+    # (Deterministic harness step, not a player input.)
+    from wyraj.core.actions import Descend
+    from wyraj.core.components import Position
+    from wyraj.core.map import Tile
+
+    stairs = game.map.find_tile(Tile.STAIRS_DOWN)
+    assert stairs is not None
+    game.world.add(game.player, Position(*stairs))
+    game.step(Descend())
+    for action in script[20:]:
+        if game.game_over:
+            break
+        game.step(action)
+    lines.append(f"END turn={game.turn} game_over={game.game_over} depth={game.depth}")
     return "\n".join(lines) + "\n"
 
 

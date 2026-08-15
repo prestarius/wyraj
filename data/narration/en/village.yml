@@ -31,8 +31,26 @@ rested:
   - weight: 1
     en: "Straw, smoke, and the murmur of the wieś below — you sleep like the dead, and unlike them, you get up."
 
-item_traded:
+item_bought:
   - weight: 2
-    en: "Hands are shaken: your {gave.name} for {got.name.def}. The handlarz looks pleased, which is mildly worrying."
+    en: "You count out {price} denary and take {item.name.def}. The merchant makes the coins disappear like a conjurer."
   - weight: 1
-    en: "You part with your {gave.name} and pocket {got.name.def}. Out here, that counts as commerce."
+    en: "{item.name.Def} changes hands for {price} denary. Both sides pretend it was a fair price."
+
+item_sold:
+  - weight: 2
+    en: "The merchant turns your {item.name} over twice, sniffs it, and counts out {price} denary."
+  - weight: 1
+    en: "Your {item.name} joins the cart for {price} denary. It has a longer road ahead than you do."
+
+coins_picked:
+  - weight: 2
+    en: "You gather {amount} denary from the dirt. Silver keeps no memory of its owners, which is the kindest thing about it."
+  - weight: 1
+    en: "{amount} denary, cold and honest, go into your purse."
+
+coins_banked:
+  - weight: 2
+    en: "You count {amount} denary into the karczma's strongbox. Whatever the woods take from you now, they will not take this."
+  - weight: 1
+    en: "The silver goes behind Dobrava's iron lid — {amount} denary the puszcza can no longer argue about."

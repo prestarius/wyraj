@@ -61,6 +61,9 @@ class AttackResolved(GameEvent):
 @dataclass(frozen=True)
 class EntityDied(GameEvent):
     entity: EntityRef
+    # Where the body fell (M6 drops); None for positionless deaths.
+    position: tuple[int, int] | None = None
+    depth: int = 0
 
 
 @dataclass(frozen=True)
@@ -148,10 +151,30 @@ class Rested(GameEvent):
 
 
 @dataclass(frozen=True)
-class ItemTraded(GameEvent):
+class CoinsPicked(GameEvent):
     actor: EntityRef
-    gave: EntityRef
-    got: EntityRef
+    amount: int
+    purse_total: int
+
+
+@dataclass(frozen=True)
+class CoinsBanked(GameEvent):
+    amount: int
+    wallet_total: int
+
+
+@dataclass(frozen=True)
+class ItemBought(GameEvent):
+    actor: EntityRef
+    item: EntityRef
+    price: int
+
+
+@dataclass(frozen=True)
+class ItemSold(GameEvent):
+    actor: EntityRef
+    item: EntityRef
+    price: int
 
 
 @dataclass(frozen=True)

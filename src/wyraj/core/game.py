@@ -10,6 +10,7 @@ import random
 from typing import ClassVar
 
 from wyraj.content.bestiary import MonsterDef, load_bestiary
+from wyraj.content.economy import load_drops, load_prices, load_village_shop
 from wyraj.content.hooks import HookDef, load_hooks
 from wyraj.content.items import ItemDef, load_items
 from wyraj.content.loot import load_loot_tables
@@ -17,11 +18,12 @@ from wyraj.content.origins import OriginDef, load_origins
 from wyraj.core.actions import (
     Action,
     Ascend,
+    BuyItem,
     Descend,
     Get,
     Move,
     Rest,
-    TradeItems,
+    SellItem,
     UseItem,
     Wait,
     WearItem,
@@ -32,6 +34,7 @@ from wyraj.core.components import (
     Actor,
     ArmorStats,
     AttackStatus,
+    CoinPile,
     Consumable,
     Health,
     Hunger,
@@ -43,6 +46,7 @@ from wyraj.core.components import (
     OnLevel,
     Player,
     Position,
+    Purse,
     Renderable,
     StatusEffects,
     StoryHook,
@@ -55,10 +59,15 @@ from wyraj.core.components import (
 from wyraj.core.ecs import Entity, World
 from wyraj.core.events import (
     AttackResolved,
+    CoinsBanked,
+    CoinsPicked,
+    EntityDied,
     EventBus,
-    ItemTraded,
+    ItemBought,
+    ItemSold,
     LevelChanged,
     LoreDiscovered,
+    MetaTransaction,
     Outcome,
     Rested,
     StarvationHit,
@@ -71,6 +80,7 @@ from wyraj.core.refs import ref_for
 from wyraj.core.rng import RngStreams
 from wyraj.core.scheduler import TurnScheduler
 from wyraj.core.systems import ai, combat, hunger, items, movement, status
+from wyraj.persistence.meta import MetaState, save_meta
 from wyraj.procgen.bagna import generate_bagna
 from wyraj.procgen.forest import generate_forest
 from wyraj.procgen.kurhany import generate_kurhan
@@ -84,7 +94,6 @@ MAX_DEPTH = 5  # world chain: 0 wies, 1 puszcza, 2 bagna, 3-5 kurhany
 CRYPT_FIRST_DEPTH = 3
 CRYPT_FOV_RADIUS = 4  # unlit barrow darkness
 REST_SATIATION_COST = 100
-TRADER_STOCK = ("chleb", "odwar", "gromnica", "kaftan", "sol_swiecona")
 
 PLAYER_HP = 20
 PLAYER_SPEED = 100
@@ -105,6 +114,8 @@ class Game:
         origin: str = "wygnaniec",
         bestiary: dict[str, MonsterDef] | None = None,
         items_catalog: dict[str, ItemDef] | None = None,
+        meta: MetaState | None = None,
+        meta_autosave: bool = True,
     ) -> None:
         self.seed = seed
         self.rng = RngStreams(seed)
@@ -127,6 +138,12 @@ class Game:
         self.hooks_catalog = load_hooks()
         self.origins_catalog = load_origins()
         self.origin: OriginDef = self.origins_catalog[origin]
+        self.drops = load_drops()
+        self.prices = load_prices()
+        self.village_shop = load_village_shop()
+        self.meta = meta if meta is not None else MetaState()
+        self.meta_autosave = meta_autosave
+        self.bus.subscribe(EntityDied, self._on_monster_died)
 
         layout = generate_village()
         self.levels[0] = layout.map
@@ -140,6 +157,7 @@ class Game:
             Melee(damage=self.origin.damage, to_hit=self.origin.to_hit),
             Actor(speed=PLAYER_SPEED),
             Hunger(self.origin.satiation, self.origin.satiation),
+            Purse(),
             Inventory(items=tuple(self.spawn_stock_item(k) for k in self.origin.starting_items)),
             Wielding(),
             Lore(key="player", name="you"),
@@ -181,8 +199,13 @@ class Game:
             Lore(key=key, name=name, description=description),
         )
         if role == "trader":
-            stock = tuple(self.spawn_stock_item(item_key) for item_key in TRADER_STOCK)
-            self.world.add(entity, Inventory(items=stock))
+            stock: list[Entity] = []
+            for entry in self.village_shop.guaranteed:
+                stock += [self.spawn_stock_item(entry.item) for _ in range(entry.count)]
+            for entry in self.village_shop.rolls:
+                if self.rng.loot.randint(1, 100) <= entry.chance:
+                    stock += [self.spawn_stock_item(entry.item) for _ in range(entry.count)]
+            self.world.add(entity, Inventory(items=tuple(stock)))
         return entity
 
     def spawn_stock_item(self, item_key: str) -> Entity:
@@ -256,6 +279,12 @@ class Game:
         for x, y in item_spots:
             chosen_key = level_rng.choices(item_keys, weights=item_weights)[0]
             self.spawn_item(self.items_catalog[chosen_key], x, y, depth)
+
+        if biome == "kurhany":
+            hoard_spots = level_rng.sample(item_candidates, min(3, len(item_candidates)))
+            for x, y in hoard_spots:
+                amount = level_rng.randint(4, 8 + 6 * max(depth - 2, 1))
+                self.spawn_coins(amount, x, y, depth)
 
         hook_defs = [
             h for h in sorted(self.hooks_catalog.values(), key=lambda h: h.key) if biome in h.biomes
@@ -358,6 +387,8 @@ class Game:
         self.world.add(self.player, OnLevel(new_depth))
         self.world.add(self.player, Position(*arrival))
         self.bus.publish(LevelChanged(depth=new_depth, direction=direction))
+        if new_depth == 0:
+            self._bank_purse()
 
     def step(self, action: Action) -> None:
         """Execute one player action, then run other actors until it is the
@@ -405,8 +436,10 @@ class Game:
                         ),
                     )
                     self.bus.publish(Rested(actor=ref_for(self.world, self.player)))
-            case TradeItems(trader=trader, give=give, take=take):
-                self._trade(trader, give, take)
+            case BuyItem(trader=trader, item=item):
+                self._buy(trader, item)
+            case SellItem(trader=trader, item=item):
+                self._sell(trader, item)
             case Descend():
                 pos = self.world.expect(self.player, Position)
                 if self.map.tiles[pos.y][pos.x] is Tile.STAIRS_DOWN and self.depth < MAX_DEPTH:
@@ -416,7 +449,23 @@ class Game:
                 if self.map.tiles[pos.y][pos.x] is Tile.STAIRS_UP and self.depth > 0:
                     self._change_level(self.depth - 1, "up")
             case Get():
-                items.pick_up(self.world, self.bus, self.player)
+                pos = self.world.expect(self.player, Position)
+                pile = self._coin_pile_at(pos.x, pos.y)
+                if pile is not None:
+                    amount = self.world.expect(pile, CoinPile).amount
+                    self.world.destroy(pile)
+                    purse = self.world.get(self.player, Purse) or Purse()
+                    new_total = purse.denary + amount
+                    self.world.add(self.player, Purse(denary=new_total))
+                    self.bus.publish(
+                        CoinsPicked(
+                            actor=ref_for(self.world, self.player),
+                            amount=amount,
+                            purse_total=new_total,
+                        )
+                    )
+                else:
+                    items.pick_up(self.world, self.bus, self.player)
             case UseItem(item=item):
                 items.use_item(self.world, self.bus, self.player, item)
             case WieldItem(item=item):
@@ -437,33 +486,148 @@ class Game:
                     self.game_over = True
             self.scheduler.spend(entity)
 
-    def _trade(self, trader: Entity, give: Entity, take: Entity) -> None:
-        """Barter v0: swap one of yours for one of theirs, no questions asked."""
-        player_inv = self.world.get(self.player, Inventory) or Inventory()
-        trader_inv = self.world.get(trader, Inventory) or Inventory()
-        if give not in player_inv.items or take not in trader_inv.items:
+    # ------------------------------------------------------------------ economy
+
+    def _on_monster_died(self, event: EntityDied) -> None:
+        if event.entity.is_player or event.position is None:
             return
-        self.world.add(
-            self.player,
-            Inventory(items=(*(i for i in player_inv.items if i != give), take)),
+        spec = self.drops.get(event.entity.key)
+        if spec is None:
+            return
+        x, y = event.position
+        if spec.denary is not None and self.rng.loot.randint(1, 100) <= spec.denary.chance:
+            amount = self.rng.loot.randint(spec.denary.min, spec.denary.max)
+            if amount > 0:
+                self.spawn_coins(amount, x, y, event.depth)
+        for trophy in spec.trophies:
+            if self.rng.loot.randint(1, 100) <= trophy.chance:
+                self.spawn_item(self.items_catalog[trophy.item], x, y, event.depth)
+
+    def spawn_coins(self, amount: int, x: int, y: int, depth: int) -> Entity:
+        return self.world.create(
+            Position(x, y),
+            OnLevel(depth),
+            Renderable(glyph="$", style="gold3", ascii_glyph="$"),
+            CoinPile(amount=amount),
+            Lore(key="denary", name="denary"),
         )
-        self.world.add(
-            trader,
-            Inventory(items=(*(i for i in trader_inv.items if i != take), give)),
-        )
-        wielding = self.world.get(self.player, Wielding)
-        if wielding is not None and wielding.item == give:
-            self.world.add(self.player, Wielding(item=None))
-        wearing = self.world.get(self.player, Wearing)
-        if wearing is not None and wearing.item == give:
-            self.world.add(self.player, Wearing(item=None))
+
+    def _coin_pile_at(self, x: int, y: int) -> Entity | None:
+        for entity, (pos, _pile) in self.world.query(Position, CoinPile):
+            if (pos.x, pos.y) == (x, y) and movement.level_of(self.world, entity) == self.depth:
+                return entity
+        return None
+
+    def _save_meta(self) -> None:
+        if self.meta_autosave:
+            save_meta(self.meta)
+
+    def _bank_purse(self) -> None:
+        purse = self.world.get(self.player, Purse) or Purse()
+        if purse.denary <= 0:
+            return
+        self.meta.currency.denary += purse.denary
+        amount = purse.denary
+        self.world.add(self.player, Purse(denary=0))
+        self.bus.publish(CoinsBanked(amount=amount, wallet_total=self.meta.currency.denary))
+        self.bus.publish(MetaTransaction(kind="bank", detail=f"+{amount} denary"))
+        self._save_meta()
+
+    def price_for(self, item_key: str, trader: Entity) -> int:
+        base = self.prices.buy.get(item_key, 10)
+        villager = self.world.get(trader, Villager)
+        if villager is not None and villager.role == "dziad_wedrowny":
+            markup = base * self.prices.dziad_multiplier
+            discount = min(
+                self.meta.dziad.reputation * self.prices.dziad_discount_per_rep,
+                self.prices.dziad_discount_cap,
+            )
+            return max(1, round(markup * (1 - discount)))
+        return base
+
+    def sell_price_for(self, item_key: str) -> int:
+        return max(1, round(self.prices.buy.get(item_key, 10) * self.prices.sell_ratio))
+
+    def _wallet_total(self) -> int:
+        """Spendable coins here: banked wallet in the wieś, purse below."""
+        purse = self.world.get(self.player, Purse) or Purse()
+        return self.meta.currency.denary if self.depth == 0 else purse.denary
+
+    def _spend(self, amount: int) -> None:
+        if self.depth == 0:
+            self.meta.currency.denary -= amount
+            self.bus.publish(MetaTransaction(kind="purchase", detail=f"-{amount} denary"))
+            self._save_meta()
+        else:
+            purse = self.world.get(self.player, Purse) or Purse()
+            self.world.add(self.player, Purse(denary=purse.denary - amount))
+
+    def _earn(self, amount: int) -> None:
+        if self.depth == 0:
+            self.meta.currency.denary += amount
+            self.bus.publish(MetaTransaction(kind="sale", detail=f"+{amount} denary"))
+            self._save_meta()
+        else:
+            purse = self.world.get(self.player, Purse) or Purse()
+            self.world.add(self.player, Purse(denary=purse.denary + amount))
+
+    def _buy(self, trader: Entity, item: Entity) -> None:
+        trader_inv = self.world.get(trader, Inventory) or Inventory()
+        item_c = self.world.get(item, Item)
+        if item not in trader_inv.items or item_c is None:
+            return
+        price = self.price_for(item_c.key, trader)
+        if self._wallet_total() < price:
+            return
+        self._spend(price)
+        player_inv = self.world.get(self.player, Inventory) or Inventory()
+        self.world.add(trader, Inventory(items=tuple(i for i in trader_inv.items if i != item)))
+        self.world.add(self.player, Inventory(items=(*player_inv.items, item)))
+        self._mark_dziad_trade(trader)
         self.bus.publish(
-            ItemTraded(
+            ItemBought(
                 actor=ref_for(self.world, self.player),
-                gave=ref_for(self.world, give),
-                got=ref_for(self.world, take),
+                item=ref_for(self.world, item),
+                price=price,
             )
         )
+
+    def _sell(self, trader: Entity, item: Entity) -> None:
+        player_inv = self.world.get(self.player, Inventory) or Inventory()
+        item_c = self.world.get(item, Item)
+        if item not in player_inv.items or item_c is None:
+            return
+        price = self.sell_price_for(item_c.key)
+        self.world.add(
+            self.player, Inventory(items=tuple(i for i in player_inv.items if i != item))
+        )
+        trader_inv = self.world.get(trader, Inventory) or Inventory()
+        self.world.add(trader, Inventory(items=(*trader_inv.items, item)))
+        wielding = self.world.get(self.player, Wielding)
+        if wielding is not None and wielding.item == item:
+            self.world.add(self.player, Wielding(item=None))
+        wearing = self.world.get(self.player, Wearing)
+        if wearing is not None and wearing.item == item:
+            self.world.add(self.player, Wearing(item=None))
+        self._earn(price)
+        self._mark_dziad_trade(trader)
+        self.bus.publish(
+            ItemSold(
+                actor=ref_for(self.world, self.player),
+                item=ref_for(self.world, item),
+                price=price,
+            )
+        )
+
+    def _mark_dziad_trade(self, trader: Entity) -> None:
+        villager = self.world.get(trader, Villager)
+        if villager is None or villager.role != "dziad_wedrowny":
+            return
+        if not getattr(self, "dziad_traded_this_run", False):
+            self.dziad_traded_this_run = True
+            self.meta.dziad.reputation += 1
+            self.bus.publish(MetaTransaction(kind="dziad_rep", detail="+1"))
+            self._save_meta()
 
     def _track_kill_cause(self, event: AttackResolved) -> None:
         if event.defender.is_player and event.outcome is Outcome.KILL:

@@ -1,0 +1,26 @@
+# Buy prices in denary (village baseline). TUNING KNOBS everywhere.
+sell_ratio: 0.35
+dziad_multiplier: 2.0          # cruel depth prices
+dziad_discount_per_rep: 0.03   # capped below
+dziad_discount_cap: 0.15
+stash_upgrades: [120, 300, 700]  # 4→6, 6→8, 8→10 slots
+
+buy:
+  odwar: 18
+  mocny_odwar: 40
+  sol_swiecona: 25
+  chleb: 8
+  suszone_mieso: 14
+  gromnica: 30
+  noz: 20
+  toporek: 45
+  ciupaga: 80
+  wilcza_skora: 50
+  kaftan: 90
+  wilczy_amulet: 35
+  zurawie_pioro: 150
+  wilczy_kiel: 12
+  zab_strzygi: 45
+  pazur_biesa: 25
+  grobowy_wosk: 18
+  futro_kuny: 20

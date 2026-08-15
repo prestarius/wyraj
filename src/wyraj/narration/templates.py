@@ -24,12 +24,15 @@ from pydantic import AliasChoices, BaseModel, Field
 from wyraj.content.paths import data_dir
 from wyraj.core.events import (
     AttackResolved,
+    CoinsBanked,
+    CoinsPicked,
     EntityDied,
     EntityRef,
     GameEvent,
     HungerChanged,
+    ItemBought,
     ItemPickedUp,
-    ItemTraded,
+    ItemSold,
     ItemUsed,
     ItemWielded,
     ItemWorn,
@@ -101,8 +104,14 @@ def rule_key(event: GameEvent) -> RuleKey:
             return "talked_to", event.role
         case Rested():
             return "rested", None
-        case ItemTraded():
-            return "item_traded", None
+        case ItemBought():
+            return "item_bought", None
+        case ItemSold():
+            return "item_sold", None
+        case CoinsPicked():
+            return "coins_picked", None
+        case CoinsBanked():
+            return "coins_banked", None
         case _:
             name = type(event).__name__
             snake = re.sub(r"(?<!^)(?=[A-Z])", "_", name).lower()
