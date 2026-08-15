@@ -69,7 +69,8 @@ uv run wyraj --narrator llm  # optional local-LLM narration (Ollama)
 **Keys:** `hjkl`/`yubn`/arrows move (bump a creature to strike it — or a
 villager, to talk), `.` wait, `g` gather, `i` pack, `x` examine,
 `c` codex, `>`/`<` stairs, `r` rest (village), `?` help, `s` save+quit,
-`q` quit.
+`q` quit (it asks first — an abandoned run is not saved). Death offers
+`n` set out again, `m` back to the title screen, `q` leave.
 
 **Your files** (all under `~/.wyraj/`, override with `WYRAJ_HOME`):
 

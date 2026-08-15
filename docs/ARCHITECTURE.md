@@ -32,6 +32,12 @@ addenda) and tracks reality as of v0.7.
 └───────────────────────────────────────────────────────────────┘
 ```
 
+The TUI stages run as sequential Textual apps. `WyrajApp` exits with a
+typed outcome — `"quit"`, `"restart"` (the death screen's "set out
+again": a fresh run, same origin, new seed — or the same seed when
+`--seed` pinned it), or `"title"` (back to the title screen) — and the
+entrypoint in `app.py` loops on it.
+
 **Golden rules**
 
 - `core/` has zero imports from `ui/`. Core emits typed `GameEvent`s
@@ -85,6 +91,10 @@ GameEvent ──enrich(context tags)──▶ buffer ──TurnEnded──▶ co
 - `SzeptSystem` is a separate thin subscriber emitting one-time
   first-encounter hints (persisted per profile in meta), styled apart
   from prose and never modal.
+- Presentation only: each `NarrationLine` carries a cosmetic `category`
+  (combat/lore/loot/ambient — the turn's dominant event family) that the
+  log uses to tint the paragraph. It never feeds back into gameplay or
+  the transcript text.
 
 ## Meta-progression ("Powroty")
 
