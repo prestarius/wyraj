@@ -2,6 +2,17 @@
 
 All notable changes to Wyraj. Format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.5-m5] — 2026-08-15 — AI Narrator (optional)
+
+### Added
+- `LLMNarrator` behind `--narrator llm` / config: Ollama-first with an
+  OpenRouter alternative, fact-grounded prompt built on the deterministic
+  template draft, strict timeout with template fallback, 60-word cap,
+  per-run latency/fallback stats. Off by default; the game remains fully
+  playable offline and byte-deterministic under the default narrator.
+- M6 "Powroty" meta-progression spec filed (`docs/WYRAJ_M6_POWROTY.md`)
+  with Epic 7 plan breakdown.
+
 ## [0.4-m4] — 2026-08-15 — Polski
 
 ### Added

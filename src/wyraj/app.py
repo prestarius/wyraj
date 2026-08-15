@@ -33,6 +33,12 @@ def main() -> None:
     parser.add_argument(
         "--lang", choices=["en", "pl"], default=None, help="game language (default: en)"
     )
+    parser.add_argument(
+        "--narrator",
+        choices=["template", "llm"],
+        default=None,
+        help="narration mode: deterministic templates (default) or LLM garnish",
+    )
     parser.add_argument("--history", action="store_true", help="show recent runs and exit")
     args = parser.parse_args()
 
@@ -62,6 +68,11 @@ def main() -> None:
         args.origin = config["origin"]
     if args.lang is None:
         args.lang = config.get("lang") if config.get("lang") in ("en", "pl") else "en"
+    if args.narrator is None:
+        args.narrator = (
+            config.get("narrator") if config.get("narrator") in ("template", "llm") else "template"
+        )
+    llm_config = config.get("llm") if isinstance(config.get("llm"), dict) else {}
 
     from wyraj.ui.i18n import set_language
 
@@ -89,6 +100,8 @@ def main() -> None:
         game=game,
         origin=origin or "wygnaniec",
         lang=args.lang,
+        narrator_mode=args.narrator,
+        llm_config=llm_config,
     ).run()
 
 
