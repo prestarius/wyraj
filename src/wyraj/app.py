@@ -39,7 +39,23 @@ def main() -> None:
         help="narration mode: deterministic templates (default) or LLM garnish",
     )
     parser.add_argument("--history", action="store_true", help="show recent runs and exit")
+    parser.add_argument(
+        "--reset-intro",
+        action="store_true",
+        help="forget the prologue and the szept whispers, then exit (progress is kept)",
+    )
     args = parser.parse_args()
+
+    if args.reset_intro:
+        from wyraj.persistence.meta import load_meta as _load_meta
+        from wyraj.persistence.meta import save_meta as _save_meta
+
+        meta = _load_meta()
+        meta.prologue_seen = False
+        meta.szept_seen = []
+        _save_meta(meta)
+        print("The threshold forgets you. Prologue and whispers will play again.")
+        return
 
     if args.history:
         from wyraj.persistence.history import recent_runs

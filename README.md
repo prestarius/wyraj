@@ -60,6 +60,7 @@ uv run wyraj --seed 42       # skip the ceremony: straight into a seeded run
 uv run wyraj --lang pl       # cała narracja po polsku
 uv run wyraj --origin zielarka
 uv run wyraj --history       # your past deaths, remembered
+uv run wyraj --reset-intro   # replay the prologue and whispers (keeps progress)
 uv run wyraj --ascii         # CP437-safe glyphs
 uv run wyraj --portrait half # halfblock portrait (default: box-drawing)
 uv run wyraj --narrator llm  # optional local-LLM narration (Ollama)

@@ -178,3 +178,26 @@ def test_help_screen_opens_in_game() -> None:
             await pilot.press("escape")
 
     asyncio.run(run())
+
+
+def test_reset_intro_flag(monkeypatch, capsys) -> None:
+    import sys
+
+    from wyraj.app import main
+    from wyraj.persistence.meta import MetaState, load_meta, save_meta
+
+    meta = MetaState()
+    meta.prologue_seen = True
+    meta.szept_seen = ["first_move", "farewell"]
+    meta.currency.denary = 77  # progress must survive the reset
+    save_meta(meta)
+
+    monkeypatch.setattr(sys, "argv", ["wyraj", "--reset-intro"])
+    main()
+    assert "forgets you" in capsys.readouterr().out
+
+    reset = load_meta()
+    assert reset.prologue_seen is False
+    assert reset.szept_seen == []
+    assert reset.currency.denary == 77
+    assert not reset.edited  # a sanctioned reset is not a hand-edit
