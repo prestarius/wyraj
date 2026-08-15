@@ -37,6 +37,7 @@ from wyraj.core.components import (
     Actor,
     ArmorStats,
     AttackStatus,
+    Channeling,
     CoinPile,
     Consumable,
     Health,
@@ -62,12 +63,18 @@ from wyraj.core.components import (
     WeaponStats,
     Wearing,
     Wielding,
+    Znamie,
 )
 from wyraj.core.ecs import Entity, World
 from wyraj.core.events import (
     AttackResolved,
     CoinsBanked,
     CoinsPicked,
+    CraneRefused,
+    CraneReturn,
+    CraneSummonCompleted,
+    CraneSummonInterrupted,
+    CraneSummonStarted,
     DziadRecognized,
     EntityDied,
     EventBus,
@@ -87,6 +94,7 @@ from wyraj.core.events import (
     StatusTick,
     TalkedTo,
     TurnEnded,
+    ZnamiePlaced,
 )
 from wyraj.core.map import GameMap, Tile
 from wyraj.core.refs import ref_for
@@ -450,7 +458,11 @@ class Game:
         player's turn again (or the player is dead)."""
         if self.game_over:
             return
-        self._apply_player_action(action)
+        flight_completed = self._tick_channel(action)
+        if not flight_completed:
+            self._apply_player_action(action)
+            self._check_perch_return()
+        hp_before_round = self.world.expect(self.player, Health).hp
         self._update_player_fov()
         self._tick_statuses()
         hunger.tick(self.world, self.bus, self.player, self.turn + 1)
@@ -458,6 +470,12 @@ class Game:
             self.game_over = True
         self.scheduler.spend(self.player)
         self._advance_until_player_turn()
+        channeling = self.world.get(self.player, Channeling)
+        if channeling is not None and self.world.expect(self.player, Health).hp < hp_before_round:
+            self.world.remove(self.player, Channeling)
+            self.bus.publish(
+                CraneSummonInterrupted(actor=ref_for(self.world, self.player), reason="damage")
+            )
         self.turn += 1
         # TurnEnded closes the whole round (player + monsters) so the
         # narration TurnComposer can flush a complete paragraph.
@@ -550,7 +568,11 @@ class Game:
                 else:
                     items.pick_up(self.world, self.bus, self.player)
             case UseItem(item=item):
-                items.use_item(self.world, self.bus, self.player, item)
+                consumable = self.world.get(item, Consumable)
+                if consumable is not None and consumable.effect == "crane":
+                    self._use_crane_feather(item, consumable.power)
+                else:
+                    items.use_item(self.world, self.bus, self.player, item)
             case WieldItem(item=item):
                 items.wield(self.world, self.bus, self.player, item)
             case WearItem(item=item):
@@ -703,6 +725,98 @@ class Game:
                 price=price,
             )
         )
+
+    def _use_crane_feather(self, item: Entity, channel_turns: int) -> None:
+        player_ref = ref_for(self.world, self.player)
+        if self.depth == 0:
+            self.bus.publish(CraneRefused(actor=player_ref, reason="in_village"))
+            return
+        pos = self.world.expect(self.player, Position)
+        if self.map.biome == "kurhany" and self.map.tiles[pos.y][pos.x] is not Tile.SHAFT:
+            self.bus.publish(CraneRefused(actor=player_ref, reason="no_sky"))
+            return
+        if self._hostile_watching():
+            self.bus.publish(CraneRefused(actor=player_ref, reason="watched"))
+            return
+        # The feather is spent the moment the call goes up (spec default: harsh).
+        inventory = self.world.get(self.player, Inventory) or Inventory()
+        self.world.add(self.player, Inventory(items=tuple(i for i in inventory.items if i != item)))
+        self.world.destroy(item)
+        self.world.add(self.player, Channeling(turns_left=channel_turns))
+        self.bus.publish(CraneSummonStarted(actor=player_ref, turns=channel_turns))
+
+    def _hostile_watching(self) -> bool:
+        for entity, (_ai, pos) in self.world.query(AI, Position):
+            if movement.level_of(self.world, entity) != self.depth:
+                continue
+            if (pos.x, pos.y) in self.map.visible:
+                return True
+        return False
+
+    def _tick_channel(self, action: Action) -> bool:
+        """Advance or break an active summoning channel. True if flight happened."""
+        channeling = self.world.get(self.player, Channeling)
+        if channeling is None:
+            return False
+        if not isinstance(action, Wait):
+            self.world.remove(self.player, Channeling)
+            self.bus.publish(
+                CraneSummonInterrupted(actor=ref_for(self.world, self.player), reason="moved")
+            )
+            return False
+        if channeling.turns_left > 1:
+            self.world.add(self.player, Channeling(turns_left=channeling.turns_left - 1))
+            return False
+        self.world.remove(self.player, Channeling)
+        self._complete_crane_flight()
+        return True
+
+    def _complete_crane_flight(self) -> None:
+        pos = self.world.expect(self.player, Position)
+        from_depth = self.depth
+        # Only one znamię may exist; a new flight moves it.
+        for old in self.world.entities_with(Znamie):
+            self.world.destroy(old)
+        self.world.create(
+            Position(pos.x, pos.y),
+            OnLevel(from_depth),
+            Renderable(glyph="⌖", style="grey93", ascii_glyph="+"),
+            Znamie(),
+            Lore(key="znamie", name="the znamię"),
+        )
+        self.bus.publish(ZnamiePlaced(depth=from_depth, position=(pos.x, pos.y)))
+        perch = self.world.entities_with(Perch)
+        target = self.world.expect(perch[0], Position) if perch else None
+        self.depth = 0
+        self.world.add(self.player, OnLevel(0))
+        if target is not None:
+            self.world.add(self.player, Position(target.x, target.y))
+        self.bus.publish(
+            CraneSummonCompleted(actor=ref_for(self.world, self.player), from_depth=from_depth)
+        )
+        self._bank_purse()
+
+    def _check_perch_return(self) -> None:
+        if self.depth != 0:
+            return
+        marks = self.world.entities_with(Znamie)
+        if not marks:
+            return
+        ppos = self.world.expect(self.player, Position)
+        perch = self.world.entities_with(Perch)
+        if not perch:
+            return
+        perch_pos = self.world.expect(perch[0], Position)
+        if (ppos.x, ppos.y) != (perch_pos.x, perch_pos.y):
+            return
+        mark = marks[0]
+        mark_pos = self.world.expect(mark, Position)
+        mark_depth = movement.level_of(self.world, mark)
+        self.world.destroy(mark)  # the feather covered one round trip
+        self.depth = mark_depth
+        self.world.add(self.player, OnLevel(mark_depth))
+        self.world.add(self.player, Position(mark_pos.x, mark_pos.y))
+        self.bus.publish(CraneReturn(actor=ref_for(self.world, self.player), depth=mark_depth))
 
     def _interactable_at(self, x: int, y: int) -> tuple[str, Entity] | None:
         for entity, (pos, _chest) in self.world.query(Position, StashChest):

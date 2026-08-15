@@ -37,6 +37,7 @@ WALL_STYLES = {
 }
 FLOOR_GLYPHS = ("·", ".")
 WATER_GLYPHS = ("≈", "~")
+SHAFT_GLYPHS = ("◌", "o")
 STAIRS_DOWN_GLYPHS = (">", ">")
 STAIRS_UP_GLYPHS = ("<", "<")
 
@@ -58,6 +59,8 @@ class MapView(Static):
             return STAIRS_UP_GLYPHS[glyph_index]
         if tile is Tile.WATER:
             return WATER_GLYPHS[glyph_index]
+        if tile is Tile.SHAFT:
+            return SHAFT_GLYPHS[glyph_index]
         return FLOOR_GLYPHS[glyph_index]
 
     def render(self) -> Text:
@@ -93,6 +96,8 @@ class MapView(Static):
                         text.append(self._terrain_glyph(tile), style="bold gold3")
                     elif tile is Tile.WATER:
                         text.append(self._terrain_glyph(tile), style="deep_sky_blue4")
+                    elif tile is Tile.SHAFT:
+                        text.append(self._terrain_glyph(tile), style="light_sky_blue3")
                     else:
                         text.append(self._terrain_glyph(tile), style="grey58")
                 elif cell in game.map.explored:

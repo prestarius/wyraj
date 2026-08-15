@@ -8,6 +8,11 @@ from wyraj.core.events import (
     AttackResolved,
     CoinsBanked,
     CoinsPicked,
+    CraneRefused,
+    CraneReturn,
+    CraneSummonCompleted,
+    CraneSummonInterrupted,
+    CraneSummonStarted,
     DziadRecognized,
     EntityDied,
     EntityRef,
@@ -120,6 +125,18 @@ def fixture_event(event_key: str, subkey: str | None) -> GameEvent:
         return HeirloomWielded(actor=PLAYER, item=CIUPAGA)
     if event_key == "dziad_recognized":
         return DziadRecognized(reputation=4)
+    if event_key == "crane_summon_started":
+        return CraneSummonStarted(actor=PLAYER, turns=6)
+    if event_key == "crane_summon_interrupted":
+        assert subkey is not None
+        return CraneSummonInterrupted(actor=PLAYER, reason=subkey)
+    if event_key == "crane_summon_completed":
+        return CraneSummonCompleted(actor=PLAYER, from_depth=4)
+    if event_key == "crane_refused":
+        assert subkey is not None
+        return CraneRefused(actor=PLAYER, reason=subkey)
+    if event_key == "crane_return":
+        return CraneReturn(actor=PLAYER, depth=4)
     raise AssertionError(f"no fixture for pack rule {event_key}/{subkey}")
 
 

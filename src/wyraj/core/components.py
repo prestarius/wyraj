@@ -70,6 +70,18 @@ class ItemMemory:
 
 
 @dataclass(frozen=True)
+class Channeling:
+    """Calling the cranes down: interruptible, turn-counted."""
+
+    turns_left: int
+
+
+@dataclass(frozen=True)
+class Znamie:
+    """The mark the cranes leave where they lifted you."""
+
+
+@dataclass(frozen=True)
 class StashChest:
     """The skrzynia — the one thing in the world that outlives you."""
 

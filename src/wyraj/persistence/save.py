@@ -28,6 +28,7 @@ _TILE_TO_CHAR = {
     Tile.WALL: "#",
     Tile.FLOOR: ".",
     Tile.WATER: "~",
+    Tile.SHAFT: "o",
     Tile.STAIRS_DOWN: ">",
     Tile.STAIRS_UP: "<",
 }

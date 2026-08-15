@@ -26,6 +26,11 @@ from wyraj.core.events import (
     AttackResolved,
     CoinsBanked,
     CoinsPicked,
+    CraneRefused,
+    CraneReturn,
+    CraneSummonCompleted,
+    CraneSummonInterrupted,
+    CraneSummonStarted,
     DziadRecognized,
     EntityDied,
     EntityRef,
@@ -127,6 +132,16 @@ def rule_key(event: GameEvent) -> RuleKey:
             return "heirloom_wielded", None
         case DziadRecognized():
             return "dziad_recognized", None
+        case CraneSummonStarted():
+            return "crane_summon_started", None
+        case CraneSummonInterrupted():
+            return "crane_summon_interrupted", event.reason
+        case CraneSummonCompleted():
+            return "crane_summon_completed", None
+        case CraneRefused():
+            return "crane_refused", event.reason
+        case CraneReturn():
+            return "crane_return", None
         case _:
             name = type(event).__name__
             snake = re.sub(r"(?<!^)(?=[A-Z])", "_", name).lower()

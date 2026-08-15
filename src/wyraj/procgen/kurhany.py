@@ -95,4 +95,10 @@ def generate_kurhan(
         dx, dy = down_room.center
         tiles[dy][dx] = Tile.STAIRS_DOWN
 
+    # 1-2 collapsed-ceiling shafts: light wells and the only open sky down
+    # here (crane flight, spec M6 §6.2).
+    floors = [(x, y) for y in range(height) for x in range(width) if tiles[y][x] is Tile.FLOOR]
+    for sx, sy in rng.sample(floors, min(rng.randint(1, 2), len(floors))):
+        tiles[sy][sx] = Tile.SHAFT
+
     return GameMap(tiles, biome="kurhany")

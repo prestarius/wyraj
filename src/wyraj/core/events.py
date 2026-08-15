@@ -140,6 +140,42 @@ class MetaTransaction(GameEvent):
 
 
 @dataclass(frozen=True)
+class CraneSummonStarted(GameEvent):
+    actor: EntityRef
+    turns: int
+
+
+@dataclass(frozen=True)
+class CraneSummonInterrupted(GameEvent):
+    actor: EntityRef
+    reason: str  # "moved" | "damage"
+
+
+@dataclass(frozen=True)
+class CraneSummonCompleted(GameEvent):
+    actor: EntityRef
+    from_depth: int
+
+
+@dataclass(frozen=True)
+class CraneRefused(GameEvent):
+    actor: EntityRef
+    reason: str  # "watched" | "no_sky" | "in_village"
+
+
+@dataclass(frozen=True)
+class ZnamiePlaced(GameEvent):
+    depth: int
+    position: tuple[int, int]
+
+
+@dataclass(frozen=True)
+class CraneReturn(GameEvent):
+    actor: EntityRef
+    depth: int
+
+
+@dataclass(frozen=True)
 class StashOpened(GameEvent):
     actor: EntityRef
 
