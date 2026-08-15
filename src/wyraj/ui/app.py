@@ -16,6 +16,7 @@ from wyraj.core.game import Game
 from wyraj.narration.context import ContextEnricher
 from wyraj.narration.engine import NarrationEngine, NarrationLine
 from wyraj.narration.forms import build_form_registry
+from wyraj.narration.llm import DEFAULT_TIMEOUT, LLMNarrator, build_backend
 from wyraj.narration.templates import TemplateNarrator, load_pack
 from wyraj.persistence.history import record_run
 from wyraj.persistence.morgue import write_morgue
@@ -70,6 +71,8 @@ class WyrajApp(App[None]):
         game: Game | None = None,
         origin: str = "wygnaniec",
         lang: str = "en",
+        narrator_mode: str = "template",
+        llm_config: dict | None = None,
     ) -> None:
         super().__init__()
         self.game = game if game is not None else Game(seed, origin=origin)
@@ -80,9 +83,17 @@ class WyrajApp(App[None]):
             {**self.game.bestiary, **self.game.items_catalog, **self.game.hooks_catalog}, lang
         )
         fallback = load_pack("en") if lang != "en" else None
-        narrator = TemplateNarrator(
+        template_narrator = TemplateNarrator(
             load_pack(lang), self.game.rng.narration, registry, fallback_pack=fallback
         )
+        narrator: TemplateNarrator | LLMNarrator = template_narrator
+        if narrator_mode == "llm":
+            config = llm_config or {}
+            narrator = LLMNarrator(
+                template_narrator,
+                build_backend(config),
+                timeout=float(config.get("timeout", DEFAULT_TIMEOUT)),
+            )
         enricher = ContextEnricher(self.game)
         self.narration = NarrationEngine(self.game.bus, narrator, enricher=enricher.enrich)
         self.narration.add_sink(self._on_narration)
@@ -163,6 +174,10 @@ class WyrajApp(App[None]):
         self.query_one(CharacterPanel).refresh()
         if self.game.game_over:
             delete_save()  # permadeath: the run is over
+            if isinstance(self.narration.narrator, LLMNarrator):
+                self.query_one(RichLog).write(
+                    Text(self.narration.narrator.stats.summary(), style="grey42")
+                )
             now = datetime.now()
             morgue_path = write_morgue(self.game, when=now)
             record_run(
