@@ -1,0 +1,58 @@
+item_picked_up:
+  - weight: 2
+    pl: "Podnosisz z mchu {item.name.bier}."
+  - weight: 1
+    pl: "Bierzesz {item.name.bier} i ważysz w dłoni."
+
+item_used:
+  heal:
+    - weight: 2
+      pl: "Wypijasz {item.name.bier}; ciepło rozchodzi się po ranach jak słońce po zimnej wodzie."
+    - weight: 1
+      pl: "{item.name.Mian} pali w gardle, a ból tępieje do głuchego pulsowania."
+    - weight: 2
+      tags: [player_dying]
+      pl: "Drżącymi rękami przełykasz {item.name.bier}. Ciemność na skraju widzenia cofa się o krok."
+  feed:
+    - weight: 2
+      pl: "Zjadasz {item.name.bier} i las wydaje się przez chwilę odrobinę mniej głodny."
+    - weight: 1
+      pl: "Rozprawiasz się z {item.name.narz} w kilku kęsach. Smakuje dymem i domem."
+  bless:
+    - weight: 1
+      pl: "Kładziesz na język szczyptę święconej soli. Coś starego i łaskawego staje odrobinę bliżej."
+  light:
+    - weight: 2
+      pl: "Zapalasz {item.name.bier}; płomień chwyta knot i cienie cofają się na odległość ramienia."
+    - weight: 2
+      tags: [darkness]
+      importance: high
+      pl: "Ogień bierze knot {item.name.dop} i kurhanowa ciemność odłazi od święconego światła."
+
+item_wielded:
+  - weight: 2
+    pl: "Bierzesz {item.name.bier} do ręki; ciężar układa się w dłoni jak gotowa odpowiedź."
+  - weight: 1
+    pl: "Od teraz dzierżysz {item.name.bier}. Drzewa zachowują zdanie dla siebie."
+
+item_worn:
+  - weight: 2
+    pl: "Wdziewasz {item.name.bier}; układa się na ramionach jak wygrany spór."
+  - weight: 1
+    pl: "Naciągasz {item.name.bier}. Cokolwiek przyjdzie, będzie o jedną warstwę dalej od ciebie."
+
+hunger_changed:
+  sated: []
+  hungry:
+    - weight: 1
+      pl: "Żołądek zaciska się w pięść. Za długo już bez chleba."
+  starving:
+    - weight: 1
+      importance: high
+      pl: "Głód przestał być uczuciem; jest teraz dziurą tam, gdzie kiedyś była twoja siła."
+
+starvation_hit:
+  - weight: 2
+    pl: "Nogi ci drżą; głód pożera to, czego nie zdążył las."
+  - weight: 1
+    pl: "Zataczasz się, pusty do kości. Musisz coś zjeść, i to szybko."

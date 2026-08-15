@@ -1,0 +1,29 @@
+lore_discovered:
+  default:
+    - weight: 1
+      importance: high
+      pl: "Coś porusza się między drzewami — kształt znany ci z opowieści przy ogniu, a opowieści były łaskawe najwyżej w połowie."
+  bies:
+    - weight: 1
+      importance: high
+      pl: "Z gąszczu rozprostowuje się krzywy kształt — bies, ten, którego starzy ludzie po zmroku nie nazywali po imieniu."
+  wilk:
+    - weight: 1
+      importance: high
+      pl: "Szarość na szarości pod linią drzew: wilk, który patrzy na ciebie tak, jak rzeźnik patrzy na utuczone prosię."
+  utopiec:
+    - weight: 1
+      importance: high
+      pl: "Mokra, oślizgła postać przewala się przez korzenie — utopiec, daleko od swojej topieli i głodny towarzystwa."
+  strzyga:
+    - weight: 1
+      importance: high
+      pl: "Oczy jak dwa kaganki łapią twoje spojrzenie przez gałęzie. Strzyga — a ona już policzyła twoje noce."
+  martwiak:
+    - weight: 1
+      importance: high
+      pl: "Zimna glina, która chodzi: martwiak, pogrzebany bez obrządku, idzie ku tobie z cierpliwością grobu."
+  licho:
+    - weight: 1
+      importance: high
+      pl: "Małe, krzywe, jednookie — licho we własnej osobie. Nie wołaj licha. I broń Boże za nim nie idź."

@@ -1,0 +1,71 @@
+attack_resolved:
+  player_hit:
+    - weight: 3
+      pl: "Twój cios sięga {defender.name.dop}; {defender.pronoun.subj} cofa się z mokrym sykiem."
+    - weight: 2
+      pl: "Trafiasz celnie. {defender.name.Mian} wzdryga się, a czarna krew perli się tam, gdzie cięło ostrze."
+    - weight: 2
+      pl: "Rozdzierasz ciało {defender.name.dop}; wycie niesie się między drzewami."
+    - weight: 1
+      pl: "Odrzucasz go o krok w tył, aż ramię dzwoni ci od uderzenia."
+  player_miss:
+    - weight: 3
+      pl: "Tniesz szeroko; {defender.name.mian} usuwa się jak gałąź na wietrze."
+    - weight: 1
+      pl: "Twoje ostrze łapie tylko zimne powietrze, a {defender.name.mian} szczerzy zęby."
+  player_kill:
+    - weight: 2
+      importance: high
+      pl: "Ostatni cios trafia z trzaskiem. {defender.name.Mian} osuwa się w mech i nieruchomieje."
+    - weight: 1
+      importance: high
+      pl: "{defender.name.Mian} rozpada się pod twoim ciosem i las robi się o to cichszy."
+  player_graze:
+    - weight: 1
+      pl: "Cios trafia, lecz ześlizguje się z {defender.name.dop}, nie czyniąc szkody."
+  enemy_hit:
+    - weight: 3
+      pl: "{attacker.name.Mian} orze ci bok krzywymi pazurami; ból rozlewa się gorąco po żebrach."
+    - weight: 2
+      pl: "{attacker.name.Mian} wpada na ciebie całym ciężarem; czujesz w ustach krew i stare liście."
+    - weight: 4
+      tags: [player_dying]
+      pl: "{attacker.name.Mian} szarpie cię raz jeszcze, a świat szarzeje na brzegach."
+    - weight: 4
+      tags: [unseen_attacker]
+      pl: "Coś niewidzialnego uderza cię z ciemności między drzewami."
+    - weight: 4
+      tags: [darkness]
+      pl: "Pazury znajdują cię w czerni; oddajesz cios w sam dźwięk."
+  enemy_miss:
+    - weight: 3
+      pl: "{attacker.name.Mian} skacze — uchylasz się w ostatniej chwili, a pazury kłapią na pustce."
+    - weight: 1
+      pl: "Idzie na ciebie nisko i szybko, ale tym razem ty jesteś szybszy."
+    - weight: 4
+      tags: [again]
+      pl: "{attacker.name.Mian} zatacza koło i znów naciera, cierpliwie jak zima."
+  enemy_graze:
+    - weight: 2
+      pl: "{attacker.name.Mian} uderza celnie, lecz cios gaśnie w warstwach twojego odzienia."
+    - weight: 1
+      pl: "Pazury drą i szarpią pancerz; czujesz nacisk, nie ból."
+  enemy_kill:
+    - weight: 1
+      importance: high
+      pl: "{attacker.name.Mian} przygniata cię do zimnego mchu. Ostatnie, co słyszysz, to jego oddech."
+
+entity_died:
+  player:
+    - weight: 1
+      importance: high
+      pl: "Ciemność zamyka się nad tobą. Gdzieś nad koronami drzew ptak zrywa się do lotu — ku Wyrajowi."
+  enemy: []
+
+move_blocked:
+  player:
+    - weight: 2
+      pl: "Drzewa stoją tu ramię w ramię; nie ma którędy przejść."
+    - weight: 1
+      pl: "Napierasz na korę i ciernie. Puszcza nie ustępuje."
+  enemy: []

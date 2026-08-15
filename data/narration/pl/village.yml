@@ -1,0 +1,38 @@
+talked_to:
+  innkeeper:
+    - weight: 2
+      pl: "Dobrava, karczmarka, mierzy cię wzrokiem jak zmokłego psa na progu. „Jest łóżko i jest ogień, wędrowcze. Odpoczywaj, póki odpoczynek darmowy.”"
+    - weight: 1
+      pl: "„Zjedz coś” — mówi karczmarka tonem kobiety, która grzebała już takich, co nie zjedli."
+  trader:
+    - weight: 2
+      pl: "Miłosz, handlarz, rozkłada towar szerokim gestem. „Rzecz za rzecz, przyjacielu. Moneta jest dla miast; tu, na końcu świata, płaci się tym, co użyteczne.”"
+    - weight: 1
+      pl: "Handlarz zerka na twój tobołek. „Wszystko ma cenę. Tutaj ceną bywa zwykle to, czego ci później zabraknie.”"
+  gossip:
+    - weight: 2
+      pl: "Stary Świętosław opiera się na kiju. „Strzyga liczy twoje noce, wędrowcze. Trzy patrzy, czwartej przychodzi. Pilnuj ognia.”"
+    - weight: 2
+      pl: "„Utopiec daleko od topieli nie zajdzie” — mruczy dziad. „Na suchym mchu jest powolny. Pamiętaj o tym, kiedy woda zacznie źle pachnieć.”"
+    - weight: 2
+      pl: "„Sól z Gromnicznej pali niepogrzebanych jak żelazo” — mówi stary. „Martwiak niczego innego się nie boi. Nawet ciebie.”"
+    - weight: 2
+      pl: "Dziad spluwa przez ramię. „Zobaczysz małe, jednookie? Nie goń. Cokolwiek ci wzięło, pogoń będzie kosztować więcej.”"
+    - weight: 1
+      pl: "„Wilki to nie jest niebezpieczeństwo” — mówi Świętosław. — „Wilki to ostrzeżenie. Jak przebiegną obok ciebie, biegnij z nimi.”"
+    - weight: 1
+      pl: "„Pod kurhanami ciemność jest starsza od ognia” — szepcze stary. „Weź gromnicę. Weź dwie.”"
+    - weight: 1
+      pl: "„Światełka nad bagnami to dusze” — powiada. „Czyje? Idź za nimi, to się dowiesz. Nie? Mądrze.”"
+
+rested:
+  - weight: 2
+    pl: "Śpisz za karczemnym ogniem i przez jedną noc las zostaje po drugiej stronie ściany. Budzisz się cały."
+  - weight: 1
+    pl: "Słoma, dym i pomruk wsi za ścianą — śpisz jak zabity, a w przeciwieństwie do zabitych wstajesz."
+
+item_traded:
+  - weight: 2
+    pl: "Ręka klepie rękę: twój {gave.name.mian} za {got.name.bier}. Handlarz wygląda na zadowolonego, co powinno cię lekko martwić."
+  - weight: 1
+    pl: "Oddajesz {gave.name.bier} i chowasz {got.name.bier}. Tu, na końcu świata, to się nazywa handel."

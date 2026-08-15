@@ -1,0 +1,47 @@
+status_applied:
+  bleeding:
+    - weight: 1
+      importance: high
+      pl: "Rana jest głęboka i sama się nie zamknie. Krew płynie ciepło pod koszulą."
+  poison:
+    - weight: 1
+      importance: high
+      pl: "Grobowa zgnilizna rozchodzi się od rany na zimno, jak atrament w wodzie."
+  fear:
+    - weight: 1
+      importance: high
+      pl: "Zimna groza wlewa się w ciebie. Ręce wiedzą lepiej niż głowa, jak jest źle."
+  blessing:
+    - weight: 1
+      pl: "Błogosławieństwo okrywa cię jak ciepły płaszcz; dłonie przestają drżeć."
+
+status_tick:
+  bleeding:
+    - weight: 2
+      pl: "Rana krwawi obficie, zostawiając na mchu ciemne monety."
+    - weight: 1
+      pl: "Krwawienie ciągnie cię za siły, krok po kroku."
+  poison:
+    - weight: 2
+      pl: "Zgnilizna wgryza się głębiej; żyły bolą od zimna."
+    - weight: 1
+      pl: "Czujesz w ustach żelazo i starą ziemię. Trucizna robi swoje."
+
+status_expired:
+  bleeding:
+    - weight: 1
+      pl: "Krwawienie wreszcie słabnie do lepkiego sączenia, a potem ustaje."
+  poison:
+    - weight: 1
+      pl: "Zimno w żyłach w końcu rozluźnia uchwyt."
+  fear:
+    - weight: 1
+      pl: "Groza unosi się i odpływa. Oddech wraca do ciebie."
+  blessing:
+    - weight: 1
+      pl: "Błogosławieństwo gaśnie, cicho jak dym świecy."
+
+light_extinguished:
+  - weight: 1
+    importance: high
+    pl: "Gromnica pryska, bucha raz płomieniem i gaśnie. Ciemność podchodzi o krok bliżej."

@@ -1,5 +1,7 @@
 wilcza_skora:
   name: "wolfskin cloak"
+  forms:
+    pl: { mian: "wilcza skóra", dop: "wilczej skóry", cel: "wilczej skórze", bier: "wilczą skórę", narz: "wilczą skórą", miej: "wilczej skórze" }
   glyph: "["
   ascii_glyph: "["
   style: "grey54"
@@ -13,6 +15,8 @@ wilcza_skora:
 
 kaftan:
   name: "quilted kaftan"
+  forms:
+    pl: { mian: "pikowany kaftan", dop: "pikowanego kaftana", bier: "pikowany kaftan", narz: "pikowanym kaftanem", miej: "pikowanym kaftanie" }
   glyph: "["
   ascii_glyph: "["
   style: "tan"

@@ -1,5 +1,7 @@
 gromnica:
   name: "gromnica candle"
+  forms:
+    pl: { mian: "gromnica", dop: "gromnicy", cel: "gromnicy", bier: "gromnicę", narz: "gromnicą", miej: "gromnicy" }
   glyph: "|"
   ascii_glyph: "|"
   style: "light_goldenrod2"
@@ -14,6 +16,8 @@ gromnica:
 
 wilczy_amulet:
   name: "wolf-tooth amulet"
+  forms:
+    pl: { mian: "wilczy amulet", dop: "wilczego amuletu", bier: "wilczy amulet", narz: "wilczym amuletem", miej: "wilczym amulecie" }
   glyph: "\""
   ascii_glyph: "\""
   style: "grey62"

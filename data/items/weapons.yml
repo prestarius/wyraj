@@ -1,5 +1,7 @@
 noz:
   name: "skinning knife"
+  forms:
+    pl: { mian: "nóż do skórowania", dop: "noża do skórowania", bier: "nóż do skórowania", narz: "nożem do skórowania", miej: "nożu do skórowania" }
   glyph: ")"
   ascii_glyph: ")"
   style: "grey66"
@@ -12,6 +14,8 @@ noz:
 
 toporek:
   name: "woodsman's toporek"
+  forms:
+    pl: { mian: "toporek", dop: "toporka", cel: "toporkowi", bier: "toporek", narz: "toporkiem", miej: "toporku" }
   glyph: ")"
   ascii_glyph: ")"
   style: "grey78"
@@ -33,6 +37,7 @@ ciupaga:
   spawn_weight: 2
   forms:
     en: { plural: "ciupagi" }
+    pl: { mian: "ciupaga", dop: "ciupagi", cel: "ciupadze", bier: "ciupagę", narz: "ciupagą", miej: "ciupadze" }
   description: >
     A long-hafted highland axe, walking stick and weapon in one. The brass
     inlay on the head is worn smooth by a hand that is no longer here.

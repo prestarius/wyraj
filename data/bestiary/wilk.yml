@@ -13,6 +13,7 @@ wilk:
   epithets: ["grey brother", "shadow of the treeline"]
   forms:
     en: { plural: "wilki" }
+    pl: { mian: "wilk", dop: "wilka", cel: "wilkowi", bier: "wilka", narz: "wilkiem", miej: "wilku", plural: "wilki" }
   description: >
     A forest wolf, lean with the hungry months. One alone watches and
     follows and weighs you; the trouble is that a wilk is rarely alone.
