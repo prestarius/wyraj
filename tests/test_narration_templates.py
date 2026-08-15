@@ -106,7 +106,7 @@ def test_every_pack_entry_renders_cleanly() -> None:
         event = fixture_event(event_key, subkey)
         assert rule_key(event) == (event_key, subkey)
         for variant in variants:
-            text = render(variant.en, event, REGISTRY)
+            text = render(variant.text, event, REGISTRY)
             assert "{" not in text and "}" not in text
             assert text.strip()
 

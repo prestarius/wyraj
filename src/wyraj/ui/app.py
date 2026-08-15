@@ -68,13 +68,20 @@ class WyrajApp(App[None]):
         portrait_style: str = "box",
         game: Game | None = None,
         origin: str = "wygnaniec",
+        lang: str = "en",
     ) -> None:
         super().__init__()
         self.game = game if game is not None else Game(seed, origin=origin)
         self.use_ascii = use_ascii
         self.portrait_style = portrait_style
-        registry = build_form_registry({**self.game.bestiary, **self.game.items_catalog})
-        narrator = TemplateNarrator(load_pack("en"), self.game.rng.narration, registry)
+        self.lang = lang
+        registry = build_form_registry(
+            {**self.game.bestiary, **self.game.items_catalog, **self.game.hooks_catalog}, lang
+        )
+        fallback = load_pack("en") if lang != "en" else None
+        narrator = TemplateNarrator(
+            load_pack(lang), self.game.rng.narration, registry, fallback_pack=fallback
+        )
         enricher = ContextEnricher(self.game)
         self.narration = NarrationEngine(self.game.bus, narrator, enricher=enricher.enrich)
         self.narration.add_sink(self._on_narration)

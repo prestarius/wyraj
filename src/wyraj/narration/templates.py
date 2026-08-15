@@ -19,7 +19,7 @@ from pathlib import Path
 from typing import Any
 
 import yaml
-from pydantic import BaseModel, Field
+from pydantic import AliasChoices, BaseModel, Field
 
 from wyraj.content.paths import data_dir
 from wyraj.core.events import (
@@ -51,7 +51,8 @@ _SLOT = re.compile(r"\{([a-zA-Z_][a-zA-Z0-9_.]*)\}")
 
 
 class Variant(BaseModel):
-    en: str
+    # Prose text; packs author it under their language key ("en:", "pl:").
+    text: str = Field(validation_alias=AliasChoices("text", "en", "pl"))
     weight: int = Field(default=1, gt=0)
     importance: str = "normal"
     # Context tags required for this variant (all must be present).
@@ -156,28 +157,43 @@ NO_TAGS: frozenset[str] = frozenset()
 
 
 class TemplateNarrator:
-    def __init__(self, pack: GrammarPack, rng: random.Random, registry: FormRegistry) -> None:
+    def __init__(
+        self,
+        pack: GrammarPack,
+        rng: random.Random,
+        registry: FormRegistry,
+        fallback_pack: "GrammarPack | None" = None,
+    ) -> None:
         self.pack = pack
         self.rng = rng
         self.registry = registry
+        # Safety net: a partially translated pack falls back per-rule (never mixes
+        # languages inside one rule, but a missing rule narrates in the fallback).
+        self.fallback_pack = fallback_pack
         # Per-rule memory of the last template used (anti-repetition).
         self._last_template: dict[RuleKey, str] = {}
 
     def compose(self, event: GameEvent, tags: frozenset[str] = NO_TAGS) -> list[NarrationLine]:
         key = rule_key(event)
-        # Fallback chain: exact subkey → "default" subkey → bare rule.
-        variants = (
-            self.pack.rules.get(key)
-            or self.pack.rules.get((key[0], "default"))
-            or self.pack.rules.get((key[0], None))
-        )
+        variants = self._lookup(self.pack, key)
+        if not variants and self.fallback_pack is not None:
+            variants = self._lookup(self.fallback_pack, key)
         if not variants:
             return []  # no rule = deliberately silent (e.g. routine movement)
         chosen = self._pick(key, variants, tags)
         if chosen is None:
             return []
-        text = render(chosen.en, event, self.registry)
+        text = render(chosen.text, event, self.registry)
         return [NarrationLine(text=text, importance=chosen.importance)]
+
+    @staticmethod
+    def _lookup(pack: GrammarPack, key: RuleKey) -> list[Variant] | None:
+        # Fallback chain: exact subkey → "default" subkey → bare rule.
+        return (
+            pack.rules.get(key)
+            or pack.rules.get((key[0], "default"))
+            or pack.rules.get((key[0], None))
+        )
 
     def _pick(self, key: RuleKey, variants: list[Variant], tags: frozenset[str]) -> Variant | None:
         eligible = [v for v in variants if set(v.tags) <= tags]
@@ -189,10 +205,10 @@ class TemplateNarrator:
         max_specificity = max(len(v.tags) for v in eligible)
         pool = [v for v in eligible if len(v.tags) == max_specificity]
         # Avoid repeating the template chosen last time for this rule.
-        fresh = [v for v in pool if v.en != self._last_template.get(key)]
+        fresh = [v for v in pool if v.text != self._last_template.get(key)]
         pool = fresh or pool
         chosen = self.rng.choices(pool, weights=[v.weight for v in pool])[0]
-        self._last_template[key] = chosen.en
+        self._last_template[key] = chosen.text
         return chosen
 
     def compose_turn(self, batch: list[tuple[GameEvent, frozenset[str]]]) -> list[NarrationLine]:
