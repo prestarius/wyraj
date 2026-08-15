@@ -1,0 +1,68 @@
+common:
+  - >
+    Mówią, że ptaki lecą do Wyraju, gdy przychodzi chłód — za dziewiąty
+    las, za dziewiątą rzekę, do krainy, gdzie dusze czekają na narodziny.
+    Mówią, że umarli też tam idą, tą samą wietrzną drogą, i że co odchodzi
+    do Wyraju, wraca na wiosnę.
+
+
+    Wiele mówią, we wsi na skraju puszczy.
+  - >
+    Przyszedłeś traktem o zmierzchu, gdy znad bagien wstawała mgła,
+    a ostatnie światło wisiało w brzozach jak coś, co się zaczepiło.
+    Wieś przyjęła cię tak, jak przyjmują takie miejsca: bez pytań,
+    bo pytania przyzywają odpowiedzi, a odpowiedzi przyzywają ciemność.
+  - >
+    Ale słyszałeś, o czym szepczą przy ogniu. Że kurhany w głębi lasu się
+    otworzyły. Że dzieci słyszą śpiew z bagien. Że stara, która strzegła
+    kapliczki Welesa, przepadła, a misę ofiarną co rano wylizuje do czysta
+    pies, którego nikt nie trzyma.
+
+
+    Coś na dole woła rzeczy w górę. Albo woła je *z powrotem*.
+
+fallback: >
+  Nie przyszedłeś tu po bezpieczeństwo. Przyszedłeś, bo droga za tobą
+  jest zamknięta, a jedyna, która została, biegnie w dół — pod kurhany,
+  pod korzenie, ku temu, co czeka na dnie ciemności.
+
+
+  Ptaki znają drogę.
+
+  Ptaki zawsze znały.
+
+origins:
+  wygnaniec: >
+    Nie przyszedłeś tu po bezpieczeństwo. Przyszedłeś, bo droga za tobą
+    jest zamknięta — zamknięta u drzwi kościoła, odczytanym na głos
+    wyrokiem i glinianą misą stłuczoną o próg, którego nie wolno ci już
+    przekroczyć. O tym, co zrobiłeś, wieś spiera się szeptem. To, czym
+    jesteś teraz, jest prostsze: człowiekiem, którego jedyna droga
+    biegnie w dół, pod kurhany, pod korzenie.
+
+
+    Ptaki znają drogę.
+
+    Ptaki zawsze znały.
+  zielarka: >
+    Nie przyszłaś tu po bezpieczeństwo. Przyszłaś, bo stara, która
+    strzegła kapliczki Welesa, nauczyła cię każdego zioła, jakie znasz —
+    a teraz jej nie ma, misa, którą napełniała, jest co rano wylizana do
+    czysta, a długu wobec umarłych nikt za ciebie nie daruje. Droga do
+    spłaty biegnie w dół, pod kurhany, pod korzenie.
+
+
+    Ptaki znają drogę.
+
+    Ptaki zawsze znały.
+  najemnik: >
+    Nie przyszedłeś tu po bezpieczeństwo. Przyszedłeś, bo pewien człowiek
+    zapłacił ci z góry połowę za robotę, której nie chciał nazwać — a nim
+    dotarłeś, zdążyli go pochować. Dwa razy, jak mówią; za drugim razem
+    staranniej. Pół sakiewki to kontrakt, a twój kontrakt biegnie w dół,
+    pod kurhany, pod korzenie.
+
+
+    Ptaki znają drogę.
+
+    Ptaki zawsze znały.

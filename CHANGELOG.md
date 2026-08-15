@@ -2,6 +2,25 @@
 
 All notable changes to Wyraj. Format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.7-prog] — 2026-08-15 — Próg (intro & onboarding)
+
+### Added
+- Title screen: block-letter WYRAJ under a sky of drifting cranes, a
+  rotating folklore tagline, and a keyboard menu — New Journey, Continue,
+  Codex, Morgue, Options, Quit. Seeded starts hide in Options.
+- Prologue: four pages of typewriter prose falling from grey to cold
+  blue, with an origin-specific final page (why *your* road is closed);
+  Esc always skips, and a profile that has read it once is never made to
+  read it again. Authored natively in EN and PL.
+- Szept: diegetic first-encounter whispers — nine one-time asides woven
+  dim-italic into the log (movement, first hostile, low HP, hunger,
+  darkness, loot, the forest edge, statuses, first kill), persisted per
+  profile in meta, closed by a farewell line. Hints toggle in Options;
+  never a popup, ever.
+- Help (`?`): full key reference plus "How Wyraj works" written in-voice
+  ("Death is not the end of knowledge. It is, regrettably, the end of you.").
+- Options write `~/.wyraj/config.yml` (hints, text speed, portrait, language).
+
 ## [0.6-m6] — 2026-08-15 — Powroty (meta-progression)
 
 ### Added

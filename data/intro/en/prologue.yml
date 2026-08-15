@@ -1,0 +1,67 @@
+common:
+  - >
+    They say the birds fly to Wyraj when the cold comes — beyond the ninth
+    forest, beyond the ninth river, to the land where souls wait to be born.
+    They say the dead go there too, walking the same wind-road, and that
+    what goes to Wyraj comes back in spring.
+
+
+    They say many things, in the village at the edge of the puszcza.
+  - >
+    You came up the cart-road at dusk, when the mist was rising off the
+    bagna and the last light hung in the birches like something snagged.
+    The village took you in the way such places do: without questions,
+    because questions invite answers, and answers invite the dark.
+  - >
+    But you have heard what they whisper by the fire. That the barrows in
+    the deep forest have opened. That children hear singing from the marsh.
+    That the old woman who kept the shrine of Weles is gone, and the offering
+    bowl is licked clean each morning by no dog anyone owns.
+
+
+    Something below is calling things up. Or calling them *back*.
+
+fallback: >
+  You did not come here to be safe. You came because the road behind you
+  is closed, and the only way left runs down — under the kurhany, under
+  the roots, toward whatever waits at the bottom of the dark.
+
+
+  The birds know the way.
+
+  The birds always knew.
+
+origins:
+  wygnaniec: >
+    You did not come here to be safe. You came because the road behind you
+    is closed — closed at a church door, with a sentence read aloud and a
+    clay bowl broken on a threshold you may not cross again. What you did,
+    the wieś argues about in whispers. What you are now is simpler: a man
+    whose only road runs down, under the kurhany, under the roots.
+
+
+    The birds know the way.
+
+    The birds always knew.
+  zielarka: >
+    You did not come here to be safe. You came because the old woman who
+    kept the shrine of Weles taught you every herb you know — and now she
+    is gone, and the bowl she filled is licked clean each morning, and a
+    debt to the dead does not forgive itself. The road to repayment runs
+    down, under the kurhany, under the roots.
+
+
+    The birds know the way.
+
+    The birds always knew.
+  najemnik: >
+    You did not come here to be safe. You came because a man paid you half
+    in advance for work he would not name — and by the time you arrived,
+    he had been buried. Twice, they say, the second time with more care.
+    Half a purse is a contract, and your contract runs down, under the
+    kurhany, under the roots.
+
+
+    The birds know the way.
+
+    The birds always knew.

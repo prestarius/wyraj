@@ -133,7 +133,7 @@ All nine stories landed on `feat/m6-powroty`. Meta path is `~/.wyraj/meta.yml` (
 - US 7.8 — Codex persistence (unknown→glimpsed→partial→full) + achievement-gated origin unlocks (Strzygobójca, Dziadowy Uczeń)
 - US 7.9 — Balance pass: 50-run shared-meta headless sim; DoD: stash value plateaus, currency in/out within 20% per depth band, golden green with meta fixture
 
-## Epic 8 — Próg: intro & onboarding *(spec: `WYRAJ_PROG_SPEC.md`; M0–M6 already done, so the phased targets collapse into one epic)*
+## Epic 8 — Próg: intro & onboarding — **DONE 2026-08-15 (v0.7-prog)** *(spec: `WYRAJ_PROG_SPEC.md`)*
 
 - US 8.1 — Title screen: figlet WYRAJ, drifting crane glyphs (decision #13: prototype), rotating tagline, menu (New Journey / Continue / Codex / Morgue / Options / Quit), seeded start hidden in Options
 - US 8.2 — Prologue: paged typewriter prose (skippable always, no first-run confirm per decision #12), origin-variant final pages, EN+PL authored natively, seen-flag in meta

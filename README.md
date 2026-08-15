@@ -35,7 +35,7 @@ leszy, strzyga, utopiec, bies, licho.
 
 ```sh
 uv sync
-uv run wyraj                 # continue a saved run, or create a character
+uv run wyraj                 # title screen: new journey, continue, codex, morgue
 uv run wyraj --seed 42       # deterministic fresh run
 uv run wyraj --origin zielarka
 uv run wyraj --lang pl        # cała narracja po polsku

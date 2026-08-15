@@ -10,6 +10,7 @@ from textual.binding import Binding
 from textual.containers import Horizontal
 from textual.widgets import Footer, RichLog
 
+from wyraj.content.intro import load_szept
 from wyraj.core.actions import Action, Ascend, Descend, Get, Move, Rest, Wait
 from wyraj.core.events import ShrineVisited, StashOpened, TalkedTo
 from wyraj.core.game import Game
@@ -17,6 +18,7 @@ from wyraj.narration.context import ContextEnricher
 from wyraj.narration.engine import NarrationEngine, NarrationLine
 from wyraj.narration.forms import build_form_registry
 from wyraj.narration.llm import DEFAULT_TIMEOUT, LLMNarrator, build_backend
+from wyraj.narration.szept import SzeptSystem
 from wyraj.narration.templates import TemplateNarrator, load_pack
 from wyraj.persistence.history import record_run
 from wyraj.persistence.morgue import write_morgue
@@ -26,6 +28,7 @@ from wyraj.ui.screens import (
     CodexScreen,
     DeathScreen,
     ExamineScreen,
+    HelpScreen,
     InventoryScreen,
     ShrineScreen,
     StashScreen,
@@ -63,6 +66,7 @@ class WyrajApp(App[None]):
         Binding("c", "codex", "Codex"),
         Binding("s", "save_quit", "Save+Quit"),
         Binding("r", "rest", "Rest"),
+        Binding("question_mark", "help", "Help", key_display="?"),
     ]
 
     def __init__(
@@ -75,6 +79,7 @@ class WyrajApp(App[None]):
         lang: str = "en",
         narrator_mode: str = "template",
         llm_config: dict | None = None,
+        hints: bool = True,
     ) -> None:
         super().__init__()
         self.game = game if game is not None else Game(seed, origin=origin)
@@ -102,6 +107,12 @@ class WyrajApp(App[None]):
         self.game.bus.subscribe(TalkedTo, self._on_talked_to)
         self.game.bus.subscribe(StashOpened, self._on_stash_opened)
         self.game.bus.subscribe(ShrineVisited, self._on_shrine_visited)
+        self.szept = SzeptSystem(
+            self.game,
+            table=load_szept(lang),
+            sink=self._on_szept,
+            enabled=hints,
+        )
 
     def compose(self) -> ComposeResult:
         with Horizontal(id="top"):
@@ -115,6 +126,10 @@ class WyrajApp(App[None]):
         intro = self.game.origin.intro_for(self.lang).strip().replace("\n", " ")
         log.write(Text(intro, style="italic grey74"))
         log.write(Text(t("intro_second"), style="italic grey58"))
+
+    def _on_szept(self, text: str) -> None:
+        if self.is_running:
+            self.query_one(RichLog).write(Text(text, style="italic grey42"))
 
     def _on_narration(self, line: NarrationLine) -> None:
         if self.is_running:
@@ -140,6 +155,9 @@ class WyrajApp(App[None]):
 
     def action_rest(self) -> None:
         self._play(Rest())
+
+    def action_help(self) -> None:
+        self.push_screen(HelpScreen())
 
     def _on_stash_opened(self, event: StashOpened) -> None:
         if not self.is_running:
