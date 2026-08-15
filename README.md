@@ -23,9 +23,9 @@ leszy, strzyga, utopiec, bies, licho.
 - **Deterministic to the bone.** Same seed, same run — golden-transcript
   tested. Saves restore RNG streams bit-exactly and are consumed on load;
   permadeath writes you a morgue file.
-- **Grammar-aware narration** built for Polish from day one (case-form
-  tables in content, per-language packs) — PL localization is the next
-  milestone, not an afterthought.
+- **Fully bilingual.** `--lang pl` switches to natively authored Polish
+  narration — real case declension (*strzygę, strzygą, strzydze*) via
+  per-noun form tables, never machine-mapped from English.
 
 ## Play
 
@@ -34,6 +34,7 @@ uv sync
 uv run wyraj                 # continue a saved run, or create a character
 uv run wyraj --seed 42       # deterministic fresh run
 uv run wyraj --origin zielarka
+uv run wyraj --lang pl        # cała narracja po polsku
 uv run wyraj --history       # your past deaths, remembered
 uv run wyraj --ascii         # CP437-safe glyphs
 uv run wyraj --portrait half # halfblock portrait (default: box-drawing)
@@ -43,7 +44,7 @@ Keys: `hjkl`/`yubn`/arrows move (bump to attack — or to talk, in the
 village), `.` wait, `g` get, `i` inventory, `x` examine, `c` codex,
 `>`/`<` stairs, `r` rest (village), `s` save+quit, `q` quit.
 
-Config file: `~/.wyraj/config.yml` (`ascii`, `portrait`, `origin`).
+Config file: `~/.wyraj/config.yml` (`ascii`, `portrait`, `origin`, `lang`).
 
 ## Develop
 
@@ -59,8 +60,7 @@ Docs: [architecture](docs/ARCHITECTURE.md) ·
 [contributing](CONTRIBUTING.md)
 
 Full design spec: `docs/WYRAJ_PROJECT.md`; roadmap:
-`docs/IMPLEMENTATION_PLAN.md`. Next milestones: **M4 Polski** (native PL
-narration packs), **M5 optional AI narrator** (local LLM garnish; the game
+`docs/IMPLEMENTATION_PLAN.md`. Next milestone: **M5 optional AI narrator** (local LLM garnish; the game
 is fully playable offline without it).
 
 ## License
