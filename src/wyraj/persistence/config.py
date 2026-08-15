@@ -12,7 +12,7 @@ import yaml
 
 from wyraj.persistence.paths import wyraj_home
 
-VALID_KEYS = {"ascii", "portrait", "origin", "lang", "narrator", "llm"}
+VALID_KEYS = {"ascii", "portrait", "origin", "lang", "narrator", "llm", "hints", "text_speed"}
 
 
 def load_config() -> dict[str, Any]:
@@ -23,3 +23,16 @@ def load_config() -> dict[str, Any]:
     if not isinstance(raw, dict):
         return {}
     return {k: v for k, v in raw.items() if k in VALID_KEYS}
+
+
+def save_config(updates: dict[str, Any]) -> None:
+    """Merge updates into config.yml, preserving unknown keys."""
+    path = wyraj_home() / "config.yml"
+    current: dict[str, Any] = {}
+    if path.exists():
+        raw = yaml.safe_load(path.read_text(encoding="utf-8"))
+        if isinstance(raw, dict):
+            current = raw
+    current.update(updates)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(yaml.safe_dump(current, sort_keys=True, allow_unicode=True), encoding="utf-8")

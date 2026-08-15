@@ -70,6 +70,8 @@ class MetaState(BaseModel):
     codex: Codex = Field(default_factory=Codex)
     unlocks: Unlocks = Field(default_factory=Unlocks)
     achievements: dict[str, int] = {}
+    prologue_seen: bool = False
+    szept_seen: list[str] = []
 
 
 def meta_path() -> Path:

@@ -35,6 +35,7 @@ from wyraj.core.components import (
 )
 from wyraj.core.game import Game
 from wyraj.core.systems.movement import level_of
+from wyraj.ui.codex_view import build_codex_text
 from wyraj.ui.i18n import t
 
 
@@ -216,6 +217,31 @@ class TradeScreen(ModalScreen[Action | None]):
         self.dismiss(None)
 
 
+class HelpScreen(ModalScreen[None]):
+    """`?` — the complete reference, in-voice ("Próg" spec §6)."""
+
+    BINDINGS: ClassVar = [("escape", "close", "Close"), ("question_mark", "close", "Close")]
+
+    def compose(self) -> ComposeResult:
+        from wyraj.content.intro import load_help
+        from wyraj.ui.i18n import current_language
+
+        help_text = load_help(current_language())
+        text = Text()
+        text.append(help_text.title + "\n\n", style="bold")
+        for line in help_text.keys:
+            text.append(f" {line}\n", style="grey74")
+        text.append("\n")
+        for paragraph in help_text.world:
+            text.append(paragraph.strip().replace("\n", " ") + "\n\n", style="italic grey62")
+        text.append(t("esc_close"), style="grey42")
+        with Middle(), Center():
+            yield Static(text)
+
+    def action_close(self) -> None:
+        self.dismiss(None)
+
+
 class ShrineScreen(ModalScreen[Action | None]):
     """Offer denary for a run-scoped favor; escape leaves the god waiting."""
 
@@ -382,48 +408,15 @@ class CodexScreen(ModalScreen[None]):
         super().__init__()
         self.game = game
 
-    def _trophy_line(self, key: str) -> str:
-        game = self.game
-        spec = game.drops.get(key)
-        if spec is None:
-            return ""
-        parts = []
-        if spec.denary is not None:
-            parts.append(t("codex_carries_silver"))
-        for trophy in spec.trophies:
-            definition = game.items_catalog.get(trophy.item)
-            if definition is not None:
-                parts.append(f"{definition.name} ({game.sell_price_for(trophy.item)})")
-        return ", ".join(parts)
-
     def compose(self) -> ComposeResult:
         game = self.game
-        text = Text()
-        text.append(t("codex_title") + "\n\n", style="bold")
-        for key in sorted(game.bestiary):
-            definition = game.bestiary[key]
-            tier = game.codex_tier(key)
-            if tier == "unknown":
-                text.append(" " + t("codex_unseen") + "\n\n", style="grey30")
-                continue
-            text.append(f" {definition.name}", style="bold")
-            text.append(f"  [{t('codex_tier_' + tier)}]", style="grey42")
-            if definition.epithets:
-                text.append(f" — {', '.join(definition.epithets)}", style="italic grey58")
-            text.append("\n")
-            if tier in ("partial", "full"):
-                trophies = self._trophy_line(key)
-                if trophies:
-                    text.append(f"   {t('codex_trophies')}: {trophies}\n", style="gold3")
-            if tier == "full":
-                if definition.weakness:
-                    text.append(
-                        f"   {t('codex_weakness')}: {definition.weakness}\n",
-                        style="medium_purple3",
-                    )
-                text.append(f"   {definition.description.strip()}\n", style="grey66")
-            text.append("\n")
-        text.append(t("esc_close"), style="grey42")
+        text = build_codex_text(
+            bestiary=game.bestiary,
+            items_catalog=game.items_catalog,
+            drops=game.drops,
+            sell_price_for=game.sell_price_for,
+            tier_of=game.codex_tier,
+        )
         with Middle(), Center():
             yield Static(text)
 

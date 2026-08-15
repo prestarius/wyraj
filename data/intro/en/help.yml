@@ -1,0 +1,24 @@
+title: "— How Wyraj works —"
+keys:
+  - "hjkl / yubn / arrows   move (bump a creature to strike; a villager, to talk)"
+  - ".                      wait      g  gather what lies here"
+  - "i  pack                x  examine what you see"
+  - "c  codex               r  rest (in the wieś only)"
+  - "> / <                  stairs down / up"
+  - "s  save and quit       q  quit    ?  this page"
+world:
+  - >
+    Death is not the end of knowledge. It is, regrettably, the end of you.
+    The save is one, and it is eaten when used; the body and everything on
+    it stays where it falls. What you lock in the skrzynia, bank with the
+    karczmarka, or learn into the codex — that returns with the next soul.
+  - >
+    Hunger is patient and the dark is older than fire. Carry bread. Carry
+    a gromnica. Under the kurhany the candle is the difference between a
+    corridor and a throat.
+  - >
+    The wieś asks no questions and heals all wounds — for a night's rest
+    and a little food. The dziad below asks no questions either, but his
+    prices do. And if you hold a crane feather under open sky and stand
+    very still, the birds will carry you home. They will not come while
+    anything watches.

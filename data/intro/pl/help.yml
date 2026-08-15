@@ -1,0 +1,22 @@
+title: "— Jak działa Wyraj —"
+keys:
+  - "hjkl / yubn / strzałki   ruch (wpadnij na stwora, by uderzyć; na człowieka, by pogadać)"
+  - ".                        czekaj    g  podnieś, co tu leży"
+  - "i  tobołek               x  przyjrzyj się temu, co widzisz"
+  - "c  kodeks                r  odpocznij (tylko we wsi)"
+  - "> / <                    schody w dół / w górę"
+  - "s  zapisz i wyjdź        q  wyjdź    ?  ta strona"
+world:
+  - >
+    Śmierć nie jest końcem wiedzy. Jest, niestety, końcem ciebie. Zapis
+    jest jeden i zjada się przy użyciu; ciało i wszystko, co przy nim,
+    zostaje tam, gdzie padło. Co zamkniesz w skrzyni, co zbankujesz u
+    karczmarki, czego nauczy się kodeks — to wraca z następną duszą.
+  - >
+    Głód jest cierpliwy, a ciemność starsza od ognia. Noś chleb. Noś
+    gromnicę. Pod kurhanami świeca to różnica między korytarzem a gardłem.
+  - >
+    Wieś nie zadaje pytań i leczy wszystkie rany — za nocleg i trochę
+    jedzenia. Dziad na dole też nie pyta, ale jego ceny owszem. A jeśli
+    pod otwartym niebem uniesiesz żurawie pióro i staniesz bardzo
+    nieruchomo, ptaki zaniosą cię do domu. Nie przylecą, póki coś patrzy.

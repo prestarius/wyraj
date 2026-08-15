@@ -77,40 +77,74 @@ def main() -> None:
 
     set_language(args.lang)
 
-    seed = args.seed if args.seed is not None else secrets.randbelow(2**31)
-
+    from wyraj.content.origins import load_origins
+    from wyraj.persistence.meta import load_meta, save_meta
     from wyraj.persistence.save import has_save, load_game
     from wyraj.ui.app import WyrajApp
 
-    # A saved run continues unless the player explicitly asks for a new seed.
-    game = load_game() if args.seed is None and has_save() else None
-
-    from wyraj.content.origins import load_origins
-    from wyraj.persistence.meta import load_meta
-
     origins = load_origins()
-    unlocked = load_meta().unlocks.origins
-    origin = args.origin
-    if origin is not None and game is None:
-        definition = origins.get(origin)
-        if definition is None or (definition.unlock is not None and origin not in unlocked):
-            print(f"Origin '{origin}' is not unlocked yet. Something of you must remain first.")
+    meta = load_meta()
+
+    def launch(game: object | None, origin: str, seed: int) -> None:
+        WyrajApp(
+            seed=seed,
+            use_ascii=args.ascii,
+            portrait_style=args.portrait,
+            game=game,  # type: ignore[arg-type]
+            origin=origin,
+            lang=args.lang,
+            narrator_mode=args.narrator,
+            llm_config=llm_config,
+            hints=bool(config.get("hints", True)),
+        ).run()
+
+    if args.seed is not None:
+        # Fast path for testers and scripts: straight into a seeded run,
+        # no title, no prologue ("Próg" spec §2 — seeds stay hidden).
+        origin = args.origin
+        if origin is not None:
+            definition = origins.get(origin)
+            if definition is None or (
+                definition.unlock is not None and origin not in meta.unlocks.origins
+            ):
+                print(f"Origin '{origin}' is not unlocked yet. Something of you must remain first.")
+                return
+        if origin is None:
+            from wyraj.ui.origin_select import OriginApp
+
+            origin = OriginApp(origins, unlocked=meta.unlocks.origins).run() or "wygnaniec"
+        launch(None, origin, args.seed)
+        return
+
+    from wyraj.ui.title import TitleApp
+
+    choice = TitleApp(meta, has_save=has_save()).run()
+    if choice is None:
+        return
+
+    if choice == "continue":
+        game = load_game()
+        if game is not None:
+            launch(game, game.origin.key, game.seed)
             return
-    if game is None and origin is None:
+        choice = "new"  # save vanished under us: fall through to a new journey
+
+    seed = int(choice.split(":", 1)[1]) if choice.startswith("new:") else secrets.randbelow(2**31)
+
+    origin = args.origin
+    if origin is None:
         from wyraj.ui.origin_select import OriginApp
 
-        origin = OriginApp(origins, unlocked=unlocked).run() or "wygnaniec"
+        origin = OriginApp(origins, unlocked=meta.unlocks.origins).run() or "wygnaniec"
 
-    WyrajApp(
-        seed=seed,
-        use_ascii=args.ascii,
-        portrait_style=args.portrait,
-        game=game,
-        origin=origin or "wygnaniec",
-        lang=args.lang,
-        narrator_mode=args.narrator,
-        llm_config=llm_config,
-    ).run()
+    if not meta.prologue_seen:
+        from wyraj.ui.prologue import PrologueApp
+
+        PrologueApp(origin, text_speed=str(config.get("text_speed", "normal"))).run()
+        meta.prologue_seen = True
+        save_meta(meta)
+
+    launch(None, origin, seed)
 
 
 if __name__ == "__main__":
