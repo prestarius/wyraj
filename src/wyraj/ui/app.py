@@ -20,6 +20,7 @@ from wyraj.narration.templates import TemplateNarrator, load_pack
 from wyraj.persistence.history import record_run
 from wyraj.persistence.morgue import write_morgue
 from wyraj.persistence.save import delete_save, save_game
+from wyraj.ui.i18n import t
 from wyraj.ui.screens import (
     CodexScreen,
     DeathScreen,
@@ -96,15 +97,9 @@ class WyrajApp(App[None]):
 
     def on_mount(self) -> None:
         log = self.query_one(RichLog)
-        intro = self.game.origin.intro.strip().replace("\n", " ")
+        intro = self.game.origin.intro_for(self.lang).strip().replace("\n", " ")
         log.write(Text(intro, style="italic grey74"))
-        log.write(
-            Text(
-                "The wieś is behind you the moment you stop looking at it. "
-                "Somewhere between the trees, something is already awake.",
-                style="italic grey58",
-            )
-        )
+        log.write(Text(t("intro_second"), style="italic grey58"))
 
     def _on_narration(self, line: NarrationLine) -> None:
         if self.is_running:

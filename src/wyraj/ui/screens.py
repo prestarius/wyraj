@@ -24,6 +24,7 @@ from wyraj.core.components import (
 )
 from wyraj.core.game import Game
 from wyraj.core.systems.movement import level_of
+from wyraj.ui.i18n import t
 
 
 class DeathScreen(Screen[None]):
@@ -44,14 +45,14 @@ class DeathScreen(Screen[None]):
 
     def compose(self) -> ComposeResult:
         text = Text(justify="center")
-        text.append("Your soul takes wing toward Wyraj.\n\n", style="bold red3")
+        text.append(t("death_title") + "\n\n", style="bold red3")
         if self.cause:
             text.append(f"{self.cause.capitalize()}.\n", style="grey74")
-        text.append(f"You lasted {self.turn} turns.\n", style="grey74")
-        text.append(f"Seed: {self.seed}\n", style="grey58")
+        text.append(t("death_lasted", n=self.turn) + "\n", style="grey74")
+        text.append(t("death_seed", seed=self.seed) + "\n", style="grey58")
         if self.morgue_path:
-            text.append(f"Morgue: {self.morgue_path}\n", style="grey42")
-        text.append("\nPress q to quit.", style="grey42")
+            text.append(t("death_morgue", path=self.morgue_path) + "\n", style="grey42")
+        text.append("\n" + t("death_quit"), style="grey42")
         with Middle(), Center():
             yield Static(text)
 
@@ -78,25 +79,30 @@ class InventoryScreen(ModalScreen[Action | None]):
 
     def compose(self) -> ComposeResult:
         text = Text()
-        text.append("— Your pack —\n\n", style="bold")
+        text.append(t("pack_title") + "\n\n", style="bold")
         if not self.entries:
-            text.append("Nothing but lint and resolve.\n", style="grey58")
+            text.append(t("pack_empty") + "\n", style="grey58")
         wielding = self.game.world.get(self.game.player, Wielding)
         wielded = wielding.item if wielding else None
         wearing = self.game.world.get(self.game.player, Wearing)
         worn = wearing.item if wearing else None
-        verbs = {"consumable": "use", "weapon": "wield", "armor": "wear", "trinket": ""}
+        verbs = {
+            "consumable": t("verb_use"),
+            "weapon": t("verb_wield"),
+            "armor": t("verb_wear"),
+            "trinket": "",
+        }
         for letter, entity, name, kind in self.entries:
             text.append(f" {letter}", style="bold gold3")
             text.append(f" — {name}")
             if entity == wielded:
-                text.append(" (wielded)", style="grey58")
+                text.append(" " + t("mark_wielded"), style="grey58")
             elif entity == worn:
-                text.append(" (worn)", style="grey58")
+                text.append(" " + t("mark_worn"), style="grey58")
             elif verbs[kind]:
                 text.append(f"  [{verbs[kind]}]", style="grey42")
             text.append("\n")
-        text.append("\nEsc to close.", style="grey42")
+        text.append("\n" + t("esc_close"), style="grey42")
         with Middle(), Center():
             yield Static(text)
 
@@ -154,20 +160,21 @@ class TradeScreen(ModalScreen[Action | None]):
 
     def compose(self) -> ComposeResult:
         text = Text()
-        text.append("— The handlarz's cart —\n\n", style="bold")
+        text.append(t("trade_title") + "\n\n", style="bold")
         if not self.mine:
-            text.append("You have nothing to trade. He is polite about it.\n", style="grey58")
+            text.append(t("trade_nothing") + "\n", style="grey58")
         else:
-            text.append("Yours (pick with a-z):\n", style="grey58")
+            text.append(t("trade_yours") + "\n", style="grey58")
             for letter, entity, name in self.mine:
                 style = "bold gold3" if entity == self.giving else "gold3"
                 text.append(f" {letter}", style=style)
-                text.append(f" — {name}{'  ← offering' if entity == self.giving else ''}\n")
-            text.append("\nHis stock (pick with A-Z):\n", style="grey58")
+                offering = f"  {t('trade_offering')}" if entity == self.giving else ""
+                text.append(f" — {name}{offering}\n")
+            text.append("\n" + t("trade_stock") + "\n", style="grey58")
             for letter, _entity, name in self.theirs:
                 text.append(f" {letter}", style="bold cyan")
                 text.append(f" — {name}\n")
-        text.append("\nEsc to walk away.", style="grey42")
+        text.append("\n" + t("trade_esc"), style="grey42")
         with Middle(), Center():
             yield Static(text)
 
@@ -203,7 +210,7 @@ class ExamineScreen(ModalScreen[None]):
     def compose(self) -> ComposeResult:
         game = self.game
         text = Text()
-        text.append("— What you see —\n\n", style="bold")
+        text.append(t("examine_title") + "\n\n", style="bold")
         seen_something = False
         for entity, (_ai, lore, pos, health) in game.world.query(AI, Lore, Position, Health):
             if level_of(game.world, entity) != game.depth:
@@ -224,7 +231,7 @@ class ExamineScreen(ModalScreen[None]):
                 continue
             seen_something = True
             text.append(f" {lore.name}", style="gold3")
-            text.append(" lies here.\n", style="grey58")
+            text.append(" " + t("lies_here") + "\n", style="grey58")
         for entity, (_hook, lore, pos) in game.world.query(StoryHook, Lore, Position):
             if level_of(game.world, entity) != game.depth:
                 continue
@@ -235,8 +242,8 @@ class ExamineScreen(ModalScreen[None]):
             if lore.description:
                 text.append(f"   {lore.description.strip()}\n\n", style="grey66")
         if not seen_something:
-            text.append("Only trees, and the spaces between them.\n", style="grey58")
-        text.append("\nEsc to close.", style="grey42")
+            text.append(t("examine_nothing") + "\n", style="grey58")
+        text.append("\n" + t("esc_close"), style="grey42")
         with Middle(), Center():
             yield Static(text)
 
@@ -256,7 +263,7 @@ class CodexScreen(ModalScreen[None]):
     def compose(self) -> ComposeResult:
         game = self.game
         text = Text()
-        text.append("— Codex of the Puszcza —\n\n", style="bold")
+        text.append(t("codex_title") + "\n\n", style="bold")
         for key in sorted(game.bestiary):
             definition = game.bestiary[key]
             if key in game.codex_seen:
@@ -266,8 +273,8 @@ class CodexScreen(ModalScreen[None]):
                 text.append("\n")
                 text.append(f"   {definition.description.strip()}\n\n", style="grey66")
             else:
-                text.append(" — a shape not yet seen —\n\n", style="grey30")
-        text.append("Esc to close.", style="grey42")
+                text.append(" " + t("codex_unseen") + "\n\n", style="grey30")
+        text.append(t("esc_close"), style="grey42")
         with Middle(), Center():
             yield Static(text)
 

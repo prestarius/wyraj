@@ -6,6 +6,16 @@ wygnaniec:
   damage: 4
   satiation: 500
   starting_items: [noz, chleb]
+  title_pl: "Banita"
+  intro_pl: >
+    Wyrok odczytali ci u drzwi kościoła i stłukli glinianą misę o próg.
+    Cokolwiek zrobiłeś — a wieś spiera się o to do dziś — puszcza jest
+    teraz twoją ojczyzną. Przetrwałeś w niej już jedną zimę. To o jedną
+    więcej, niż udaje się większości wygnańców.
+  description_pl: >
+    Twardszy niż inni (24 zdrowia), oswojony z pierwszym ukąszeniem głodu,
+    ale wieś nie jest ci nic winna. Zaczynasz z nożem i bochnem kradzionego
+    chleba.
   intro: >
     They read your sentence at the church door and broke a clay bowl over
     the threshold. Whatever you did — and the wieś argues about it still —
@@ -23,6 +33,15 @@ zielarka:
   damage: 3
   satiation: 600
   starting_items: [odwar, odwar, sol_swiecona, gromnica]
+  title_pl: "Zielarka"
+  intro_pl: >
+    Znasz puszczę tak, jak pleban zna swój psałterz — która kora uciszy
+    gorączkę, który mech opatrzy ranę i z których polan trzeba odejść
+    przed zmierzchem. Ale coś w lesie zmieniło zwyczaje, a zioła, których
+    potrzebujesz, rosną już tylko tam, gdzie ono poluje.
+  description_pl: >
+    Wątła (18 zdrowia), lecz nigdy bez leków. Zaczynasz z dwoma odwarami,
+    solą święconą i gromnicą.
   intro: >
     You know the puszcza the way the priest knows his psalter — which bark
     quiets a fever, which moss packs a wound, and which clearings to leave
@@ -40,6 +59,15 @@ najemnik:
   damage: 4
   satiation: 550
   starting_items: [toporek, wilcza_skora]
+  title_pl: "Najemnik"
+  intro_pl: >
+    Biłeś się pod trzema chorągwiami i przeżyłeś wszystkich trzech
+    płatników. Srebro w tej wsi jest cienkie, ale robota jak na twoje
+    standardy uczciwa: coś porywa ludzi z brzegu lasu, a wieś wykarmi
+    każdego, kto sprawi, że przestanie.
+  description_pl: >
+    Wprawny zabójca (20 zdrowia, pewna ręka w walce). Zaczynasz
+    z toporkiem i wilczą skórą.
   intro: >
     You fought for three banners and outlived all three paymasters. The
     silver in this village is thin, but the work is honest by your
