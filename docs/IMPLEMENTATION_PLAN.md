@@ -114,10 +114,10 @@ Goal: `uv run wyraj --seed 42` is a completable-by-dying game; golden-run test r
 - US 5.2 — `--lang pl` + UI catalog PL
 - US 5.3 — Blog post: grammar-aware narration engine for Polish
 
-## Epic 6 — M5: AI Narrator (optional)
+## Epic 6 — M5: AI Narrator (optional) — **DONE 2026-08-15 (v0.5-m5)**
 
-- US 6.1 — `LLMNarrator` behind config flag (Ollama-first, OpenRouter fallback; timeout → template fallback; cosmetic-only contract)
-- US 6.2 — Style-guide prompt + per-run cost/latency stats; comparative blog post
+- ~~US 6.1~~ — `LLMNarrator` behind `--narrator llm` (Ollama-first, OpenRouter alternative; timeout → template fallback; cosmetic-only contract)
+- ~~US 6.2~~ — Style-guide prompt + per-run latency/fallback stats; comparison blog skeleton awaiting LLM captures (`docs/blog/ai-narrator-comparison.md`)
 
 ## Epic 7 — M6: Powroty (meta-progression) *(spec: `WYRAJ_M6_POWROTY.md`; stories mirror its implementation order; break down to tasks at milestone start)*
 
