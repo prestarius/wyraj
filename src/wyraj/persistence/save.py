@@ -99,6 +99,9 @@ def save_game(game: Game, path: Path | None = None) -> Path:
         "origin": game.origin.key,
         "max_depth_reached": game.max_depth_reached,
         "dziad_traded_this_run": getattr(game, "dziad_traded_this_run", False),
+        "dziad_seen_this_run": getattr(game, "dziad_seen_this_run", False),
+        "dziad_met_this_run": getattr(game, "dziad_met_this_run", False),
+        "dziad_last_depth": getattr(game, "dziad_last_depth", 0),
         "player": game.player,
         "rng": game.rng.get_states(),
         "levels": {str(depth): _encode_map(m) for depth, m in game.levels.items()},
@@ -139,7 +142,7 @@ def load_game(path: Path | None = None) -> Game | None:
         game.rng.set_state(name, (version, tuple(internal), gauss))
 
     from wyraj.content.bestiary import load_bestiary
-    from wyraj.content.economy import load_drops, load_prices, load_village_shop
+    from wyraj.content.economy import load_drops, load_dziad_shop, load_prices, load_village_shop
     from wyraj.content.hooks import load_hooks
     from wyraj.content.items import load_items
     from wyraj.content.loot import load_loot_tables
@@ -160,6 +163,10 @@ def load_game(path: Path | None = None) -> Game | None:
     game.meta = load_meta()
     game.meta_autosave = True
     game.dziad_traded_this_run = payload.get("dziad_traded_this_run", False)
+    game.dziad_seen_this_run = payload.get("dziad_seen_this_run", False)
+    game.dziad_met_this_run = payload.get("dziad_met_this_run", False)
+    game.dziad_last_depth = payload.get("dziad_last_depth", 0)
+    game.dziad_shop = load_dziad_shop()
 
     game.levels = {int(d): _decode_map(m) for d, m in payload["levels"].items()}
 

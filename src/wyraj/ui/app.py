@@ -152,7 +152,7 @@ class WyrajApp(App[None]):
         self.call_after_refresh(self.push_screen, StashScreen(self.game), on_result)
 
     def _on_talked_to(self, event: TalkedTo) -> None:
-        if event.role == "trader" and self.is_running:
+        if event.role in ("trader", "dziad_wedrowny") and self.is_running:
 
             def on_result(action: Action | None) -> None:
                 if action is not None:

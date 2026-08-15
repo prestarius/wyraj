@@ -57,3 +57,27 @@ def load_prices(root: Path | None = None) -> Prices:
 def load_village_shop(root: Path | None = None) -> VillageShop:
     raw = yaml.safe_load(((root or data_dir()) / "economy" / "shop_village.yml").read_text()) or {}
     return VillageShop(**raw)
+
+
+class DziadShop(BaseModel):
+    first_eligible: int = 3
+    base_chance: int = Field(default=60, ge=0, le=100)
+    pity_level: int = 5
+    repeat_chance: int = Field(default=40, ge=0, le=100)
+    repeat_interval: int = 2
+    stock_per_visit: int = 4
+    tiers: dict[int, list[str]] = {}
+    tier_unlocks: dict[int, int] = {}
+
+    def stock_pool(self, reputation: int) -> list[str]:
+        pool: list[str] = []
+        for tier in sorted(self.tiers):
+            required = self.tier_unlocks.get(tier, 0)
+            if reputation >= required:
+                pool.extend(self.tiers[tier])
+        return pool
+
+
+def load_dziad_shop(root: Path | None = None) -> DziadShop:
+    raw = yaml.safe_load(((root or data_dir()) / "economy" / "shop_dziad.yml").read_text()) or {}
+    return DziadShop(**raw)

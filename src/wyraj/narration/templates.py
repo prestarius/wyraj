@@ -26,6 +26,7 @@ from wyraj.core.events import (
     AttackResolved,
     CoinsBanked,
     CoinsPicked,
+    DziadRecognized,
     EntityDied,
     EntityRef,
     GameEvent,
@@ -124,6 +125,8 @@ def rule_key(event: GameEvent) -> RuleKey:
             return "stash_upgraded", None
         case HeirloomWielded():
             return "heirloom_wielded", None
+        case DziadRecognized():
+            return "dziad_recognized", None
         case _:
             name = type(event).__name__
             snake = re.sub(r"(?<!^)(?=[A-Z])", "_", name).lower()

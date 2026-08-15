@@ -174,6 +174,13 @@ class ShrineVisited(GameEvent):
 
 
 @dataclass(frozen=True)
+class DziadRecognized(GameEvent):
+    """The dziad knows this soul — or one very like it (rep ≥ 3)."""
+
+    reputation: int
+
+
+@dataclass(frozen=True)
 class TalkedTo(GameEvent):
     villager: EntityRef
     role: str

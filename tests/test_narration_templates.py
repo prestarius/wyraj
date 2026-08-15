@@ -8,6 +8,7 @@ from wyraj.core.events import (
     AttackResolved,
     CoinsBanked,
     CoinsPicked,
+    DziadRecognized,
     EntityDied,
     EntityRef,
     EventBus,
@@ -117,6 +118,8 @@ def fixture_event(event_key: str, subkey: str | None) -> GameEvent:
         return StashUpgraded(slots=6, price=120)
     if event_key == "heirloom_wielded":
         return HeirloomWielded(actor=PLAYER, item=CIUPAGA)
+    if event_key == "dziad_recognized":
+        return DziadRecognized(reputation=4)
     raise AssertionError(f"no fixture for pack rule {event_key}/{subkey}")
 
 

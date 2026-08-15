@@ -10,7 +10,7 @@ import random
 from typing import ClassVar
 
 from wyraj.content.bestiary import MonsterDef, load_bestiary
-from wyraj.content.economy import load_drops, load_prices, load_village_shop
+from wyraj.content.economy import load_drops, load_dziad_shop, load_prices, load_village_shop
 from wyraj.content.hooks import HookDef, load_hooks
 from wyraj.content.items import ItemDef, load_items
 from wyraj.content.loot import load_loot_tables
@@ -68,6 +68,7 @@ from wyraj.core.events import (
     AttackResolved,
     CoinsBanked,
     CoinsPicked,
+    DziadRecognized,
     EntityDied,
     EventBus,
     ItemBought,
@@ -156,6 +157,11 @@ class Game:
         self.village_shop = load_village_shop()
         self.meta = meta if meta is not None else MetaState()
         self.meta_autosave = meta_autosave
+        self.dziad_shop = load_dziad_shop()
+        self.dziad_seen_this_run = False
+        self.dziad_met_this_run = False
+        self.dziad_traded_this_run = False
+        self.dziad_last_depth = 0
         self.bus.subscribe(EntityDied, self._on_monster_died)
 
         layout = generate_village()
@@ -367,6 +373,7 @@ class Game:
         else:
             self.levels[depth] = generate_kurhan(level_seed, with_down_stairs=depth < MAX_DEPTH)
         self._populate_level(depth, random.Random(level_seed ^ 0xA5A5))
+        self._maybe_spawn_dziad(depth)
 
     def spawn_item(self, definition: ItemDef, x: int, y: int, depth: int = 0) -> Entity:
         entity = self.world.create(
@@ -477,6 +484,15 @@ class Game:
                 if target is not None and target != self.player:
                     villager = self.world.get(target, Villager)
                     if villager is not None:
+                        if villager.role == "dziad_wedrowny" and not self.dziad_met_this_run:
+                            self.dziad_met_this_run = True
+                            self.meta.dziad.met_count += 1
+                            self.bus.publish(MetaTransaction(kind="dziad_met", detail=""))
+                            self._save_meta()
+                            if self.meta.dziad.reputation >= 3:
+                                self.bus.publish(
+                                    DziadRecognized(reputation=self.meta.dziad.reputation)
+                                )
                         self.bus.publish(
                             TalkedTo(villager=ref_for(self.world, target), role=villager.role)
                         )
@@ -543,6 +559,8 @@ class Game:
                 pass
 
     def _advance_until_player_turn(self) -> None:
+        if movement.level_of(self.world, self.player) != self.depth:
+            return  # defensive: never spin the AI loop without the player present
         while not self.game_over:
             entity = self.scheduler.next_actor(self.depth)
             if entity is None or entity == self.player:
@@ -763,6 +781,44 @@ class Game:
         self.bus.publish(StashUpgraded(slots=self.meta.stash.slots_total, price=price))
         self.bus.publish(MetaTransaction(kind="stash_upgrade", detail=str(price)))
         self._save_meta()
+
+    def _maybe_spawn_dziad(self, depth: int) -> None:
+        cfg = self.dziad_shop
+        if self.levels[depth].biome != "kurhany" or depth < cfg.first_eligible:
+            return
+        if self.dziad_seen_this_run:
+            if depth < self.dziad_last_depth + cfg.repeat_interval:
+                return
+            chance = cfg.repeat_chance
+        else:
+            chance = 100 if depth >= cfg.pity_level else cfg.base_chance
+        if self.rng.worldgen.randint(1, 100) > chance:
+            return
+        self.dziad_seen_this_run = True
+        self.dziad_last_depth = depth
+        floors = self.levels[depth].floor_tiles()
+        x, y = self.rng.worldgen.choice(floors)
+        dziad = self.world.create(
+            Position(x, y),
+            OnLevel(depth),
+            Renderable(glyph="☺", style="grey66", ascii_glyph="D"),
+            Health(10, 10),
+            Villager(role="dziad_wedrowny"),
+            Lore(
+                key="dziad_wedrowny",
+                name="the wandering dziad",
+                epithets=("always already there",),
+                description=(
+                    "An old peddler with a cart no one has ever seen him pull, met "
+                    "deeper underground than any living man should be. He is never "
+                    "surprised to see you. He is never surprised at all."
+                ),
+            ),
+        )
+        pool = self.dziad_shop.stock_pool(self.meta.dziad.reputation)
+        count = min(cfg.stock_per_visit, len(pool))
+        stock = tuple(self.spawn_stock_item(self.rng.worldgen.choice(pool)) for _ in range(count))
+        self.world.add(dziad, Inventory(items=stock))
 
     def apply_death_to_meta(self) -> list[str]:
         """Fold the run's fate into the meta-state; return newly unlocked origins."""
