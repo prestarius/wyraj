@@ -35,6 +35,12 @@ WALL_STYLES = {
     "bagna": "dark_olive_green3",
     "wies": "tan",
 }
+FLOOR_STYLES = {
+    "wies": "#93856b",
+    "puszcza": "#7d8a6e",
+    "bagna": "#7e8154",
+    "kurhany": "#6f7a85",
+}
 FLOOR_GLYPHS = ("·", ".")
 WATER_GLYPHS = ("≈", "~")
 SHAFT_GLYPHS = ("◌", "o")
@@ -42,11 +48,27 @@ STAIRS_DOWN_GLYPHS = (">", ">")
 STAIRS_UP_GLYPHS = ("<", "<")
 
 
+def place_label(game: Game) -> str:
+    places = {0: t("place_wies"), 1: t("place_puszcza"), 2: t("place_bagna")}
+    return places.get(game.depth, t("place_kurhan", n=game.depth - 2))
+
+
 class MapView(Static):
     def __init__(self, game: Game, use_ascii: bool = False) -> None:
         super().__init__()
         self.game = game
         self.use_ascii = use_ascii
+        self._damage_flash = False
+
+    def flash_damage(self) -> None:
+        """Briefly mark the player glyph after taking a hit (cosmetic only)."""
+        self._damage_flash = True
+        self.refresh()
+        self.set_timer(0.2, self._clear_flash)
+
+    def _clear_flash(self) -> None:
+        self._damage_flash = False
+        self.refresh()
 
     def _terrain_glyph(self, tile: Tile) -> str:
         glyph_index = 1 if self.use_ascii else 0
@@ -65,7 +87,11 @@ class MapView(Static):
 
     def render(self) -> Text:
         game = self.game
+        self.border_title = place_label(game)
         wall_style = WALL_STYLES.get(game.map.biome, "dark_green")
+        floor_style = FLOOR_STYLES.get(game.map.biome, "grey58")
+        player_pos = game.world.expect(game.player, Position)
+        flash_cell = (player_pos.x, player_pos.y) if self._damage_flash else None
 
         # Items first, creatures second — creatures draw on top.
         entities: dict[tuple[int, int], Renderable] = {}
@@ -89,7 +115,8 @@ class MapView(Static):
                             if self.use_ascii and renderable.ascii_glyph
                             else renderable.glyph
                         )
-                        text.append(glyph, style=renderable.style)
+                        style = "bold white on red3" if cell == flash_cell else renderable.style
+                        text.append(glyph, style=style)
                     elif tile is Tile.WALL:
                         text.append(self._terrain_glyph(tile), style=wall_style)
                     elif tile in (Tile.STAIRS_DOWN, Tile.STAIRS_UP):
@@ -99,7 +126,7 @@ class MapView(Static):
                     elif tile is Tile.SHAFT:
                         text.append(self._terrain_glyph(tile), style="light_sky_blue3")
                     else:
-                        text.append(self._terrain_glyph(tile), style="grey58")
+                        text.append(self._terrain_glyph(tile), style=floor_style)
                 elif cell in game.map.explored:
                     text.append(self._terrain_glyph(tile), style="grey23")
                 else:
@@ -114,6 +141,7 @@ class CharacterPanel(Static):
         super().__init__()
         self.game = game
         self.portrait_style = portrait_style
+        self.border_title = game.origin.name
 
     def _weapon_key(self) -> str | None:
         wielding = self.game.world.get(self.game.player, Wielding)
@@ -133,9 +161,7 @@ class CharacterPanel(Static):
         text.append(
             f" {game.origin.name}, {game.origin.title_for(current_language())}\n", style="bold"
         )
-        places = {0: t("place_wies"), 1: t("place_puszcza"), 2: t("place_bagna")}
-        place = places.get(game.depth, t("place_kurhan", n=game.depth - 2))
-        text.append(f" {place}\n", style="grey58")
+        text.append(f" {place_label(game)}\n", style="grey58")
         text.append(f" {t('turn', n=game.turn)}\n\n", style="grey58")
         text.append(" HP ")
         bar_width = 14

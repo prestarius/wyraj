@@ -201,7 +201,7 @@ class LLMNarrator:
             return draft_lines
         self.stats.reply_chars += len(text)
         self._recent.append(text)
-        return [NarrationLine(text=text, importance=draft.importance)]
+        return [NarrationLine(text=text, importance=draft.importance, category=draft.category)]
 
     def _build_prompt(self, batch: list[tuple[GameEvent, frozenset[str]]], draft: str) -> str:
         parts = [STYLE_GUIDE, "", "FACTS:", _facts_for(batch)]

@@ -22,16 +22,61 @@ CharacterPanel {
     width: 26;
     height: 100%;
     border: round #2e3d2a;
+    border-title-color: #7a8f6e;
     padding: 0 1;
 }
 
 #narrative {
-    height: 12;
+    height: 40%;
+    min-height: 12;
     border: round #2e3d2a;
+    border-title-color: #7a8f6e;
     background: #0d0f0c;
     padding: 0 1;
+    scrollbar-background: #0d0f0c;
+    scrollbar-color: #2e3d2a;
+    scrollbar-color-hover: #4a5d3f;
+    scrollbar-size-vertical: 1;
+}
+
+/* Modal dialogs render as a lit panel over the dimmed game. */
+ModalScreen {
+    background: #0d0f0c 60%;
+    align: center middle;
+}
+
+.dialog {
+    width: auto;
+    max-width: 80%;
+    background: #141712;
+    border: round #4a5d3f;
+    padding: 1 3;
 }
 
 DeathScreen {
     background: #0a0505;
+}
+
+DeathScreen .dialog {
+    background: #140808;
+    border: round #5d2a2a;
+}
+
+Footer {
+    background: #141712;
+    color: #8a8875;
+}
+
+FooterKey {
+    background: #141712;
+}
+
+FooterKey .footer-key--key {
+    color: #d7af5f;
+    background: #141712;
+}
+
+FooterKey .footer-key--description {
+    color: #8a8875;
+    background: #141712;
 }

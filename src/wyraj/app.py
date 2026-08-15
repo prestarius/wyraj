@@ -101,8 +101,8 @@ def main() -> None:
     origins = load_origins()
     meta = load_meta()
 
-    def launch(game: object | None, origin: str, seed: int) -> None:
-        WyrajApp(
+    def launch(game: object | None, origin: str, seed: int) -> str | None:
+        return WyrajApp(
             seed=seed,
             use_ascii=args.ascii,
             portrait_style=args.portrait,
@@ -113,6 +113,14 @@ def main() -> None:
             llm_config=llm_config,
             hints=bool(config.get("hints", True)),
         ).run()
+
+    def play_run(game: object | None, origin: str, seed: int) -> str | None:
+        """Run the app; the death screen's "set out again" starts fresh runs
+        (same origin, new seed) until the player quits or asks for the title."""
+        outcome = launch(game, origin, seed)
+        while outcome == "restart":
+            outcome = launch(None, origin, secrets.randbelow(2**31))
+        return outcome
 
     if args.seed is not None:
         # Fast path for testers and scripts: straight into a seeded run,
@@ -129,38 +137,50 @@ def main() -> None:
             from wyraj.ui.origin_select import OriginApp
 
             origin = OriginApp(origins, unlocked=meta.unlocks.origins).run() or "wygnaniec"
-        launch(None, origin, args.seed)
-        return
+        outcome: str | None = "restart"
+        while outcome == "restart":
+            outcome = launch(None, origin, args.seed)  # a pinned seed stays pinned
+        if outcome != "title":
+            return
+        meta = load_meta()  # death mutated it on disk
 
     from wyraj.ui.title import TitleApp
 
-    choice = TitleApp(meta, has_save=has_save()).run()
-    if choice is None:
-        return
-
-    if choice == "continue":
-        game = load_game()
-        if game is not None:
-            launch(game, game.origin.key, game.seed)
+    while True:
+        choice = TitleApp(meta, has_save=has_save()).run()
+        if choice is None:
             return
-        choice = "new"  # save vanished under us: fall through to a new journey
 
-    seed = int(choice.split(":", 1)[1]) if choice.startswith("new:") else secrets.randbelow(2**31)
+        if choice == "continue":
+            game = load_game()
+            if game is not None:
+                if play_run(game, game.origin.key, game.seed) != "title":
+                    return
+                meta = load_meta()
+                continue
+            choice = "new"  # save vanished under us: fall through to a new journey
 
-    origin = args.origin
-    if origin is None:
-        from wyraj.ui.origin_select import OriginApp
+        if choice.startswith("new:"):
+            seed = int(choice.split(":", 1)[1])
+        else:
+            seed = secrets.randbelow(2**31)
 
-        origin = OriginApp(origins, unlocked=meta.unlocks.origins).run() or "wygnaniec"
+        origin = args.origin
+        if origin is None:
+            from wyraj.ui.origin_select import OriginApp
 
-    if not meta.prologue_seen:
-        from wyraj.ui.prologue import PrologueApp
+            origin = OriginApp(origins, unlocked=meta.unlocks.origins).run() or "wygnaniec"
 
-        PrologueApp(origin, text_speed=str(config.get("text_speed", "normal"))).run()
-        meta.prologue_seen = True
-        save_meta(meta)
+        if not meta.prologue_seen:
+            from wyraj.ui.prologue import PrologueApp
 
-    launch(None, origin, seed)
+            PrologueApp(origin, text_speed=str(config.get("text_speed", "normal"))).run()
+            meta.prologue_seen = True
+            save_meta(meta)
+
+        if play_run(None, origin, seed) != "title":
+            return
+        meta = load_meta()  # back to the threshold with fresh unlocks
 
 
 if __name__ == "__main__":

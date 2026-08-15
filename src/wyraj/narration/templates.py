@@ -58,6 +58,7 @@ from wyraj.core.events import (
     StatusExpired,
     StatusTick,
     TalkedTo,
+    ZnamiePlaced,
 )
 from wyraj.narration.engine import NarrationLine
 from wyraj.narration.forms import FormRegistry
@@ -75,6 +76,55 @@ class Variant(BaseModel):
 
 
 RuleKey = tuple[str, str | None]
+
+# Paragraph tint families for the UI (cosmetic only). A turn's paragraph takes
+# the highest-ranked family among its events: combat > lore > loot > ambient.
+_CATEGORY_RANK = {"ambient": 0, "loot": 1, "lore": 2, "combat": 3}
+_COMBAT_EVENTS: tuple[type[GameEvent], ...] = (
+    AttackResolved,
+    EntityDied,
+    StatusApplied,
+    StatusTick,
+    StatusExpired,
+    StarvationHit,
+)
+_LOOT_EVENTS: tuple[type[GameEvent], ...] = (
+    ItemPickedUp,
+    ItemUsed,
+    ItemWielded,
+    ItemWorn,
+    ItemBought,
+    ItemSold,
+    CoinsPicked,
+    CoinsBanked,
+    StashDeposited,
+    StashWithdrawn,
+    StashUpgraded,
+    HeirloomWielded,
+)
+_LORE_EVENTS: tuple[type[GameEvent], ...] = (
+    LoreDiscovered,
+    TalkedTo,
+    ShrineVisited,
+    OfferingMade,
+    DziadRecognized,
+    ZnamiePlaced,
+    CraneSummonStarted,
+    CraneSummonInterrupted,
+    CraneSummonCompleted,
+    CraneRefused,
+    CraneReturn,
+)
+
+
+def category_of(event: GameEvent) -> str:
+    if isinstance(event, _COMBAT_EVENTS):
+        return "combat"
+    if isinstance(event, _LORE_EVENTS):
+        return "lore"
+    if isinstance(event, _LOOT_EVENTS):
+        return "loot"
+    return "ambient"
 
 
 def rule_key(event: GameEvent) -> RuleKey:
@@ -229,7 +279,7 @@ class TemplateNarrator:
         if chosen is None:
             return []
         text = render(chosen.text, event, self.registry)
-        return [NarrationLine(text=text, importance=chosen.importance)]
+        return [NarrationLine(text=text, importance=chosen.importance, category=category_of(event))]
 
     @staticmethod
     def _lookup(pack: GrammarPack, key: RuleKey) -> list[Variant] | None:
@@ -260,6 +310,7 @@ class TemplateNarrator:
         """Coalesce one turn's events into a single composed paragraph."""
         sentences: list[str] = []
         importance = "normal"
+        category = "ambient"
         again_added = False
         for event, tags in batch:
             for line in self.compose(event, tags):
@@ -271,6 +322,8 @@ class TemplateNarrator:
                 sentences.append(line.text)
                 if line.importance == "high":
                     importance = "high"
+                if _CATEGORY_RANK[line.category] > _CATEGORY_RANK[category]:
+                    category = line.category
         if not sentences:
             return []
-        return [NarrationLine(text=" ".join(sentences), importance=importance)]
+        return [NarrationLine(text=" ".join(sentences), importance=importance, category=category)]
