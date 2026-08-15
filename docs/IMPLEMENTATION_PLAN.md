@@ -133,6 +133,15 @@ All nine stories landed on `feat/m6-powroty`. Meta path is `~/.wyraj/meta.yml` (
 - US 7.8 — Codex persistence (unknown→glimpsed→partial→full) + achievement-gated origin unlocks (Strzygobójca, Dziadowy Uczeń)
 - US 7.9 — Balance pass: 50-run shared-meta headless sim; DoD: stash value plateaus, currency in/out within 20% per depth band, golden green with meta fixture
 
+## Epic 8 — Próg: intro & onboarding *(spec: `WYRAJ_PROG_SPEC.md`; M0–M6 already done, so the phased targets collapse into one epic)*
+
+- US 8.1 — Title screen: figlet WYRAJ, drifting crane glyphs (decision #13: prototype), rotating tagline, menu (New Journey / Continue / Codex / Morgue / Options / Quit), seeded start hidden in Options
+- US 8.2 — Prologue: paged typewriter prose (skippable always, no first-run confirm per decision #12), origin-variant final pages, EN+PL authored natively, seen-flag in meta
+- US 8.3 — Arrival + Szept: diegetic first-encounter whispers (fired once per profile, persisted in meta), forest-edge consent moment, hints on/off with auto-quiet
+- US 8.4 — Help screen (`?`) in-voice reference; Pilot smoke tests; cut
+
+Deviation note: intro content lives under `data/intro/{en,pl}/` rather than `data/narration/` — the narration dir is reserved for grammar packs, whose loader globs every `*.yml` there.
+
 ---
 
 ## Open decisions blocking future work (spec §13)
@@ -147,4 +156,8 @@ All nine stories landed on `feat/m6-powroty`. Meta path is `~/.wyraj/meta.yml` (
 | 8 | M6: dziad gambling minigame | US 7.5 | spec default: defer (flag off) — likely M7 |
 | 9 | M6: currency name | US 7.2 | spec default: denary (single tier) |
 | 10 | M6: dziad unkillable hand-wave | US 7.5 | spec default: yes for v1 |
+| 11 | Próg: prologue prose keep/edit | US 8.2 | implemented as drafted — awaiting Prestarius's read |
+| 12 | Próg: confirm Esc-skip on first run | US 8.2 | **no** (spec lean; respect the player) |
+| 13 | Próg: drifting bird glyphs | US 8.1 | prototyped in — judge by feel |
+| 14 | Próg: szept in-log vs hint bar | US 8.3 | in-log dim italics (spec assumption) |
 | 5 | Portrait art direction | US 2.6 | **prototyped in M1** — compare **RESOLVED 2026-08-15: box-drawing wins** — box is the default (`--portrait half` remains as an option); YAML layer files are a later cleanup |
