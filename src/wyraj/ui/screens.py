@@ -46,12 +46,14 @@ class DeathScreen(Screen[None]):
         turn: int,
         cause: str | None = None,
         morgue_path: str | None = None,
+        unlocked: list[str] | None = None,
     ) -> None:
         super().__init__()
         self.seed = seed
         self.turn = turn
         self.cause = cause
         self.morgue_path = morgue_path
+        self.unlocked = unlocked or []
 
     def compose(self) -> ComposeResult:
         text = Text(justify="center")
@@ -62,6 +64,8 @@ class DeathScreen(Screen[None]):
         text.append(t("death_seed", seed=self.seed) + "\n", style="grey58")
         if self.morgue_path:
             text.append(t("death_morgue", path=self.morgue_path) + "\n", style="grey42")
+        for name in self.unlocked:
+            text.append("\n" + t("death_unlock", name=name) + "\n", style="bold gold3")
         text.append("\n" + t("death_quit"), style="grey42")
         with Middle(), Center():
             yield Static(text)

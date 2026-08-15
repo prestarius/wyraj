@@ -192,6 +192,7 @@ class WyrajApp(App[None]):
                 self.query_one(RichLog).write(
                     Text(self.narration.narrator.stats.summary(), style="grey42")
                 )
+            new_origins = self.game.apply_death_to_meta()
             now = datetime.now()
             morgue_path = write_morgue(self.game, when=now)
             record_run(
@@ -202,11 +203,13 @@ class WyrajApp(App[None]):
                 cause=self.game.death_cause or "lost to the forest",
                 when=now,
             )
+            unlock_names = [self.game.origins_catalog[k].name for k in new_origins]
             self.push_screen(
                 DeathScreen(
                     seed=self.game.seed,
                     turn=self.game.turn,
                     cause=self.game.death_cause,
                     morgue_path=str(morgue_path),
+                    unlocked=unlock_names,
                 )
             )

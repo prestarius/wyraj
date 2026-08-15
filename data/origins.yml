@@ -76,3 +76,57 @@ najemnik:
   description: >
     A practiced killer (20 HP, sure-handed in a fight). Starts with a
     woodsman's toporek and a wolfskin cloak.
+
+strzygobojca:
+  name: "Strzygobójca"
+  title: "the Strzyga-Slayer"
+  hp: 20
+  to_hit: 78
+  damage: 4
+  satiation: 550
+  starting_items: [sol_swiecona, sol_swiecona, noz]
+  unlock: { type: achievement, key: strzyga_deaths, threshold: 3 }
+  title_pl: "Strzygobójca"
+  intro_pl: >
+    Trzy razy patrzyłeś w kaganki jej oczu i trzy razy było to ostatnie,
+    co widziałeś. Coś z tamtych nocy wróciło jednak z tobą: wiesz już,
+    jak ona liczy, jak krąży i czego nie znosi. Wieś mówi o tobie szeptem.
+    Strzyga też.
+  intro: >
+    Three times you looked into the lamplight of her eyes, and three times
+    it was the last thing you saw. But something of those nights came back
+    with you: you know how she counts now, how she circles, what she
+    cannot stand. The village speaks of you in whispers. So does she.
+  description_pl: >
+    Zrodzony z porażki — trzykrotnie zabity przez strzygę. Pewna ręka
+    (20 zdrowia, celny cios), sól święcona zawsze przy pasie.
+  description: >
+    Born of failure — slain three times by the strzyga. Steady-handed
+    (20 HP, sharp aim), blessed salt always at the belt.
+
+dziadowy_uczen:
+  name: "Dziadowy Uczeń"
+  title: "the Dziad's Apprentice"
+  hp: 18
+  to_hit: 72
+  damage: 3
+  satiation: 600
+  starting_items: [gromnica, gromnica, odwar]
+  unlock: { type: dziad_reputation, threshold: 5 }
+  title_pl: "Dziadowy Uczeń"
+  intro_pl: >
+    Handlowałeś z nim tyle razy, że przestał udawać, że cię nie zna.
+    Nauczył cię, jak nosić światło, jak liczyć bez patrzenia na palce
+    i jak nie zadawać jednego, jedynego pytania. Cokolwiek dziad wie
+    o Wyraju — trochę z tego przeszło na ciebie.
+  intro: >
+    You traded with him so many times he stopped pretending not to know
+    you. He taught you how to carry light, how to count without looking
+    at your fingers, and how never to ask the one question. Whatever the
+    dziad knows about Wyraj — some of it rubbed off on you.
+  description_pl: >
+    Zaufany wędrownego dziada (reputacja 5). Wątły, ale nigdy w ciemności
+    — zaczyna z dwiema gromnicami.
+  description: >
+    Trusted by the wandering dziad (reputation 5). Frail, but never in
+    the dark — starts with two gromnice.

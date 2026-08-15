@@ -30,6 +30,14 @@ def write_morgue(game: Game, when: datetime, directory: Path | None = None) -> P
     places = {0: "the wieś", 1: "the puszcza", 2: "the bagna"}
     deepest = places.get(game.max_depth_reached, f"kurhan level {game.max_depth_reached - 2}")
 
+    stash_count = sum(item.count for item in game.meta.stash.items)
+    meta_lines = [
+        f"Banked in the wieś: {game.meta.currency.denary} denary",
+        f"Heirlooms waiting in the skrzynia: {stash_count}",
+    ]
+    if game.meta.edited:
+        meta_lines.append("(profile hand-edited — no judgment, just honesty)")
+
     lines = [
         "════════ WYRAJ — morgue ════════",
         f"{game.origin.name}, {game.origin.title}",
@@ -40,6 +48,7 @@ def write_morgue(game: Game, when: datetime, directory: Path | None = None) -> P
         "",
         "Creatures witnessed: " + (", ".join(known) if known else "none"),
         "Carried at the end: " + (", ".join(carried) if carried else "nothing"),
+        *meta_lines,
         "",
         "Somewhere above the canopy, a bird takes wing toward Wyraj.",
     ]

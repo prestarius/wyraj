@@ -5,11 +5,19 @@ from wyraj.core.components import Health, Hunger, Inventory, Item, Melee
 from wyraj.core.game import Game
 
 
-def test_three_origins_load() -> None:
+def test_origins_load() -> None:
     origins = load_origins()
-    assert set(origins) == {"wygnaniec", "zielarka", "najemnik"}
+    assert set(origins) == {
+        "wygnaniec",
+        "zielarka",
+        "najemnik",
+        "strzygobojca",
+        "dziadowy_uczen",
+    }
     for origin in origins.values():
         assert origin.intro and origin.description
+    base = [o for o in origins.values() if o.unlock is None]
+    assert {o.key for o in base} == {"wygnaniec", "zielarka", "najemnik"}
 
 
 def test_origin_stats_and_kit_apply() -> None:

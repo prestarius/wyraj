@@ -139,6 +139,7 @@ class Game:
         self.depth = 0
         self.max_depth_reached = 0
         self.death_cause: str | None = None
+        self.death_by_key: str | None = None
         self.levels: dict[int, GameMap] = {}
         self.bus.subscribe(AttackResolved, self._track_kill_cause)
         self.bus.subscribe(StarvationHit, self._track_starvation_cause)
@@ -763,6 +764,33 @@ class Game:
         self.bus.publish(MetaTransaction(kind="stash_upgrade", detail=str(price)))
         self._save_meta()
 
+    def apply_death_to_meta(self) -> list[str]:
+        """Fold the run's fate into the meta-state; return newly unlocked origins."""
+        counters = self.meta.achievements
+        counters["runs"] = counters.get("runs", 0) + 1
+        counters["deepest_level"] = max(counters.get("deepest_level", 0), self.max_depth_reached)
+        if self.death_by_key:
+            key = f"{self.death_by_key}_deaths"
+            counters[key] = counters.get(key, 0) + 1
+        newly_unlocked = []
+        for origin_key, definition in sorted(self.origins_catalog.items()):
+            if definition.unlock is None or origin_key in self.meta.unlocks.origins:
+                continue
+            rule = definition.unlock
+            threshold = int(rule.get("threshold", 1))
+            if rule.get("type") == "achievement":
+                current = counters.get(str(rule.get("key", "")), 0)
+            elif rule.get("type") == "dziad_reputation":
+                current = self.meta.dziad.reputation
+            else:
+                continue
+            if current >= threshold:
+                self.meta.unlocks.origins.append(origin_key)
+                newly_unlocked.append(origin_key)
+        self.bus.publish(MetaTransaction(kind="death", detail=self.death_cause or ""))
+        self._save_meta()
+        return newly_unlocked
+
     def _mark_dziad_trade(self, trader: Entity) -> None:
         villager = self.world.get(trader, Villager)
         if villager is None or villager.role != "dziad_wedrowny":
@@ -776,6 +804,7 @@ class Game:
     def _track_kill_cause(self, event: AttackResolved) -> None:
         if event.defender.is_player and event.outcome is Outcome.KILL:
             self.death_cause = f"slain by {event.attacker.name}"
+            self.death_by_key = event.attacker.key
 
     def _track_starvation_cause(self, event: StarvationHit) -> None:
         if event.actor.is_player and event.hp_frac <= 0:

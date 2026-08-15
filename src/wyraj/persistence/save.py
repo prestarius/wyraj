@@ -130,6 +130,7 @@ def load_game(path: Path | None = None) -> Game | None:
     game.codex_seen = set(payload["codex_seen"])
     game.max_depth_reached = payload.get("max_depth_reached", game.depth)
     game.death_cause = None
+    game.death_by_key = None
     game.player = payload["player"]
 
     game.rng = RngStreams(game.seed)
