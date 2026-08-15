@@ -119,6 +119,20 @@ Goal: `uv run wyraj --seed 42` is a completable-by-dying game; golden-run test r
 - US 6.1 — `LLMNarrator` behind config flag (Ollama-first, OpenRouter fallback; timeout → template fallback; cosmetic-only contract)
 - US 6.2 — Style-guide prompt + per-run cost/latency stats; comparative blog post
 
+## Epic 7 — M6: Powroty (meta-progression) *(spec: `WYRAJ_M6_POWROTY.md`; stories mirror its implementation order; break down to tasks at milestone start)*
+
+Prerequisite per spec: M5 landed. Branch `feat/m6-powroty`, each story keeps `main` playable.
+
+- US 7.1 — Meta-persistence layer: versioned `meta.yml` (pydantic), HMAC tamper flag (`edited: true`, no punishment), unknown-field preservation, migrations, atomic writes, `MetaTransaction` events
+- US 7.2 — Economy core: denary + trophy drop tables (lore-gated: beasts drop trophies, coins need a narrative excuse), buy/sell replacing barter v0, `data/economy/*` knobs
+- US 7.3 — Skrzynia stash: single village chest, deposit/withdraw at chest only, body loss absolute, 4→10 slot upgrades, `memory_tag` heirloom narration (item wear dormant per decision #7)
+- US 7.4 — Death integration: achievement counters, death-screen unlock announcements, morgue meta summary
+- US 7.5 — Dziad wandering merchant: pity-guaranteed depth spawns, cruel prices, tiered stock, persistent reputation + recognition narration
+- US 7.6 — Crane flight: żurawie pióro, 6-turn interruptible channel (no-LOS gate), znamię return mark, żerdź perch, shaft tiles in kurhany procgen, `crane.yml` packs (EN+PL)
+- US 7.7 — Shrines & offerings: Perun/Weles, run-scoped blessings only, curse cleansing hook
+- US 7.8 — Codex persistence (unknown→glimpsed→partial→full) + achievement-gated origin unlocks (Strzygobójca, Dziadowy Uczeń)
+- US 7.9 — Balance pass: 50-run shared-meta headless sim; DoD: stash value plateaus, currency in/out within 20% per depth band, golden green with meta fixture
+
 ---
 
 ## Open decisions blocking future work (spec §13)
@@ -128,4 +142,9 @@ Goal: `uv run wyraj --seed 42` is a completable-by-dying game; golden-run test r
 | 2 | ~~License~~ — **RESOLVED 2026-08-14: AGPL-3.0 (code) + CC-BY-SA (data), with CLA** (US 4.5) | M3 publish | — |
 | 3 | Overworld vs pure descent | post-M5 | descent + hub for now |
 | 4 | Fear/mood: mechanic vs narration-only | M3 | narration-only until M3 |
+| 6 | M6: feather consumed on interrupted channel? | US 7.6 | spec default: consumed (harsh) |
+| 7 | M6: heirloom item wear/curse risk | US 7.3 | spec default: dormant (`meta.item_wear: false`) |
+| 8 | M6: dziad gambling minigame | US 7.5 | spec default: defer (flag off) — likely M7 |
+| 9 | M6: currency name | US 7.2 | spec default: denary (single tier) |
+| 10 | M6: dziad unkillable hand-wave | US 7.5 | spec default: yes for v1 |
 | 5 | Portrait art direction | US 2.6 | **prototyped in M1** — compare **RESOLVED 2026-08-15: box-drawing wins** — box is the default (`--portrait half` remains as an option); YAML layer files are a later cleanup |
