@@ -1,13 +1,14 @@
 title: "— How Wyraj works —"
 keys:
-  - "hjkl / yubn / arrows   move (bump a creature to strike; a villager, to talk)"
-  - ".                      wait      g  gather what lies here"
-  - "i  pack                x  examine what you see"
-  - "c  codex               r  rest (in the wieś only)"
-  - "L  legend of the signs   e  worn & wielded"
-  - "1-4  at-hand items       Shift+1-4 clears a slot (bind in the pack: 1-4, then a letter)"
-  - "> / <                  stairs down / up"
-  - "s  save and quit       q  quit    ?  this page"
+  - "hjkl / yubn / arrows    move (bump a creature to strike; a villager, to talk)"
+  - ".  wait                 g  gather what lies here"
+  - "i  pack                 x  examine what you see"
+  - "c  codex                r  rest (in the wieś only)"
+  - "e  worn & wielded       L  legend of the signs"
+  - "1-4  use at-hand item   Shift+1-4  clear a slot"
+  - "     (bind in the pack: 1-4, then an item's letter)"
+  - "> / <  stairs down / up"
+  - "s  save and quit        q  quit    ?  this page"
 world:
   - >
     Death is not the end of knowledge. It is, regrettably, the end of you.

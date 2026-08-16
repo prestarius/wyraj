@@ -1,12 +1,13 @@
 title: "— Jak działa Wyraj —"
 keys:
   - "hjkl / yubn / strzałki   ruch (wpadnij na stwora, by uderzyć; na człowieka, by pogadać)"
-  - ".                        czekaj    g  podnieś, co tu leży"
+  - ".  czekaj                g  podnieś, co tu leży"
   - "i  tobołek               x  przyjrzyj się temu, co widzisz"
   - "c  kodeks                r  odpocznij (tylko we wsi)"
-  - "L  legenda znaków        e  wyposażenie"
-  - "1-4  podręczne           Shift+1-4 czyści (przypisz w tobołku: 1-4, potem litera)"
-  - "> / <                    schody w dół / w górę"
+  - "e  wyposażenie           L  legenda znaków"
+  - "1-4  użyj podręcznego    Shift+1-4  wyczyść miejsce"
+  - "     (przypisz w tobołku: 1-4, potem litera przedmiotu)"
+  - "> / <  schody w dół / w górę"
   - "s  zapisz i wyjdź        q  wyjdź    ?  ta strona"
 world:
   - >
