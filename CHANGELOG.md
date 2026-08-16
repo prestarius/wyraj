@@ -2,7 +2,33 @@
 
 All notable changes to Wyraj. Format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
-## [Unreleased] — M8 "Dno" (ending, antagonist, victory)
+## [Unreleased] — M9 "Koło Roku" (time, weather, festivals)
+
+### Added
+- **The wheel turns.** A 240-turn day (świt/dzień/zmierzch/noc) on a
+  12-day wheel whose starting day is part of the seed's identity — all
+  of it pure functions of (seed, turn), zero saved state. The pane shows
+  phase, moon, weather, and festival; surface floors take the sky's
+  color; the seed-42 golden walk turned out to begin on Gromniczna.
+- **Night and weather.** Surface sight follows the sky (mist shortens
+  it further; a carried flame pushes night back); rain drains an
+  unprotected gromnica; during burza Perun is present — his shrine
+  favor doubles and lightning cracks overhead. Spawn pools read the sky
+  at generation time: strzygi hunt at night, and the południca — the
+  noon demon in white linen — exists only at midday.
+- **Festivals**, each with one ritual: Gromniczna halves candle burn;
+  on Noc Kupały the fern flowers once per run somewhere on your level;
+  Dożynki makes village rest free; on Dziady the dead walk under a
+  truce and *talk* — the codex learns martwiaki from conversation, not
+  killing.
+- A first-night szept whisper; EN+PL narration for phases, weathers,
+  festivals, the bloom, the talking dead, and the lightning.
+
+### Changed
+- Golden transcript regenerated once, intentionally (open decision #30):
+  calendar boundary events necessarily enter the seed-42 walk.
+
+## M8 "Dno" (ending, antagonist, victory) — merged 2026-08-16
 
 ### Added
 - The world now bottoms out: crypts 4–6 (depths 6–8), unlit sight

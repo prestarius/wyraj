@@ -71,6 +71,10 @@ packs never author it, and it never changes the prose.
 | `wij_attack_futile` | — (bumping the cradle without salt)             |
 | `rite_started` / `rite_completed` | —                                 |
 | `rite_interrupted` | `moved`, `damage`                                |
+| `phase_changed`  | `swit`, `dzien`, `zmierzch`, `noc`                 |
+| `weather_changed`| `jasno`, `deszcz`, `mgla`, `burza`                 |
+| `festival_dawned`| `gromniczna`, `kupala`, `dozynki`, `dziady`        |
+| `kupala_bloom` / `talked_to_dead` / `lightning_struck` | —             |
 
 ## Context tags
 

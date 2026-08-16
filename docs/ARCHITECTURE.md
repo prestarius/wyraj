@@ -136,6 +136,17 @@ a running Textual app:
 - **Morgue capture**: `write_morgue` embeds the final composited
   portrait — the file shows who you were at the end.
 
+## Time (M9 "Koło Roku")
+
+`core/calendar.py` is stateless: day phase, wheel day, festival, weather,
+and storm lightning are pure functions of `(seed, turn)` — nothing saved,
+nothing to drift. `Game.step` publishes `PhaseChanged` / `WeatherChanged` /
+`FestivalDawned` at boundaries; surface FOV, candle drain, offering bonuses,
+and spawn-pool weights *read* the clock rather than being driven by it. The
+one new save field is `kupala_bloomed`. This is also why the golden
+transcript was regenerated exactly once at M9: a breathing calendar
+necessarily enters the event log.
+
 ## The ending (M8 "Dno")
 
 The Wij is engine-honest: a lifting meter on `Game`, sługa monsters with a

@@ -213,12 +213,16 @@ M8 → M9 → M10 → M11 → M12; M11 may slide earlier (no prerequisites past 
   CORE_TRIGGERS so the farewell never waits on them); bespoke sługa
   first-sighting line EN/PL. Sim after: 2/30 wins (7%). The vault
   itself still carries no loot — by design.
-- **Epic 12 — M9 "Koło Roku"** (Wheel of the Year) — **SPEC READY:
-  `WYRAJ_M9_KOLO_ROKU.md`**, awaiting Prestarius's read + open decisions
-  26–30. Stories US 12.1–12.6 per spec §6: pure-function clock (240-turn
-  day, 12-day wheel, seeded start) → night/weather mechanics → sky-aware
-  spawns (południca) → four festivals → pane wheel & sky tints → polish.
-  Note: calendar boundary events force one sanctioned golden regeneration.
+- **Epic 12 — M9 "Koło Roku"** (Wheel of the Year) — **DONE 2026-08-16** —
+  spec `WYRAJ_M9_KOLO_ROKU.md`, built with all spec defaults (decisions
+  26–30). US 12.1 pure clock (240-turn day, 12-day wheel, seeded start;
+  boundary events; the one sanctioned golden regeneration — seed 42 turned
+  out to be a Gromniczna start); US 12.2 night/mist FOV, rain candle
+  drain, storm-doubled Perun favor, deterministic lightning; US 12.3
+  sky-read spawn pools (strzyga ×3 at noc, południca at midday only);
+  US 12.4 the four festival rituals (half-burn, fern flower, free rest,
+  the talkable dead + Peaceful truce); US 12.5 pane calendar line + sky
+  tints; US 12.6 first-night szept, docs, sim floor re-verified (2/30).
 - **Epic 13 — M10 "Zlecenia"** (Errands): rumor-driven procedural errands,
   named-villager reputation, off-screen failure states that change the
   village across deaths.
