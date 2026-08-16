@@ -22,6 +22,7 @@ from wyraj.core.systems.movement import level_of
 from wyraj.ui.i18n import current_language, t
 from wyraj.ui.item_info import display_name, stat_suffix
 from wyraj.ui.portrait import PortraitState, compose_portrait, get_art, hp_band
+from wyraj.ui.status_row import build_status_row
 
 # (unicode, ascii) glyphs per terrain, keyed by biome
 WALL_GLYPHS = {
@@ -226,17 +227,11 @@ class CharacterPanel(Static):
 
         statuses = game.world.get(game.player, StatusEffects)
         if statuses is not None and statuses.effects:
-            status_styles = {
-                "bleeding": "red3",
-                "poison": "chartreuse4",
-                "fear": "medium_purple3",
-                "blessing": "light_goldenrod2",
-            }
-            text.append("\n")
-            for effect in statuses.effects:
-                style = status_styles.get(effect.kind, "grey66")
-                label = t("status_" + effect.kind)
-                text.append(f" {label} ({effect.duration})\n", style=style)
+            row = build_status_row(statuses.effects, use_ascii=self.use_ascii)
+            if row is not None:
+                text.append("\n")
+                text.append(row)
+                text.append("\n")
 
         light = game.world.get(game.player, LightSource)
         if light is not None:
