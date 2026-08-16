@@ -147,6 +147,21 @@ one new save field is `kupala_bloomed`. This is also why the golden
 transcript was regenerated exactly once at M9: a breathing calendar
 necessarily enters the event log.
 
+## The voice (M11 "Głosy")
+
+Sound is one more listener on the bus and nothing else. `ui/audio.py`'s
+`AudioSystem` subscribes like the narration engine, maps events to files
+through the same rule keys the grammar packs use (`data/audio/sounds.yml`),
+and swaps one looping ambient bed per (biome, depth, phase, festival).
+It publishes no events, saves no state, and draws from none of the four
+save-versioned RNG streams — chance-flavored behavior (a distant unseen
+creature voicing) uses local `sha256(seed, "audio", turn)` hashes, so the
+golden transcript is provably unaffected. The backend is a Protocol:
+pygame-ce behind the optional `sound` extra (mixer only, headless, SDL's
+own audio thread), a NullBackend otherwise; tests inject a recording fake.
+Audio is never the sole carrier of information — the narration already
+says everything.
+
 ## The village that remembers (M10 "Zlecenia")
 
 Errands are assembled once per run — a weighted 1–3 draw from

@@ -63,18 +63,45 @@ def test_audio_config_round_trips(tmp_path, monkeypatch) -> None:
     assert config["audio"] == {"enabled": False, "master": 0.5}
 
 
-def test_app_boots_silent_without_backend() -> None:
-    """The dev environment has no pygame-ce — exactly the degraded path."""
+def test_app_boots_silent_without_backend(monkeypatch) -> None:
+    """Missing extra / refused device — exactly the degraded path."""
     import asyncio
 
+    import wyraj.ui.app as app_module
     from wyraj.ui.app import WyrajApp
+    from wyraj.ui.audio import AudioUnavailable
+
+    def refuse() -> None:
+        raise AudioUnavailable("no extra in this test")
+
+    monkeypatch.setattr(app_module, "PygameBackend", refuse)
 
     async def run() -> None:
         app = WyrajApp(seed=SEED)
         async with app.run_test(size=(100, 40)) as pilot:
             assert app.audio is None  # missing extra → silent, noted once
+            assert app._audio_note is True
             await pilot.press("full_stop")
             assert app.game.turn == 1
+
+    asyncio.run(run())
+
+
+def test_app_wires_audio_when_backend_available(monkeypatch) -> None:
+    import asyncio
+
+    import wyraj.ui.app as app_module
+    from wyraj.ui.app import WyrajApp
+
+    backend = FakeBackend()
+    monkeypatch.setattr(app_module, "PygameBackend", lambda: backend)
+
+    async def run() -> None:
+        app = WyrajApp(seed=SEED)
+        async with app.run_test(size=(100, 40)):
+            assert app.audio is not None
+            assert backend.beds  # the wieś bed started with the app
+        assert backend.shutdowns == 1  # unmount closes the mixer
 
     asyncio.run(run())
 

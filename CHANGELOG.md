@@ -2,7 +2,37 @@
 
 All notable changes to Wyraj. Format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
-## [Unreleased] — M10 "Zlecenia" (errands, the village that remembers)
+## [Unreleased] — M11 "Głosy" (sound)
+
+### Added
+- **The game has a voice — optionally.** `uv sync --extra sound` installs
+  pygame-ce (backend re-verified 2026-08-16: the maintained fork, LGPL,
+  headless mixer, wheels everywhere); without it the game runs
+  byte-identically silent, one dim launch note aside. Audio is one more
+  listener on the event bus: it publishes nothing, saves nothing, and
+  draws nothing from the game RNG streams — the golden transcript cannot
+  move. Never `pygame.init()`, never a window.
+- **Ambient beds**, one at a time with a fade: hearth-warm wieś, wind in
+  the puszcza (darker at noc), marsh blubs, near-silent kurhany, nearer
+  silence below the last sky — and at the Dno, a heartbeat. His. Kupała
+  night carries distant singing over the water.
+- **Sparse event SFX** (~18 mappings in `data/audio/sounds.yml`, keyed by
+  narration rule keys): hits, kills, the death sting, candle lit and
+  dying, stairs, thunder, Wij phases — and the crane's arrival, the one
+  big sound in the game. Unmapped events are silent by design; no sound
+  on keypresses, ever. No music in v1.
+- **Creature voicing at a distance:** roughly every 17 turns, an unseen
+  monster within 12 tiles may sound — wolf howl, strzyga shriek, martwiak
+  groan, bies growl, utopiec gurgle. Deterministic (local hash), and only
+  for what you cannot see: audio as information.
+- **Starter assets are synthesized** (decision #38): 30 files (2.8 MB)
+  from the stdlib-only deterministic `tools/gen_sounds.py`, credited to
+  the project in `data/audio/CREDITS.yml` (CC0/CC-BY-only rule enforced
+  in CI for future curated replacements).
+- Config `audio: {enabled, master, ambient, sfx}`, `--mute` flag,
+  Options-screen toggle (`a`), EN/PL locale keys.
+
+## [0.11-zlecenia] — merged 2026-08-16 — M10 "Zlecenia" (errands, the village that remembers)
 
 ### Added
 - **Zlecenia.** Each run assembles 1–3 errands from a YAML catalog
