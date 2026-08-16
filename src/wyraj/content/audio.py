@@ -11,7 +11,7 @@ from pathlib import Path
 import yaml
 from pydantic import BaseModel, Field
 
-from wyraj.content.paths import data_dir
+from wyraj.content.paths import data_dir, data_roots
 
 
 class SoundSpec(BaseModel):
@@ -46,11 +46,23 @@ def audio_dir(root: Path | None = None) -> Path:
 
 
 def load_audio_catalog(root: Path | None = None) -> AudioCatalog:
-    path = audio_dir(root) / "sounds.yml"
-    if not path.exists():
-        return AudioCatalog()
-    raw = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
-    return AudioCatalog(**raw)
+    """Merge sound catalogs across the pack chain (M12). Each entry's file
+    resolves against the root that declared it, so packs carry their own
+    sounds; the merged catalog stores absolute paths."""
+    merged = AudioCatalog()
+    for base in [root] if root is not None else data_roots():
+        path = base / "audio" / "sounds.yml"
+        if not path.exists():
+            continue
+        raw = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+        catalog = AudioCatalog(**raw)
+        for section in ("beds", "events", "voices"):
+            entries: dict[str, SoundSpec] = getattr(catalog, section)
+            target: dict[str, SoundSpec] = getattr(merged, section)
+            for key, spec in entries.items():
+                resolved = str((base / "audio" / spec.file).resolve())
+                target[key] = spec.model_copy(update={"file": resolved})
+    return merged
 
 
 def load_audio_credits(root: Path | None = None) -> list[CreditEntry]:

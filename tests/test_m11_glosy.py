@@ -133,15 +133,15 @@ def test_catalog_files_exist_and_are_credited() -> None:
     catalog = load_audio_catalog()
     assert catalog.beds and catalog.events and catalog.voices
     credited = {entry.file for entry in load_audio_credits()}
-    root = audio_dir()
+    root = audio_dir().resolve()
     referenced = [
-        spec.file
+        Path(spec.file)  # M12: the merged catalog stores absolute paths
         for group in (catalog.beds, catalog.events, catalog.voices)
         for spec in group.values()
     ]
-    for rel in referenced:
-        assert (root / rel).exists(), f"missing asset {rel}"
-        assert rel in credited, f"uncredited asset {rel}"
+    for path in referenced:
+        assert path.exists(), f"missing asset {path.name}"
+        assert str(path.relative_to(root)) in credited, f"uncredited asset {path.name}"
     # Every shipped asset file is credited, referenced or not.
     for path in root.rglob("*.wav"):
         assert str(path.relative_to(root)) in credited, f"uncredited file {path.name}"

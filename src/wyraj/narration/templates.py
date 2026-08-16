@@ -19,9 +19,9 @@ from pathlib import Path
 from typing import Any
 
 import yaml
-from pydantic import AliasChoices, BaseModel, Field
+from pydantic import AliasChoices, BaseModel, Field, model_validator
 
-from wyraj.content.paths import data_dir
+from wyraj.content.paths import data_roots
 from wyraj.core.events import (
     AttackResolved,
     BliznaEarned,
@@ -88,12 +88,22 @@ _SLOT = re.compile(r"\{([a-zA-Z_][a-zA-Z0-9_.]*)\}")
 
 
 class Variant(BaseModel):
-    # Prose text; packs author it under their language key ("en:", "pl:").
+    # Prose text; packs author it under their language key ("en:", "pl:",
+    # or any language a data pack introduces — M12).
     text: str = Field(validation_alias=AliasChoices("text", "en", "pl"))
     weight: int = Field(default=1, gt=0)
     importance: str = "normal"
     # Context tags required for this variant (all must be present).
     tags: list[str] = []
+
+    @model_validator(mode="before")
+    @classmethod
+    def any_language_key(cls, values: Any) -> Any:
+        if isinstance(values, dict) and not any(k in values for k in ("text", "en", "pl")):
+            prose = [k for k in values if k not in ("weight", "importance", "tags")]
+            if len(prose) == 1:
+                values = {**values, "text": values.pop(prose[0])}
+        return values
 
 
 RuleKey = tuple[str, str | None]
@@ -301,7 +311,14 @@ class GrammarPack:
 
 
 def load_pack(lang: str = "en") -> GrammarPack:
-    return GrammarPack.load_dir(data_dir() / "narration" / lang)
+    """Merge grammar rules across the pack chain (M12): a pack that
+    redefines a rule key owns that whole variant list; new keys extend."""
+    rules: dict[RuleKey, list[Variant]] = {}
+    for base in data_roots():
+        lang_dir = base / "narration" / lang
+        if lang_dir.is_dir():
+            rules.update(GrammarPack.load_dir(lang_dir).rules)
+    return GrammarPack(rules)
 
 
 NO_TAGS: frozenset[str] = frozenset()

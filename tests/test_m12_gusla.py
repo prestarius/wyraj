@@ -206,6 +206,90 @@ def test_later_pack_wins(tmp_path) -> None:
     assert load_items()["bursztyn"].name == "sea amber"
 
 
+# ---- US 15.3: narration, locale, audio, languages --------------------------
+
+
+def test_pack_overrides_and_extends_narration(tmp_path) -> None:
+    from wyraj.narration.templates import load_pack
+
+    base_rules = load_pack("en").rules
+    pack = make_pack(
+        tmp_path,
+        narration__en__extra_yml=yaml.safe_dump(
+            {
+                "talked_to": {"gossip": [{"weight": 1, "en": "The dziad only points at the sea."}]},
+                "lore_discovered": {
+                    "topielica": [{"weight": 1, "en": "A pale shape stands in the reeds."}]
+                },
+            }
+        ),
+    )
+    _activate(pack)
+    rules = load_pack("en").rules
+    assert len(rules[("talked_to", "gossip")]) == 1  # whole-rule override: pack owns it
+    assert ("lore_discovered", "topielica") in rules  # extension
+    assert rules[("talked_to", "innkeeper")] == base_rules[("talked_to", "innkeeper")]
+
+
+def test_language_pack_makes_a_new_lang_real(tmp_path) -> None:
+    import random
+
+    from wyraj.content.locale import available_languages, load_locale
+    from wyraj.narration.templates import TemplateNarrator, load_pack
+    from wyraj.ui import i18n
+
+    pack = make_pack(
+        tmp_path,
+        locale__de_yml=yaml.safe_dump({"turn": "Zug {n}", "purse": "{n} Denare im Beutel"}),
+        narration__de__combat_yml=yaml.safe_dump(
+            {
+                "attack_resolved": {
+                    "player_hit": [{"weight": 1, "de": "Dein Hieb trifft {defender.name}."}]
+                }
+            }
+        ),
+    )
+    _activate(pack)
+    assert "de" in available_languages()
+    assert load_locale("de")["turn"] == "Zug {n}"
+
+    i18n.set_language("de")
+    try:
+        assert i18n.t("turn", n=7) == "Zug 7"
+        assert i18n.t("codex_title")  # EN merged underneath fills the rest
+    finally:
+        i18n.set_language("en")
+
+    from tests.test_narration_templates import REGISTRY, fixture_event
+
+    narrator = TemplateNarrator(
+        load_pack("de"), random.Random(1), REGISTRY, fallback_pack=load_pack("en")
+    )
+    hit = narrator.compose(fixture_event("attack_resolved", "player_hit"))
+    assert hit and "Hieb" in hit[0].text
+    fallback = narrator.compose(fixture_event("rested", None))
+    assert fallback and fallback[0].text  # missing rule narrates in EN
+
+
+def test_pack_audio_resolves_to_pack_files(tmp_path) -> None:
+    from wyraj.content.audio import load_audio_catalog
+
+    pack = make_pack(
+        tmp_path,
+        audio__sounds_yml=yaml.safe_dump(
+            {"beds": {"wies": {"file": "beds/sea_wies.wav", "volume": 0.5}}}
+        ),
+    )
+    (pack / "audio" / "beds").mkdir(parents=True)
+    (pack / "audio" / "beds" / "sea_wies.wav").write_bytes(b"RIFF")
+    _activate(pack)
+    catalog = load_audio_catalog()
+    wies = Path(catalog.beds["wies"].file)
+    assert wies.is_absolute() and wies.is_relative_to(pack)
+    dno = Path(catalog.beds["dno"].file)  # untouched base entry
+    assert "pack" not in str(dno)
+
+
 def test_save_refuses_changed_pack_set(tmp_path) -> None:
     from wyraj.persistence.save import load_game, save_game
 

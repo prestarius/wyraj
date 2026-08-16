@@ -30,7 +30,9 @@ def main() -> None:
         help="skip character creation and start as this origin (must be unlocked)",
     )
     parser.add_argument(
-        "--lang", choices=["en", "pl"], default=None, help="game language (default: en)"
+        "--lang",
+        default=None,
+        help="game language (en/pl shipped; packs may add more — M12)",
     )
     parser.add_argument(
         "--narrator",
@@ -94,8 +96,14 @@ def main() -> None:
         )
     if args.origin is None and config.get("origin"):
         args.origin = config["origin"]
+    from wyraj.content.locale import available_languages
+
+    languages = available_languages()
     if args.lang is None:
-        args.lang = config.get("lang") if config.get("lang") in ("en", "pl") else "en"
+        args.lang = config.get("lang") if config.get("lang") in languages else "en"
+    elif args.lang not in languages:
+        print(f"No pack or base content ships '{args.lang}' — the tale stays in English.")
+        args.lang = "en"
     if args.narrator is None:
         args.narrator = (
             config.get("narrator") if config.get("narrator") in ("template", "llm") else "template"
