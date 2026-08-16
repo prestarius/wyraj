@@ -151,6 +151,42 @@ class WeaponRecognized(GameEvent):
 
 
 @dataclass(frozen=True)
+class PhaseChanged(GameEvent):
+    """The day turns (M9 §1): świt/dzień/zmierzch/noc boundary crossed."""
+
+    phase: str
+    day: int  # wheel day 0-11
+    festival: str = ""  # "" outside festival days
+
+
+@dataclass(frozen=True)
+class WeatherChanged(GameEvent):
+    kind: str  # "jasno" | "deszcz" | "mgla" | "burza"
+
+
+@dataclass(frozen=True)
+class FestivalDawned(GameEvent):
+    festival: str  # "gromniczna" | "kupala" | "dozynki" | "dziady"
+
+
+@dataclass(frozen=True)
+class KupalaBloom(GameEvent):
+    """Once a run, on Kupała night, on the surface: the fern flowers."""
+
+
+@dataclass(frozen=True)
+class TalkedToDead(GameEvent):
+    """Dziady (M9 §3): a martwiak conversed with instead of struck."""
+
+    entity: EntityRef
+
+
+@dataclass(frozen=True)
+class LightningStruck(GameEvent):
+    """Burza ambience: Perun is present. Cosmetic."""
+
+
+@dataclass(frozen=True)
 class DeepDescended(GameEvent):
     """First descent past the last sky shaft (M8 §1): no crane below this."""
 

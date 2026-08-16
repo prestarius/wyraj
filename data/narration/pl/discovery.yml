@@ -31,3 +31,7 @@ lore_discovered:
     - weight: 1
       importance: high
       pl: "Grobowe płótno, dłonie starte na płasko, chód o jednym jedynym celu. Nie patrzy na ciebie. Nie ty jesteś kamieniem, któremu służy."
+  poludnica:
+    - weight: 1
+      importance: high
+      pl: "Powietrze nad polaną wstaje i staje się kobietą w białym płótnie. Południe patrzy na ciebie przez nią — i południe ma pytanie."

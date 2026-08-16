@@ -108,6 +108,7 @@ def save_game(game: Game, path: Path | None = None) -> Path:
         "weapon_kills": getattr(game, "weapon_kills", {}),
         "dziad_greeted_weapon": getattr(game, "_dziad_greeted_weapon", False),
         "glebiej": getattr(game, "glebiej", False),
+        "kupala_bloomed": getattr(game, "kupala_bloomed", False),
         "wij_phase": getattr(game, "wij_phase", "buried"),
         "wij_lift": getattr(game, "wij_lift", 0),
         "wij_respawn": getattr(game, "_wij_respawn", 12),
@@ -190,6 +191,7 @@ def load_game(path: Path | None = None) -> Game | None:
     from wyraj.procgen.vault import generate_vault
 
     game.glebiej = payload.get("glebiej", False)
+    game.kupala_bloomed = payload.get("kupala_bloomed", False)
     game.victory = False
     game.victory_epilogue = ""
     game.wij_phase = payload.get("wij_phase", "buried")

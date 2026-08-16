@@ -1,0 +1,73 @@
+phase_changed:
+  swit:
+    - weight: 2
+      en: "Grey light finds the tops of the trees first, the way it always has."
+    - weight: 1
+      en: "Dawn. The night gives ground grudgingly, keeping the ditches."
+  dzien:
+    - weight: 2
+      en: "The sun stands up over the puszcza and the shadows go home to their trunks."
+    - weight: 1
+      en: "Full day. Even the old dark under the firs thins to something you could argue with."
+  zmierzch:
+    - weight: 2
+      en: "The light goes long and copper, and every tree grows a second, darker tree behind it."
+    - weight: 1
+      en: "Dusk comes down like a lid set gently. Whatever hunts by night is stretching now."
+  noc:
+    - weight: 2
+      importance: high
+      en: "Night. The forest does not grow quieter — it grows more honest."
+    - weight: 1
+      importance: high
+      en: "The dark arrives whole, all at once, the way it does far from lamps."
+
+weather_changed:
+  jasno:
+    - weight: 1
+      en: "The sky scrubs itself clean. A day with nothing overhead to blame."
+  deszcz:
+    - weight: 1
+      en: "Rain sets in — thin, patient, the kind that gets into wicks and resolve alike."
+  mgla:
+    - weight: 1
+      en: "Mist off the low ground, waist-high and rising. The world shortens."
+  burza:
+    - weight: 1
+      importance: high
+      en: "Thunderheads shoulder up over the treeline. Perun is in the neighborhood, and the neighborhood knows it."
+
+festival_dawned:
+  gromniczna:
+    - weight: 1
+      importance: high
+      en: "Gromniczna. Every candle lit today carries the blessing — the flame holds the wolf-dark at a longer arm's length."
+  kupala:
+    - weight: 1
+      importance: high
+      en: "Noc Kupały comes tonight. Somewhere a fern is deciding, once in the whole turning year, to flower."
+  dozynki:
+    - weight: 1
+      importance: high
+      en: "Dożynki. The wieś smells of straw and baking; today the harvest asks nothing back from the resting."
+  dziady:
+    - weight: 1
+      importance: high
+      en: "Dziady. Set a place, keep your voice low. The dead walk today, and today — only today — they will talk."
+
+kupala_bloom:
+  - weight: 1
+    importance: high
+    en: "Somewhere close, the dark gets a degree warmer. The fern has flowered — one bloom, one night, and every wrong thing in the forest knows it too."
+
+talked_to_dead:
+  - weight: 2
+    en: "{entity.name.Def} stops, and the grave-slack face arranges itself around remembering. It talks. You listen the way you would at any elder's table."
+  - weight: 1
+    en: "On any other day this would be teeth. Today {entity.name.def} tells you what the ground taught it, patiently, as is owed to guests."
+
+lightning_struck:
+  - weight: 2
+    en: "Lightning whitens the world for a heartbeat; the thunder walks in afterward like an owner."
+  - weight: 1
+    en: "A crack overhead — close. The old god is splitting something, and it is not, this time, you."

@@ -77,3 +77,19 @@ suszone_mieso:
     Smoked over a juniper fire until it bends like leather. Chewing it
     takes half a day and gives you something to think about other than
     the sounds between the trees.
+
+kwiat_paproci:
+  name: "fern flower"
+  forms:
+    pl: { mian: "kwiat paproci", dop: "kwiatu paproci", cel: "kwiatowi paproci", bier: "kwiat paproci", narz: "kwiatem paproci", miej: "kwiecie paproci" }
+  glyph: "❀"
+  ascii_glyph: "*"
+  style: "gold1"
+  kind: consumable
+  effect: heal
+  power: 99
+  spawn_weight: 0
+  description: >
+    It blooms for one night in the whole turning year, and the year knows
+    better than to tell anyone where. Whoever carries it home alive has
+    already received the miracle; the healing is a courtesy.

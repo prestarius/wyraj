@@ -23,6 +23,7 @@ from wyraj.content.hooks import HookDef, load_hooks
 from wyraj.content.items import ItemDef, load_items
 from wyraj.content.loot import load_loot_tables
 from wyraj.content.origins import OriginDef, load_origins
+from wyraj.core import calendar
 from wyraj.core.actions import (
     Action,
     Ascend,
@@ -64,6 +65,7 @@ from wyraj.core.components import (
     Lore,
     Melee,
     OnLevel,
+    Peaceful,
     Perch,
     Player,
     Position,
@@ -98,14 +100,19 @@ from wyraj.core.events import (
     EntityDied,
     EntityRef,
     EventBus,
+    FestivalDawned,
     ItemBought,
     ItemPickedUp,
     ItemSold,
+    KupalaBloom,
     LevelChanged,
+    LightExtinguished,
+    LightningStruck,
     LoreDiscovered,
     MetaTransaction,
     OfferingMade,
     Outcome,
+    PhaseChanged,
     QuickslotUsed,
     Rested,
     RiteCompleted,
@@ -120,9 +127,11 @@ from wyraj.core.events import (
     StashWithdrawn,
     StatusTick,
     TalkedTo,
+    TalkedToDead,
     TurnEnded,
     WeaponNamed,
     WeaponRecognized,
+    WeatherChanged,
     WijAttackFutile,
     WijGazeOpened,
     WijLidLifted,
@@ -171,6 +180,13 @@ RITE_TURNS = 6  # zamknięcie powiek: turns of pressing
 RITE_ITEM = "sol_swiecona"  # consumed the moment the rite begins
 GLEBIEJ_SPAWN_BONUS = 2
 GLEBIEJ_LOOT_BONUS = 1
+
+# M9 "Koło Roku" tuning (spec §2)
+SURFACE_PHASE_FOV = {"swit": 6, "dzien": 8, "zmierzch": 6, "noc": 5}
+MIST_FOV_PENALTY = 2
+SURFACE_FOV_FLOOR = 3
+NIGHT_STRZYGA_MULTIPLIER = 3
+NOON_POLUDNICA_WEIGHT = 3
 PLAYER_DAMAGE = 4
 PLAYER_TO_HIT = 75
 PLAYER_SATIATION = 600
@@ -245,6 +261,7 @@ class Game:
         self.glebiej = glebiej
         self.victory = False
         self.victory_epilogue = ""
+        self.kupala_bloomed = False  # M9 §3: the fern flowers once per run
         self.wij_phase = "buried"  # buried | stirring | lid | gaze | sealed
         self.wij_lift = 0
         self._wij_respawn = WIJ_RESPAWN_TURNS
@@ -417,7 +434,7 @@ class Game:
                 (x, y) for x, y in floors if max(abs(x - ax), abs(y - ay)) >= MIN_SPAWN_DISTANCE
             ]
         defs = self._biome_defs(biome)
-        weights = [d.spawn_weight for d in defs]
+        weights = [self._spawn_weight(d, biome) for d in defs]
         water_adjacent = [
             (x, y)
             for x, y in candidates
@@ -546,6 +563,8 @@ class Game:
                 description=definition.description,
             ),
         )
+        if definition.key == "martwiak" and self.festival == "dziady":
+            self.world.add(entity, Peaceful())  # born into the truce (M9 §3)
         if definition.attack_status is not None:
             spec = definition.attack_status
             self.world.add(
@@ -593,6 +612,7 @@ class Game:
         hp_before_round = self.world.expect(self.player, Health).hp
         self._update_player_fov()
         self._tick_statuses()
+        self._tick_surface_weather()
         hunger.tick(self.world, self.bus, self.player, self.turn + 1)
         self._tick_wij()
         if self.world.expect(self.player, Health).hp <= 0:
@@ -613,6 +633,7 @@ class Game:
                 RiteInterrupted(actor=ref_for(self.world, self.player), reason="damage")
             )
         self.turn += 1
+        self._tick_calendar(self.turn - 1, self.turn)
         # TurnEnded closes the whole round (player + monsters) so the
         # narration TurnComposer can flush a complete paragraph.
         self.bus.publish(TurnEnded(self.turn))
@@ -660,6 +681,17 @@ class Game:
                         if villager.role == "dziad_wedrowny":
                             self._dziad_greets_weapon()
                     else:
+                        target_lore = self.world.get(target, Lore)
+                        if (
+                            self.festival == "dziady"
+                            and target_lore is not None
+                            and target_lore.key == "martwiak"
+                            and self.world.get(target, Peaceful) is not None
+                        ):
+                            self._talk_to_dead(target)
+                            return
+                        if self.world.get(target, Peaceful) is not None:
+                            self.world.remove(target, Peaceful)  # struck: the truce ends
                         combat.attack(self.world, self.bus, self.rng.combat, self.player, target)
                 else:
                     movement.try_move(self.world, self.map, self.bus, self.player, dx, dy)
@@ -671,7 +703,7 @@ class Game:
                     self.world.add(
                         self.player,
                         Hunger(
-                            max(hunger_c.satiation - REST_SATIATION_COST, 1),
+                            max(hunger_c.satiation - self._rest_cost(), 1),
                             hunger_c.max_satiation,
                         ),
                     )
@@ -1027,11 +1059,14 @@ class Game:
         self.meta.currency.denary -= spec.cost
         self.bus.publish(MetaTransaction(kind="offering", detail=f"{god}:-{spec.cost}"))
         self._save_meta()
+        duration = spec.duration
+        if god == "perun" and self.weather == "burza":
+            duration *= 2  # M9 §2: Perun is present in the storm
         status.apply_status(
             self.world,
             self.bus,
             self.player,
-            StatusEffect(kind=spec.kind, duration=spec.duration, power=spec.power),
+            StatusEffect(kind=spec.kind, duration=duration, power=spec.power),
         )
         self.bus.publish(
             OfferingMade(actor=ref_for(self.world, self.player), god=god, cost=spec.cost)
@@ -1194,6 +1229,107 @@ class Game:
             self.meta.dziad.reputation += 1
             self.bus.publish(MetaTransaction(kind="dziad_rep", detail="+1"))
             self._save_meta()
+
+    # ---- M9 "Koło Roku" ---------------------------------------------------
+
+    @property
+    def phase(self) -> str:
+        return calendar.phase_of(self.turn)
+
+    @property
+    def weather(self) -> str:
+        return calendar.weather_of(self.seed, self.turn)
+
+    @property
+    def festival(self) -> str | None:
+        return calendar.festival_of(self.seed, self.turn)
+
+    @property
+    def wheel_day(self) -> int:
+        return calendar.wheel_day(self.seed, self.turn)
+
+    def _rest_cost(self) -> int:
+        # Dożynki (M9 §3): the harvest asks nothing back from the resting.
+        return 0 if self.festival == "dozynki" else REST_SATIATION_COST
+
+    def _tick_calendar(self, before: int, after: int) -> None:
+        if calendar.phase_of(after) != calendar.phase_of(before):
+            self.bus.publish(
+                PhaseChanged(
+                    phase=calendar.phase_of(after),
+                    day=calendar.wheel_day(self.seed, after),
+                    festival=calendar.festival_of(self.seed, after) or "",
+                )
+            )
+        if calendar.absolute_day(after) != calendar.absolute_day(before):
+            self.bus.publish(WeatherChanged(kind=calendar.weather_of(self.seed, after)))
+            festival = calendar.festival_of(self.seed, after)
+            if festival:
+                self.bus.publish(FestivalDawned(festival=festival))
+            self._apply_dziady(festival == "dziady")
+        if calendar.lightning_cracks(self.seed, after) and self.depth <= 2:
+            self.bus.publish(LightningStruck())
+        if (
+            not self.kupala_bloomed
+            and calendar.festival_of(self.seed, after) == "kupala"
+            and calendar.phase_of(after) == "noc"
+            and calendar.phase_of(before) != "noc"
+            and 1 <= self.depth <= 2
+        ):
+            self._bloom_kupala()
+
+    def _tick_surface_weather(self) -> None:
+        """Rain drains unprotected flame; Gromniczna blesses it (M9 §2-3)."""
+        if self.depth > 2:
+            return
+        light = self.world.get(self.player, LightSource)
+        if light is None:
+            return
+        if self.festival == "gromniczna" and self.turn % 2 == 0:
+            self.world.add(self.player, LightSource(turns=light.turns + 1))
+            return
+        if self.weather in ("deszcz", "burza"):
+            if light.turns <= 1:
+                self.world.remove(self.player, LightSource)
+                self.bus.publish(LightExtinguished(actor=ref_for(self.world, self.player)))
+            else:
+                self.world.add(self.player, LightSource(turns=light.turns - 1))
+
+    def _spawn_weight(self, definition: MonsterDef, biome: str) -> int:
+        """The sky at generation time shifts the pool (M9 §2), deterministically."""
+        weight = definition.spawn_weight
+        if biome in ("puszcza", "bagna"):
+            if definition.key == "strzyga" and self.phase == "noc":
+                weight *= NIGHT_STRZYGA_MULTIPLIER
+            if definition.key == "poludnica":
+                weight = NOON_POLUDNICA_WEIGHT if self.phase == "dzien" else 0
+        return weight
+
+    def _apply_dziady(self, active: bool) -> None:
+        for entity, (_ai, lore) in self.world.query(AI, Lore):
+            if lore.key != "martwiak":
+                continue
+            if active:
+                self.world.add(entity, Peaceful())
+            elif self.world.get(entity, Peaceful) is not None:
+                self.world.remove(entity, Peaceful)
+
+    def _talk_to_dead(self, target: Entity) -> None:
+        """Dziady (M9 §3): the codex learns from conversation, not killing."""
+        lore = self.world.expect(target, Lore)
+        current = self.meta.codex.known.get(lore.key, "unknown")
+        tier = "full" if current in ("partial", "full") else "partial"
+        self._raise_codex_tier(lore.key, tier)
+        self.bus.publish(TalkedToDead(entity=ref_for(self.world, target)))
+
+    def _bloom_kupala(self) -> None:
+        floors = self.map.floor_tiles()
+        if not floors:
+            return
+        x, y = self.rng.worldgen.choice(floors)
+        self.spawn_item(self.items_catalog["kwiat_paproci"], x, y, depth=self.depth)
+        self.kupala_bloomed = True
+        self.bus.publish(KupalaBloom())
 
     # ---- M8 "Dno" ---------------------------------------------------------
 
@@ -1487,6 +1623,13 @@ class Game:
         """
         if not self.in_darkness:
             radius = FOV_RADIUS
+            if 1 <= self.depth <= 2:  # M9 §2: the surface has a sky and it matters
+                radius = SURFACE_PHASE_FOV[self.phase]
+                if self.weather == "mgla":
+                    radius -= MIST_FOV_PENALTY
+                if self.world.get(self.player, LightSource) is not None:
+                    radius = max(radius, 6)  # a carried flame pushes night back some
+                radius = max(SURFACE_FOV_FLOOR, radius)
         else:
             radius = max(1, CRYPT_FOV_RADIUS - max(0, self.depth - (CRYPT_FIRST_DEPTH + 2)))
             if self.depth == MAX_DEPTH and self.wij_phase in ("lid", "gaze"):

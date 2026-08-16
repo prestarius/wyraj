@@ -32,6 +32,8 @@ TurnEnded(turn=18)
 EntityMoved(actor=EntityRef(entity=3, key='player', name='you', is_player=True), from_pos=(17, 7), to_pos=(18, 6))
 TurnEnded(turn=19)
 EntityMoved(actor=EntityRef(entity=3, key='player', name='you', is_player=True), from_pos=(18, 6), to_pos=(17, 5))
+PhaseChanged(phase='dzien', day=2, festival='gromniczna')
+NARRATE: The sun stands up over the puszcza and the shadows go home to their trunks.
 TurnEnded(turn=20)
 LevelChanged(depth=1, direction='down')
 NARRATE: You climb down into the barrow dark. The air is old here — earth, cold wax, and something underneath both.
@@ -55,9 +57,7 @@ TurnEnded(turn=28)
 EntityMoved(actor=EntityRef(entity=3, key='player', name='you', is_player=True), from_pos=(19, 19), to_pos=(19, 18))
 MetaTransaction(kind='codex', detail='bies:glimpsed')
 LoreDiscovered(entity=EntityRef(entity=21, key='bies', name='bies', is_player=False))
-MetaTransaction(kind='codex', detail='utopiec:glimpsed')
-LoreDiscovered(entity=EntityRef(entity=23, key='utopiec', name='utopiec', is_player=False))
-NARRATE: A crooked shape unfolds from the thicket — a bies, the one the old people would not name after dark. A wet, green-slick figure hauls itself over the roots — an utopiec, far from its pool and hungry for company.
+NARRATE: A crooked shape unfolds from the thicket — a bies, the one the old people would not name after dark.
 TurnEnded(turn=29)
 TurnEnded(turn=30)
 EntityMoved(actor=EntityRef(entity=3, key='player', name='you', is_player=True), from_pos=(19, 18), to_pos=(18, 18))
@@ -73,40 +73,58 @@ TurnEnded(turn=33)
 EntityMoved(actor=EntityRef(entity=3, key='player', name='you', is_player=True), from_pos=(18, 17), to_pos=(19, 16))
 TurnEnded(turn=34)
 AttackResolved(attacker=EntityRef(entity=20, key='wilk', name='wilk', is_player=False), defender=EntityRef(entity=3, key='player', name='you', is_player=True), weapon=None, damage=0, outcome=<Outcome.MISS: 'miss'>, defender_hp_frac=0.8333333333333334)
-AttackResolved(attacker=EntityRef(entity=23, key='utopiec', name='utopiec', is_player=False), defender=EntityRef(entity=3, key='player', name='you', is_player=True), weapon=None, damage=4, outcome=<Outcome.HIT: 'hit'>, defender_hp_frac=0.6666666666666666)
-NARRATE: The wilk lunges — you twist away, its claws snapping shut on nothing. The utopiec slams into you, and you taste blood and old leaves.
+NARRATE: The wilk lunges — you twist away, its claws snapping shut on nothing.
 TurnEnded(turn=35)
 EntityMoved(actor=EntityRef(entity=3, key='player', name='you', is_player=True), from_pos=(19, 16), to_pos=(18, 16))
-AttackResolved(attacker=EntityRef(entity=20, key='wilk', name='wilk', is_player=False), defender=EntityRef(entity=3, key='player', name='you', is_player=True), weapon=None, damage=0, outcome=<Outcome.MISS: 'miss'>, defender_hp_frac=0.6666666666666666)
-AttackResolved(attacker=EntityRef(entity=20, key='wilk', name='wilk', is_player=False), defender=EntityRef(entity=3, key='player', name='you', is_player=True), weapon=None, damage=2, outcome=<Outcome.HIT: 'hit'>, defender_hp_frac=0.5833333333333334)
-AttackResolved(attacker=EntityRef(entity=23, key='utopiec', name='utopiec', is_player=False), defender=EntityRef(entity=3, key='player', name='you', is_player=True), weapon=None, damage=0, outcome=<Outcome.MISS: 'miss'>, defender_hp_frac=0.5833333333333334)
-NARRATE: The wilk circles and comes at you again, patient as winter. The wilk rakes you with crooked claws; pain flares hot along your ribs. The utopiec circles and comes at you again, patient as winter.
+AttackResolved(attacker=EntityRef(entity=20, key='wilk', name='wilk', is_player=False), defender=EntityRef(entity=3, key='player', name='you', is_player=True), weapon=None, damage=2, outcome=<Outcome.HIT: 'hit'>, defender_hp_frac=0.75)
+AttackResolved(attacker=EntityRef(entity=20, key='wilk', name='wilk', is_player=False), defender=EntityRef(entity=3, key='player', name='you', is_player=True), weapon=None, damage=0, outcome=<Outcome.MISS: 'miss'>, defender_hp_frac=0.75)
+NARRATE: The wilk slams into you, and you taste blood and old leaves. The wilk circles and comes at you again, patient as winter.
 TurnEnded(turn=36)
 AttackResolved(attacker=EntityRef(entity=3, key='player', name='you', is_player=True), defender=EntityRef(entity=19, key='bies', name='bies', is_player=False), weapon=None, damage=4, outcome=<Outcome.HIT: 'hit'>, defender_hp_frac=0.5)
-AttackResolved(attacker=EntityRef(entity=19, key='bies', name='bies', is_player=False), defender=EntityRef(entity=3, key='player', name='you', is_player=True), weapon=None, damage=3, outcome=<Outcome.HIT: 'hit'>, defender_hp_frac=0.4583333333333333)
-AttackResolved(attacker=EntityRef(entity=20, key='wilk', name='wilk', is_player=False), defender=EntityRef(entity=3, key='player', name='you', is_player=True), weapon=None, damage=2, outcome=<Outcome.HIT: 'hit'>, defender_hp_frac=0.375)
-AttackResolved(attacker=EntityRef(entity=21, key='bies', name='bies', is_player=False), defender=EntityRef(entity=3, key='player', name='you', is_player=True), weapon=None, damage=0, outcome=<Outcome.MISS: 'miss'>, defender_hp_frac=0.375)
-NARRATE: Your strike tears its flesh, and the bies howls. The bies slams into you, and you taste blood and old leaves. The wilk rakes you with crooked claws; pain flares hot along your ribs. The bies circles and comes at you again, patient as winter.
+AttackResolved(attacker=EntityRef(entity=19, key='bies', name='bies', is_player=False), defender=EntityRef(entity=3, key='player', name='you', is_player=True), weapon=None, damage=0, outcome=<Outcome.MISS: 'miss'>, defender_hp_frac=0.75)
+AttackResolved(attacker=EntityRef(entity=20, key='wilk', name='wilk', is_player=False), defender=EntityRef(entity=3, key='player', name='you', is_player=True), weapon=None, damage=2, outcome=<Outcome.HIT: 'hit'>, defender_hp_frac=0.6666666666666666)
+AttackResolved(attacker=EntityRef(entity=21, key='bies', name='bies', is_player=False), defender=EntityRef(entity=3, key='player', name='you', is_player=True), weapon=None, damage=3, outcome=<Outcome.HIT: 'hit'>, defender_hp_frac=0.5416666666666666)
+NARRATE: Your strike tears its flesh, and the bies howls. The bies circles and comes at you again, patient as winter. The wilk rakes you with crooked claws; pain flares hot along your ribs. The bies slams into you, and you taste blood and old leaves.
 TurnEnded(turn=37)
 AttackResolved(attacker=EntityRef(entity=3, key='player', name='you', is_player=True), defender=EntityRef(entity=19, key='bies', name='bies', is_player=False), weapon=None, damage=4, outcome=<Outcome.KILL: 'kill'>, defender_hp_frac=0.0)
 MetaTransaction(kind='codex', detail='bies:partial')
 EntityDied(entity=EntityRef(entity=19, key='bies', name='bies', is_player=False), position=(18, 15), depth=1)
-AttackResolved(attacker=EntityRef(entity=20, key='wilk', name='wilk', is_player=False), defender=EntityRef(entity=3, key='player', name='you', is_player=True), weapon=None, damage=0, outcome=<Outcome.MISS: 'miss'>, defender_hp_frac=0.375)
-AttackResolved(attacker=EntityRef(entity=21, key='bies', name='bies', is_player=False), defender=EntityRef(entity=3, key='player', name='you', is_player=True), weapon=None, damage=0, outcome=<Outcome.MISS: 'miss'>, defender_hp_frac=0.375)
-AttackResolved(attacker=EntityRef(entity=23, key='utopiec', name='utopiec', is_player=False), defender=EntityRef(entity=3, key='player', name='you', is_player=True), weapon=None, damage=0, outcome=<Outcome.MISS: 'miss'>, defender_hp_frac=0.375)
-NARRATE: The bies comes apart under your strike, and the forest is quieter for it. The wilk circles and comes at you again, patient as winter. The bies circles and comes at you again, patient as winter. The utopiec circles and comes at you again, patient as winter.
+AttackResolved(attacker=EntityRef(entity=20, key='wilk', name='wilk', is_player=False), defender=EntityRef(entity=3, key='player', name='you', is_player=True), weapon=None, damage=0, outcome=<Outcome.MISS: 'miss'>, defender_hp_frac=0.5416666666666666)
+AttackResolved(attacker=EntityRef(entity=21, key='bies', name='bies', is_player=False), defender=EntityRef(entity=3, key='player', name='you', is_player=True), weapon=None, damage=3, outcome=<Outcome.HIT: 'hit'>, defender_hp_frac=0.4166666666666667)
+NARRATE: Your last blow lands with a crack. The bies folds into the moss and is still. The wilk circles and comes at you again, patient as winter. The bies rakes you with crooked claws; pain flares hot along your ribs.
 TurnEnded(turn=38)
 EntityMoved(actor=EntityRef(entity=3, key='player', name='you', is_player=True), from_pos=(18, 16), to_pos=(19, 15))
-AttackResolved(attacker=EntityRef(entity=21, key='bies', name='bies', is_player=False), defender=EntityRef(entity=3, key='player', name='you', is_player=True), weapon=None, damage=3, outcome=<Outcome.HIT: 'hit'>, defender_hp_frac=0.25)
-NARRATE: The bies tears at you, and the world swims grey at the edges.
+AttackResolved(attacker=EntityRef(entity=21, key='bies', name='bies', is_player=False), defender=EntityRef(entity=3, key='player', name='you', is_player=True), weapon=None, damage=0, outcome=<Outcome.MISS: 'miss'>, defender_hp_frac=0.4166666666666667)
+NARRATE: The bies circles and comes at you again, patient as winter.
 TurnEnded(turn=39)
-AttackResolved(attacker=EntityRef(entity=21, key='bies', name='bies', is_player=False), defender=EntityRef(entity=3, key='player', name='you', is_player=True), weapon=None, damage=0, outcome=<Outcome.MISS: 'miss'>, defender_hp_frac=0.25)
-AttackResolved(attacker=EntityRef(entity=23, key='utopiec', name='utopiec', is_player=False), defender=EntityRef(entity=3, key='player', name='you', is_player=True), weapon=None, damage=4, outcome=<Outcome.HIT: 'hit'>, defender_hp_frac=0.08333333333333333)
-NARRATE: The bies circles and comes at you again, patient as winter. The utopiec tears at you, and the world swims grey at the edges.
+AttackResolved(attacker=EntityRef(entity=21, key='bies', name='bies', is_player=False), defender=EntityRef(entity=3, key='player', name='you', is_player=True), weapon=None, damage=0, outcome=<Outcome.MISS: 'miss'>, defender_hp_frac=0.4166666666666667)
+NARRATE: The bies circles and comes at you again, patient as winter.
 TurnEnded(turn=40)
 EntityMoved(actor=EntityRef(entity=3, key='player', name='you', is_player=True), from_pos=(19, 15), to_pos=(20, 16))
-AttackResolved(attacker=EntityRef(entity=20, key='wilk', name='wilk', is_player=False), defender=EntityRef(entity=3, key='player', name='you', is_player=True), weapon=None, damage=2, outcome=<Outcome.KILL: 'kill'>, defender_hp_frac=0.0)
-EntityDied(entity=EntityRef(entity=3, key='player', name='you', is_player=True), position=(20, 16), depth=1)
-NARRATE: The wilk bears you down into the cold moss. The last thing you hear is its breathing. Darkness closes over you. Somewhere above the canopy, a bird takes wing toward Wyraj.
+AttackResolved(attacker=EntityRef(entity=20, key='wilk', name='wilk', is_player=False), defender=EntityRef(entity=3, key='player', name='you', is_player=True), weapon=None, damage=2, outcome=<Outcome.HIT: 'hit'>, defender_hp_frac=0.3333333333333333)
+AttackResolved(attacker=EntityRef(entity=20, key='wilk', name='wilk', is_player=False), defender=EntityRef(entity=3, key='player', name='you', is_player=True), weapon=None, damage=0, outcome=<Outcome.MISS: 'miss'>, defender_hp_frac=0.3333333333333333)
+AttackResolved(attacker=EntityRef(entity=21, key='bies', name='bies', is_player=False), defender=EntityRef(entity=3, key='player', name='you', is_player=True), weapon=None, damage=0, outcome=<Outcome.MISS: 'miss'>, defender_hp_frac=0.3333333333333333)
+NARRATE: The wilk slams into you, and you taste blood and old leaves. The wilk circles and comes at you again, patient as winter. The bies circles and comes at you again, patient as winter.
 TurnEnded(turn=41)
-END turn=41 game_over=True depth=1
+EntityMoved(actor=EntityRef(entity=3, key='player', name='you', is_player=True), from_pos=(20, 16), to_pos=(21, 15))
+TurnEnded(turn=42)
+EntityMoved(actor=EntityRef(entity=3, key='player', name='you', is_player=True), from_pos=(21, 15), to_pos=(22, 14))
+TurnEnded(turn=43)
+EntityMoved(actor=EntityRef(entity=3, key='player', name='you', is_player=True), from_pos=(22, 14), to_pos=(22, 13))
+TurnEnded(turn=44)
+EntityMoved(actor=EntityRef(entity=3, key='player', name='you', is_player=True), from_pos=(22, 13), to_pos=(23, 12))
+TurnEnded(turn=45)
+EntityMoved(actor=EntityRef(entity=3, key='player', name='you', is_player=True), from_pos=(23, 12), to_pos=(24, 12))
+AttackResolved(attacker=EntityRef(entity=20, key='wilk', name='wilk', is_player=False), defender=EntityRef(entity=3, key='player', name='you', is_player=True), weapon=None, damage=2, outcome=<Outcome.HIT: 'hit'>, defender_hp_frac=0.25)
+AttackResolved(attacker=EntityRef(entity=20, key='wilk', name='wilk', is_player=False), defender=EntityRef(entity=3, key='player', name='you', is_player=True), weapon=None, damage=2, outcome=<Outcome.HIT: 'hit'>, defender_hp_frac=0.16666666666666666)
+AttackResolved(attacker=EntityRef(entity=24, key='bies', name='bies', is_player=False), defender=EntityRef(entity=3, key='player', name='you', is_player=True), weapon=None, damage=3, outcome=<Outcome.HIT: 'hit'>, defender_hp_frac=0.041666666666666664)
+NARRATE: The wilk tears at you, and the world swims grey at the edges. And again. The bies tears at you, and the world swims grey at the edges.
+TurnEnded(turn=46)
+AttackResolved(attacker=EntityRef(entity=3, key='player', name='you', is_player=True), defender=EntityRef(entity=20, key='wilk', name='wilk', is_player=False), weapon=None, damage=4, outcome=<Outcome.KILL: 'kill'>, defender_hp_frac=0.0)
+MetaTransaction(kind='codex', detail='wilk:partial')
+EntityDied(entity=EntityRef(entity=20, key='wilk', name='wilk', is_player=False), position=(23, 13), depth=1)
+AttackResolved(attacker=EntityRef(entity=21, key='bies', name='bies', is_player=False), defender=EntityRef(entity=3, key='player', name='you', is_player=True), weapon=None, damage=3, outcome=<Outcome.KILL: 'kill'>, defender_hp_frac=0.0)
+EntityDied(entity=EntityRef(entity=3, key='player', name='you', is_player=True), position=(24, 12), depth=1)
+NARRATE: The wilk comes apart under your strike, and the forest is quieter for it. The bies bears you down into the cold moss. The last thing you hear is its breathing. Darkness closes over you. Somewhere above the canopy, a bird takes wing toward Wyraj.
+TurnEnded(turn=47)
+END turn=47 game_over=True depth=1

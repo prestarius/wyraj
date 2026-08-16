@@ -207,6 +207,11 @@ class Rite:
 
 
 @dataclass(frozen=True)
+class Peaceful:
+    """Dziady truce (M9 §3): the dead walk but do not begin. Striking one ends it."""
+
+
+@dataclass(frozen=True)
 class StatusEffect:
     kind: str  # "bleeding" | "poison" | "fear" | "blessing"
     duration: int  # turns remaining
