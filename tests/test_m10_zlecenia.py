@@ -386,6 +386,33 @@ def test_errands_tab_renders_from_meta_alone() -> None:
     assert "No one here knows your name yet." in text
 
 
+# ---- waiting is acknowledged ----------------------------------------------
+
+
+def test_wait_publishes_waited() -> None:
+    from wyraj.core.actions import Wait
+    from wyraj.core.events import Waited
+
+    game = Game(seed=SEED, meta_autosave=False)
+    waits: list[Waited] = []
+    game.bus.subscribe(Waited, waits.append)
+    game.step(Wait())
+    assert len(waits) == 1 and waits[0].actor.is_player
+
+
+def test_wait_is_silent_while_channeling() -> None:
+    from wyraj.core.actions import Wait
+    from wyraj.core.components import Channeling
+    from wyraj.core.events import Waited
+
+    game = Game(seed=SEED, meta_autosave=False)
+    game.world.add(game.player, Channeling(turns_left=3))
+    waits: list[Waited] = []
+    game.bus.subscribe(Waited, waits.append)
+    game.step(Wait())
+    assert waits == []  # the channel owns the silence
+
+
 def test_errand_state_survives_save(tmp_path) -> None:
     from wyraj.persistence.save import load_game, save_game
 

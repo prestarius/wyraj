@@ -6,9 +6,13 @@ EntityMoved(actor=EntityRef(entity=3, key='player', name='you', is_player=True),
 TurnEnded(turn=3)
 EntityMoved(actor=EntityRef(entity=3, key='player', name='you', is_player=True), from_pos=(15, 8), to_pos=(16, 8))
 TurnEnded(turn=4)
+Waited(actor=EntityRef(entity=3, key='player', name='you', is_player=True))
+NARRATE: You hold still and let the turn pass. The world, unimpressed, keeps moving.
 TurnEnded(turn=5)
 EntityMoved(actor=EntityRef(entity=3, key='player', name='you', is_player=True), from_pos=(16, 8), to_pos=(15, 8))
 TurnEnded(turn=6)
+Waited(actor=EntityRef(entity=3, key='player', name='you', is_player=True))
+NARRATE: You wait — listening, counting, breathing. Nothing asks you to stop.
 TurnEnded(turn=7)
 EntityMoved(actor=EntityRef(entity=3, key='player', name='you', is_player=True), from_pos=(15, 8), to_pos=(16, 9))
 TurnEnded(turn=8)
@@ -16,14 +20,20 @@ EntityMoved(actor=EntityRef(entity=3, key='player', name='you', is_player=True),
 TurnEnded(turn=9)
 EntityMoved(actor=EntityRef(entity=3, key='player', name='you', is_player=True), from_pos=(17, 8), to_pos=(17, 7))
 TurnEnded(turn=10)
+Waited(actor=EntityRef(entity=3, key='player', name='you', is_player=True))
+NARRATE: You hold still and let the turn pass. The world, unimpressed, keeps moving.
 TurnEnded(turn=11)
 EntityMoved(actor=EntityRef(entity=3, key='player', name='you', is_player=True), from_pos=(17, 7), to_pos=(16, 7))
 TurnEnded(turn=12)
 EntityMoved(actor=EntityRef(entity=3, key='player', name='you', is_player=True), from_pos=(16, 7), to_pos=(16, 8))
 TurnEnded(turn=13)
+Waited(actor=EntityRef(entity=3, key='player', name='you', is_player=True))
+NARRATE: You wait — listening, counting, breathing. Nothing asks you to stop.
 TurnEnded(turn=14)
 EntityMoved(actor=EntityRef(entity=3, key='player', name='you', is_player=True), from_pos=(16, 8), to_pos=(17, 7))
 TurnEnded(turn=15)
+Waited(actor=EntityRef(entity=3, key='player', name='you', is_player=True))
+NARRATE: You hold still and let the turn pass. The world, unimpressed, keeps moving.
 TurnEnded(turn=16)
 EntityMoved(actor=EntityRef(entity=3, key='player', name='you', is_player=True), from_pos=(17, 7), to_pos=(16, 7))
 TurnEnded(turn=17)
@@ -36,7 +46,7 @@ PhaseChanged(phase='dzien', day=2, festival='gromniczna')
 NARRATE: The sun stands up over the puszcza and the shadows go home to their trunks.
 TurnEnded(turn=20)
 LevelChanged(depth=1, direction='down')
-NARRATE: You climb down into the barrow dark. The air is old here — earth, cold wax, and something underneath both.
+NARRATE: Stone steps, cut before anyone now living was born, take you down under the mound. The daylight does not follow.
 TurnEnded(turn=21)
 EntityMoved(actor=EntityRef(entity=3, key='player', name='you', is_player=True), from_pos=(18, 20), to_pos=(18, 21))
 TurnEnded(turn=22)
@@ -44,6 +54,8 @@ EntityMoved(actor=EntityRef(entity=3, key='player', name='you', is_player=True),
 TurnEnded(turn=23)
 EntityMoved(actor=EntityRef(entity=3, key='player', name='you', is_player=True), from_pos=(17, 21), to_pos=(18, 21))
 TurnEnded(turn=24)
+Waited(actor=EntityRef(entity=3, key='player', name='you', is_player=True))
+NARRATE: You wait — listening, counting, breathing. Nothing asks you to stop.
 TurnEnded(turn=25)
 EntityMoved(actor=EntityRef(entity=3, key='player', name='you', is_player=True), from_pos=(18, 21), to_pos=(19, 20))
 TurnEnded(turn=26)
@@ -53,18 +65,22 @@ LoreDiscovered(entity=EntityRef(entity=22, key='wilk', name='wilk', is_player=Fa
 LoreDiscovered(entity=EntityRef(entity=37, key='umarly_wedrowiec', name='dead traveler', is_player=False))
 NARRATE: Grey on grey against the treeline: a wilk, watching you the way a butcher watches a fattened pig. A dead traveler sits against an oak as if only resting. The puszcza has been patient with him. Something took his boots.
 TurnEnded(turn=27)
+Waited(actor=EntityRef(entity=3, key='player', name='you', is_player=True))
+NARRATE: You hold still and let the turn pass. The world, unimpressed, keeps moving.
 TurnEnded(turn=28)
 EntityMoved(actor=EntityRef(entity=3, key='player', name='you', is_player=True), from_pos=(19, 19), to_pos=(19, 18))
 MetaTransaction(kind='codex', detail='bies:glimpsed')
 LoreDiscovered(entity=EntityRef(entity=23, key='bies', name='bies', is_player=False))
 NARRATE: A crooked shape unfolds from the thicket — a bies, the one the old people would not name after dark.
 TurnEnded(turn=29)
+Waited(actor=EntityRef(entity=3, key='player', name='you', is_player=True))
+NARRATE: You wait — listening, counting, breathing. Nothing asks you to stop.
 TurnEnded(turn=30)
 EntityMoved(actor=EntityRef(entity=3, key='player', name='you', is_player=True), from_pos=(19, 18), to_pos=(18, 18))
 TurnEnded(turn=31)
 AttackResolved(attacker=EntityRef(entity=3, key='player', name='you', is_player=True), defender=EntityRef(entity=22, key='wilk', name='wilk', is_player=False), weapon=None, damage=4, outcome=<Outcome.HIT: 'hit'>, defender_hp_frac=0.3333333333333333)
 AttackResolved(attacker=EntityRef(entity=22, key='wilk', name='wilk', is_player=False), defender=EntityRef(entity=3, key='player', name='you', is_player=True), weapon=None, damage=2, outcome=<Outcome.HIT: 'hit'>, defender_hp_frac=0.9166666666666666)
-NARRATE: Your blow bites into the wilk; it recoils with a wet hiss. The wilk slams into you, and you taste blood and old leaves.
+NARRATE: Your strike tears its flesh, and the wilk howls. The wilk slams into you, and you taste blood and old leaves.
 TurnEnded(turn=32)
 EntityMoved(actor=EntityRef(entity=3, key='player', name='you', is_player=True), from_pos=(18, 18), to_pos=(18, 17))
 AttackResolved(attacker=EntityRef(entity=22, key='wilk', name='wilk', is_player=False), defender=EntityRef(entity=3, key='player', name='you', is_player=True), weapon=None, damage=2, outcome=<Outcome.HIT: 'hit'>, defender_hp_frac=0.8333333333333334)
@@ -72,8 +88,9 @@ NARRATE: The wilk rakes you with crooked claws; pain flares hot along your ribs.
 TurnEnded(turn=33)
 EntityMoved(actor=EntityRef(entity=3, key='player', name='you', is_player=True), from_pos=(18, 17), to_pos=(19, 16))
 TurnEnded(turn=34)
+Waited(actor=EntityRef(entity=3, key='player', name='you', is_player=True))
 AttackResolved(attacker=EntityRef(entity=22, key='wilk', name='wilk', is_player=False), defender=EntityRef(entity=3, key='player', name='you', is_player=True), weapon=None, damage=0, outcome=<Outcome.MISS: 'miss'>, defender_hp_frac=0.8333333333333334)
-NARRATE: The wilk lunges — you twist away, its claws snapping shut on nothing.
+NARRATE: You hold still and let the turn pass. The world, unimpressed, keeps moving. It comes at you low and fast, but you are faster, this once.
 TurnEnded(turn=35)
 EntityMoved(actor=EntityRef(entity=3, key='player', name='you', is_player=True), from_pos=(19, 16), to_pos=(18, 16))
 AttackResolved(attacker=EntityRef(entity=22, key='wilk', name='wilk', is_player=False), defender=EntityRef(entity=3, key='player', name='you', is_player=True), weapon=None, damage=2, outcome=<Outcome.HIT: 'hit'>, defender_hp_frac=0.75)
@@ -84,7 +101,7 @@ AttackResolved(attacker=EntityRef(entity=3, key='player', name='you', is_player=
 AttackResolved(attacker=EntityRef(entity=21, key='bies', name='bies', is_player=False), defender=EntityRef(entity=3, key='player', name='you', is_player=True), weapon=None, damage=0, outcome=<Outcome.MISS: 'miss'>, defender_hp_frac=0.75)
 AttackResolved(attacker=EntityRef(entity=22, key='wilk', name='wilk', is_player=False), defender=EntityRef(entity=3, key='player', name='you', is_player=True), weapon=None, damage=2, outcome=<Outcome.HIT: 'hit'>, defender_hp_frac=0.6666666666666666)
 AttackResolved(attacker=EntityRef(entity=23, key='bies', name='bies', is_player=False), defender=EntityRef(entity=3, key='player', name='you', is_player=True), weapon=None, damage=3, outcome=<Outcome.HIT: 'hit'>, defender_hp_frac=0.5416666666666666)
-NARRATE: Your strike tears its flesh, and the bies howls. The bies circles and comes at you again, patient as winter. The wilk rakes you with crooked claws; pain flares hot along your ribs. The bies slams into you, and you taste blood and old leaves.
+NARRATE: You strike true. The bies shudders, black blood beading where you cut. The bies circles and comes at you again, patient as winter. The wilk rakes you with crooked claws; pain flares hot along your ribs. The bies slams into you, and you taste blood and old leaves.
 TurnEnded(turn=37)
 AttackResolved(attacker=EntityRef(entity=3, key='player', name='you', is_player=True), defender=EntityRef(entity=21, key='bies', name='bies', is_player=False), weapon=None, damage=4, outcome=<Outcome.KILL: 'kill'>, defender_hp_frac=0.0)
 MetaTransaction(kind='codex', detail='bies:partial')
@@ -97,8 +114,9 @@ EntityMoved(actor=EntityRef(entity=3, key='player', name='you', is_player=True),
 AttackResolved(attacker=EntityRef(entity=23, key='bies', name='bies', is_player=False), defender=EntityRef(entity=3, key='player', name='you', is_player=True), weapon=None, damage=0, outcome=<Outcome.MISS: 'miss'>, defender_hp_frac=0.4166666666666667)
 NARRATE: The bies circles and comes at you again, patient as winter.
 TurnEnded(turn=39)
+Waited(actor=EntityRef(entity=3, key='player', name='you', is_player=True))
 AttackResolved(attacker=EntityRef(entity=23, key='bies', name='bies', is_player=False), defender=EntityRef(entity=3, key='player', name='you', is_player=True), weapon=None, damage=0, outcome=<Outcome.MISS: 'miss'>, defender_hp_frac=0.4166666666666667)
-NARRATE: The bies circles and comes at you again, patient as winter.
+NARRATE: You wait — listening, counting, breathing. Nothing asks you to stop. The bies circles and comes at you again, patient as winter.
 TurnEnded(turn=40)
 EntityMoved(actor=EntityRef(entity=3, key='player', name='you', is_player=True), from_pos=(19, 15), to_pos=(20, 16))
 AttackResolved(attacker=EntityRef(entity=22, key='wilk', name='wilk', is_player=False), defender=EntityRef(entity=3, key='player', name='you', is_player=True), weapon=None, damage=2, outcome=<Outcome.HIT: 'hit'>, defender_hp_frac=0.3333333333333333)

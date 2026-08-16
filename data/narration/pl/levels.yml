@@ -11,3 +11,15 @@ level_changed:
       pl: "Wspinasz się z powrotem ku żywemu powietrzu, a ciężar ziemi zsuwa się z twoich ramion."
     - weight: 1
       pl: "Po wytartych stopniach w górę, spod kopca. Nawet szare niebo nad puszczą wydaje się teraz hojne."
+
+waited:
+  - weight: 3
+    pl: "Stoisz bez ruchu i pozwalasz turze przeminąć. Świat, niewzruszony, idzie dalej."
+  - weight: 2
+    pl: "Czekasz — nasłuchujesz, liczysz, oddychasz. Nic nie każe ci przestać."
+  - weight: 2
+    tags: [darkness]
+    pl: "Stoisz w ciemności i pozwalasz jej do siebie przywyknąć."
+  - weight: 2
+    tags: [player_dying]
+    pl: "Trwasz w bezruchu — głównie dlatego, że bezruch to wszystko, co ci zostało."

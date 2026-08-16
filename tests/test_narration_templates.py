@@ -58,6 +58,7 @@ from wyraj.core.events import (
     TalkedTo,
     TalkedToDead,
     VillageFateResolved,
+    Waited,
     WeaponNamed,
     WeaponRecognized,
     WeatherChanged,
@@ -188,6 +189,8 @@ def fixture_event(event_key: str, subkey: str | None) -> GameEvent:
         return TalkedTo(villager=villager, role=subkey)
     if event_key == "rested":
         return Rested(actor=PLAYER)
+    if event_key == "waited":
+        return Waited(actor=PLAYER)
     if event_key == "item_bought":
         return ItemBought(actor=PLAYER, item=ODWAR, price=18)
     if event_key == "item_sold":

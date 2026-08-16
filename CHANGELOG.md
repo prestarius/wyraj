@@ -28,9 +28,16 @@ All notable changes to Wyraj. Format loosely follows [Keep a Changelog](https://
   the in-run codex and the title-menu codex (the latter reads meta
   alone); gossip rumors escalate to point at your unfinished business.
 
+- **Waiting is acknowledged.** Pressing `.` now narrates the held turn
+  (a new `Waited` event with EN/PL ambient lines, darkness- and
+  dying-aware) instead of passing in silence — except while channeling
+  or performing the rite, which own their own drama.
+
 ### Changed
-- Golden transcript regenerated once (US 13.2): two new villager
-  entities shift later entity ids; normalized diff is id-only.
+- Golden transcript regenerated twice: US 13.2 (two new villager
+  entities shift later entity ids; normalized diff is id-only) and the
+  `Waited` event (the scripted walk's waits now narrate; mechanical
+  events unchanged).
 - The utopiec finally drops proof (`utopcowa_luska`); prices for the
   M7 slot pieces (szkaplerz, baranica, łapcie).
 

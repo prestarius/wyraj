@@ -133,6 +133,7 @@ from wyraj.core.events import (
     TalkedToDead,
     TurnEnded,
     VillageFateResolved,
+    Waited,
     WeaponNamed,
     WeaponRecognized,
     WeatherChanged,
@@ -816,7 +817,11 @@ class Game:
                 if entity is not None:
                     self._use_quickslot(index, entity)
             case Wait():
-                pass
+                if (
+                    self.world.get(self.player, Channeling) is None
+                    and self.world.get(self.player, Rite) is None
+                ):
+                    self.bus.publish(Waited(actor=ref_for(self.world, self.player)))
 
     def _advance_until_player_turn(self) -> None:
         if movement.level_of(self.world, self.player) != self.depth:

@@ -408,6 +408,17 @@ class Rested(GameEvent):
 
 
 @dataclass(frozen=True)
+class Waited(GameEvent):
+    """The player deliberately let a turn pass — acknowledged, not silent.
+
+    Not published while channeling or performing the rite; those waits
+    already carry their own drama.
+    """
+
+    actor: EntityRef
+
+
+@dataclass(frozen=True)
 class CoinsPicked(GameEvent):
     actor: EntityRef
     amount: int
