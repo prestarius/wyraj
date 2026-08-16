@@ -33,6 +33,15 @@ talked_to:
       en: "\"Under the mounds the dark is older than fire,\" the old man whispers. \"Take the thunder-candle. Take two.\""
     - weight: 1
       en: "\"The lights over the bagna are souls,\" he says. \"Whose souls? Follow them and find out. No? Wise.\""
+    - weight: 3
+      tags: [fate_mlyn_pusty]
+      en: "\"The mill stands empty now,\" Świętosław says, and lets it sit there, because there is nothing to add and both of you know whose word it waited on."
+    - weight: 3
+      tags: [fate_ciemna_kapliczka]
+      en: "\"No smoke over the kapliczka,\" the dziad says, not looking at you. \"The gods keep accounts too, wanderer. Neater than mine.\""
+    - weight: 3
+      tags: [fate_zimna_kuznia]
+      en: "\"You'll want a whetstone from now on,\" Świętosław says. \"The kuźnia is cold. Radzim got tired of promises — ours and yours both.\""
   kowal:
     - weight: 2
       tags: [known_face]

@@ -266,6 +266,84 @@ def test_known_face_tag_from_reputation() -> None:
     assert "known_face" not in stranger
 
 
+# ---- US 13.5: fates -------------------------------------------------------
+
+
+def test_ignored_chain_resolves_after_patience_runs() -> None:
+    meta = MetaState()
+    for run in range(3):
+        game = Game(seed=run, meta=meta, meta_autosave=False)
+        game.errands = {"syn_mlynarza": "heard"}
+        game.apply_death_to_meta()
+    assert meta.village.fates["mlyn_pusty"] == 3
+    assert meta.village.resolved == ["mlyn_pusty"]
+    assert meta.villagers["mlynarz"].errands_failed == 3
+
+    # A fourth ignored run cannot resolve it twice — and the miller is gone.
+    game = Game(seed=99, meta=meta, meta_autosave=False)
+    from wyraj.core.components import Villager
+
+    roles = {v.role for _e, (v,) in game.world.query(Villager)}
+    assert "mlynarz" not in roles
+    game.apply_death_to_meta()
+    assert meta.village.resolved == ["mlyn_pusty"]
+    assert meta.village.fates["mlyn_pusty"] == 3
+
+
+def test_unheard_errands_do_not_count_against_you() -> None:
+    meta = MetaState()
+    game = Game(seed=SEED, meta=meta, meta_autosave=False)
+    game.errands = {"syn_mlynarza": "offered"}
+    game.apply_death_to_meta()
+    assert "mlynarz" not in meta.villagers
+    assert meta.village.fates == {}
+
+
+def test_fate_announced_once_ever() -> None:
+    from wyraj.core.actions import Wait
+    from wyraj.core.events import VillageFateResolved
+
+    meta = MetaState()
+    meta.village.resolved.append("zimna_kuznia")
+
+    game = Game(seed=SEED, meta=meta, meta_autosave=False)
+    told: list[VillageFateResolved] = []
+    game.bus.subscribe(VillageFateResolved, told.append)
+    game.step(Wait())
+    game.step(Wait())
+    assert [event.fate for event in told] == ["zimna_kuznia"]
+    assert meta.village.announced == ["zimna_kuznia"]
+
+    later = Game(seed=SEED + 1, meta=meta, meta_autosave=False)
+    told_again: list[VillageFateResolved] = []
+    later.bus.subscribe(VillageFateResolved, told_again.append)
+    later.step(Wait())
+    assert told_again == []
+
+
+def test_resolved_fate_thins_the_shelves() -> None:
+    meta = MetaState()
+    meta.village.resolved.extend(["mlyn_pusty", "zimna_kuznia"])
+    stock = _trader_stock_keys(Game(seed=SEED, meta=meta, meta_autosave=False))
+    assert "chleb" not in stock
+    assert "toporek" not in stock and "ciupaga" not in stock
+
+
+def test_morgue_records_the_changed_wies(tmp_path) -> None:
+    from datetime import datetime
+
+    from wyraj.persistence.morgue import write_morgue
+
+    meta = MetaState()
+    meta.village.resolved.append("mlyn_pusty")
+    game = Game(seed=SEED, meta=meta, meta_autosave=False)
+    game.errands = {"czwarta_noc": "heard"}
+    path = write_morgue(game, datetime(2026, 8, 16, 12, 0, 0), directory=tmp_path)
+    text = path.read_text(encoding="utf-8")
+    assert "Words given and not kept: czwarta_noc" in text
+    assert "The wieś, changed: mlyn_pusty" in text
+
+
 def test_errand_state_survives_save(tmp_path) -> None:
     from wyraj.persistence.save import load_game, save_game
 

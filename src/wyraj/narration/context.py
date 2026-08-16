@@ -14,7 +14,7 @@ the event actually occurred, not the state at end-of-turn flush.
 from dataclasses import dataclass, field
 
 from wyraj.core.components import Health, Position
-from wyraj.core.events import AttackResolved, GameEvent, TalkedTo
+from wyraj.core.events import AttackResolved, GameEvent, OfferingMade, ShrineVisited, TalkedTo
 from wyraj.core.game import Game
 from wyraj.narration.templates import RuleKey, rule_key
 
@@ -60,11 +60,13 @@ class ContextEnricher:
             for key, state in sorted(self.game.errands.items()):
                 if state in ("heard", "proof"):
                     tags.add(f"errand_{key}")
-            for fate in self.game.meta.village.resolved:
-                tags.add(f"fate_{fate}")
             memory = self.game.meta.villagers.get(event.role)
             if memory is not None and memory.reputation >= KNOWN_FACE_REP:
                 tags.add("known_face")
+        if isinstance(event, TalkedTo | ShrineVisited | OfferingMade):
+            # Resolved fates tint what the wieś and its shrines say (M10 §4).
+            for fate in self.game.meta.village.resolved:
+                tags.add(f"fate_{fate}")
         return tags
 
     def _recency_tags(self, event: GameEvent) -> set[str]:

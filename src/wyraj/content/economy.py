@@ -50,6 +50,8 @@ class VillageShop(BaseModel):
     guaranteed: list[StockEntry] = []
     rolls: list[StockEntry] = []
     reputation_tiers: list[RepTier] = []
+    # M10 §4: what a resolved village fate takes off the shelves, forever.
+    fate_removals: dict[str, list[str]] = {}
 
 
 def load_drops(root: Path | None = None) -> dict[str, DropSpec]:

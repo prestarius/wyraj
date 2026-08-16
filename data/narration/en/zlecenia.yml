@@ -58,3 +58,19 @@ errand_completed:
     - weight: 1
       importance: high
       en: "Miłosz weighs the grave-wax, sniffs it, and does not ask. \"Pleasure doing honest trade,\" he says, entirely unironically, and counts out {reward} denary."
+
+# The telling (M10 §4): spoken once, at the first step of the run after a
+# fate resolved off-screen. The village changed while you were dead.
+village_fate:
+  mlyn_pusty:
+    - weight: 1
+      importance: high
+      en: "The mill wheel stands still on the stream. The mill stands empty now — Bogusz waited for word that the water was only water, and word never came, and one morning the wieś woke to a door left open and flour going grey on the stones."
+  ciemna_kapliczka:
+    - weight: 1
+      importance: high
+      en: "No smoke over the kapliczka, and none coming. The censer stayed under the mounds; the shrine keeps its stone shoulders bare now, and the wieś walks past it faster than it used to."
+  zimna_kuznia:
+    - weight: 1
+      importance: high
+      en: "The forge is cold and swept clean, which is worse than cold and abandoned. Radzim waited for the wilki to leave his charcoal pits, then packed his hammers and left for a town where edges arrive by cart."

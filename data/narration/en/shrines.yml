@@ -1,10 +1,16 @@
 shrine_visited:
   perun:
     - weight: 2
+      tags: [fate_ciemna_kapliczka]
+      en: "Perun's post stands scarred and smokeless. No censer has swung here since the mounds kept the keeper's, and the iron nails are going quietly to rust."
+    - weight: 2
       en: "The shrine of Perun: an oak post scarred by lightning, iron nails driven in rows. The air smells faintly of storms that haven't happened yet."
     - weight: 1
       en: "Perun's post watches the sky the way a soldier watches a road. An offering would not go unnoticed."
   weles:
+    - weight: 2
+      tags: [fate_ciemna_kapliczka]
+      en: "Weles's stone sits low and unsmoked, the wool unwound by weather. The god of the low places is patient with the dead; with the living, he merely keeps the page open."
     - weight: 2
       en: "The shrine of Weles sits low and half in shadow, wound with wool and old horns. The god of the underworld keeps his door here — and his ledger."
     - weight: 1

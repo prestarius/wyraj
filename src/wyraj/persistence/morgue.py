@@ -37,6 +37,13 @@ def write_morgue(
         f"Banked in the wieś: {game.meta.currency.denary} denary",
         f"Heirlooms waiting in the skrzynia: {stash_count}",
     ]
+    undone = sorted(
+        key for key, state in getattr(game, "errands", {}).items() if state in ("heard", "proof")
+    )
+    if undone:
+        meta_lines.append("Words given and not kept: " + ", ".join(undone))
+    if game.meta.village.resolved:
+        meta_lines.append("The wieś, changed: " + ", ".join(game.meta.village.resolved))
     if game.meta.edited:
         meta_lines.append("(profile hand-edited — no judgment, just honesty)")
 

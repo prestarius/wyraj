@@ -132,6 +132,7 @@ from wyraj.core.events import (
     TalkedTo,
     TalkedToDead,
     TurnEnded,
+    VillageFateResolved,
     WeaponNamed,
     WeaponRecognized,
     WeatherChanged,
@@ -350,10 +351,21 @@ class Game:
             Lore(key=key, name=name, description=description),
         )
         if role == "trader":
+            # A resolved fate thins the shelves for good (M10 §4).
+            removed = {
+                item
+                for fate, keys in self.village_shop.fate_removals.items()
+                if fate in self.meta.village.resolved
+                for item in keys
+            }
             stock: list[Entity] = []
             for entry in self.village_shop.guaranteed:
+                if entry.item in removed:
+                    continue
                 stock += [self.spawn_stock_item(entry.item) for _ in range(entry.count)]
             for entry in self.village_shop.rolls:
+                if entry.item in removed:
+                    continue
                 if self.rng.loot.randint(1, 100) <= entry.chance:
                     stock += [self.spawn_stock_item(entry.item) for _ in range(entry.count)]
             # The good shelf (M10 §3): no RNG draws — meta-gated guarantees
@@ -637,6 +649,7 @@ class Game:
         player's turn again (or the player is dead)."""
         if self.game_over:
             return
+        self._announce_fates()
         self._tick_rite(action)
         flight_completed = False
         if not self.game_over:  # a completed rite ends the run mid-step
@@ -1240,6 +1253,7 @@ class Game:
         counters = self.meta.achievements
         counters["runs"] = counters.get("runs", 0) + 1
         counters["deepest_level"] = max(counters.get("deepest_level", 0), self.max_depth_reached)
+        self._settle_errands_into_meta()
         if self.death_by_key:
             key = f"{self.death_by_key}_deaths"
             counters[key] = counters.get(key, 0) + 1
@@ -1328,6 +1342,41 @@ class Game:
             MetaTransaction(kind="errand_done", detail=f"{errand.key}:+{errand.reward.denary}")
         )
         self._save_meta()
+
+    def _announce_fates(self) -> None:
+        """The telling (M10 §4): a fate resolved between runs is spoken once,
+        on the first step of the next run, standing in the changed wieś."""
+        if self._fates_announced:
+            return
+        self._fates_announced = True
+        if self.depth != 0:
+            return
+        told = False
+        for fate in self.meta.village.resolved:
+            if fate not in self.meta.village.announced:
+                self.meta.village.announced.append(fate)
+                self.bus.publish(VillageFateResolved(fate=fate))
+                told = True
+        if told:
+            self._save_meta()
+
+    def _settle_errands_into_meta(self) -> None:
+        """Heard-but-undone feeds the giver's memory and the fate counters
+        (M10 §4). Called when a run ends, before the final meta save."""
+        for key, state in sorted(self.errands.items()):
+            if state not in ("heard", "proof"):
+                continue
+            errand = self.errands_catalog[key]
+            memory = self.meta.villagers.setdefault(errand.giver, VillagerMemory())
+            memory.errands_failed += 1
+            self.bus.publish(MetaTransaction(kind="errand_failed", detail=key))
+            if not errand.fate or errand.fate in self.meta.village.resolved:
+                continue
+            count = self.meta.village.fates.get(errand.fate, 0) + 1
+            self.meta.village.fates[errand.fate] = count
+            if count >= errand.patience:
+                self.meta.village.resolved.append(errand.fate)
+                self.bus.publish(MetaTransaction(kind="village_fate", detail=errand.fate))
 
     def _stamp_errand_items(self, depth: int) -> None:
         """Fetch targets are stamped into their depth at generation (M10 §1) —
@@ -1614,6 +1663,8 @@ class Game:
     def apply_victory_to_meta(self) -> None:
         from wyraj.persistence.meta import VictoryRecord
 
+        # Even a sealed Wij doesn't excuse a broken word (M10 §4).
+        self._settle_errands_into_meta()
         self.meta.victories.append(
             VictoryRecord(
                 origin=self.origin.key,

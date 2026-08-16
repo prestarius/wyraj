@@ -24,3 +24,9 @@ reputation_tiers:
     items:
       - { item: baranica }
       - { item: zurawie_pioro }
+
+# What a resolved village fate takes off the shelves, forever (M10 §4):
+# no mill, no flour, no bread; no forge, no new edges.
+fate_removals:
+  mlyn_pusty: [chleb]
+  zimna_kuznia: [toporek, ciupaga]

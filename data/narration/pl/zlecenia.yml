@@ -58,3 +58,19 @@ errand_completed:
     - weight: 1
       importance: high
       pl: "Miłosz waży grobowy wosk, wącha i nie pyta. „Przyjemność robić uczciwy handel” — mówi zupełnie bez ironii i odlicza {reward} denarów."
+
+# Oznajmienie (M10 §4): raz, przy pierwszym kroku biegu po tym, jak los
+# rozstrzygnął się za sceną. Wieś zmieniła się, kiedy było po tobie.
+village_fate:
+  mlyn_pusty:
+    - weight: 1
+      importance: high
+      pl: "Młyńskie koło stoi nieruchomo na strumieniu. Młyn stoi teraz pusty — Bogusz czekał na wieść, że woda to tylko woda, wieść nie przyszła, a któregoś ranka wieś obudziła się na otwarte drzwi i mąkę siwiejącą na kamieniach."
+  ciemna_kapliczka:
+    - weight: 1
+      importance: high
+      pl: "Nad kapliczką nie ma dymu i żaden nie nadchodzi. Kadzielnica została pod kurhanami; kapliczka trzyma teraz gołe kamienne ramiona, a wieś mija ją szybciej niż kiedyś."
+  zimna_kuznia:
+    - weight: 1
+      importance: high
+      pl: "Kuźnia jest zimna i zamieciona do czysta, co jest gorsze niż zimna i porzucona. Radzim nie doczekał się, aż wilki odejdą od jego mielerzy — spakował młoty i ruszył do miasta, gdzie ostrza przyjeżdżają wozem."

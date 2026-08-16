@@ -33,6 +33,15 @@ talked_to:
       pl: "„Pod kurhanami ciemność jest starsza od ognia” — szepcze stary. „Weź gromnicę. Weź dwie.”"
     - weight: 1
       pl: "„Światełka nad bagnami to dusze” — powiada. „Czyje? Idź za nimi, to się dowiesz. Nie? Mądrze.”"
+    - weight: 3
+      tags: [fate_mlyn_pusty]
+      pl: "„Młyn stoi teraz pusty” — mówi Świętosław i zostawia to tak, bo dodać nie ma czego, a na czyje słowo młyn czekał, wiecie oboje."
+    - weight: 3
+      tags: [fate_ciemna_kapliczka]
+      pl: "„Nad kapliczką nie ma dymu” — mówi dziad, nie patrząc na ciebie. „Bogowie też prowadzą rachunki, wędrowcze. Porządniejsze od moich.”"
+    - weight: 3
+      tags: [fate_zimna_kuznia]
+      pl: "„Od teraz noś przy sobie osełkę” — mówi Świętosław. „Kuźnia zimna. Radzim zmęczył się obietnicami — naszymi i twoimi.”"
   kowal:
     - weight: 2
       tags: [known_face]
