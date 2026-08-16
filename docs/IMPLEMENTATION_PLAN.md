@@ -190,11 +190,11 @@ each story keeps `main` playable. Everything the pane shows is a projection of E
 
 ---
 
-## Planned epics — roadmap `WYRAJ_ROADMAP_M8PLUS.md` (Proposal v0.1)
+## Roadmap epics — `WYRAJ_ROADMAP_M8PLUS.md` — **ALL DONE 2026-08-16**
 
-Outline-level on purpose (spec §12: no early scaffolding) — each gets a full
-CC spec and story breakdown when its milestone starts. Recommended order
-M8 → M9 → M10 → M11 → M12; M11 may slide earlier (no prerequisites past M0).
+Every roadmap milestone shipped in order (M8 → M12), each via its own full
+CC spec, feature branch, `--no-ff` merge, and tag (`v0.9-dno` through
+`v0.13-gusla`). Entries below are the per-epic record.
 
 - **Epic 11 — M8 "Dno"** (the Bottom) — **DONE 2026-08-16** — spec
   `WYRAJ_M8_DNO.md`, built with all spec defaults (decisions 20–25).

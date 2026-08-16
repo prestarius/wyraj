@@ -2,7 +2,14 @@
 
 All notable changes to Wyraj. Format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
-## [Unreleased] — M12 "Gusła" (data-pack modding)
+## [Unreleased]
+
+### Added
+- `wyraj --sound-check`: reports the whole audio chain (config, backend,
+  mixer, output devices) and plays a test sound; exits 0/1. README notes
+  the footgun it exists for — a plain `uv sync` prunes the sound extra.
+
+## [0.13-gusla] — merged 2026-08-16 — M12 "Gusła" (data-pack modding)
 
 ### Added
 - **Data packs.** A pack is a folder shaped like `data/` plus a

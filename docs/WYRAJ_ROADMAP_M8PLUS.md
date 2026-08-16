@@ -1,6 +1,7 @@
 # WYRAJ — Roadmap M8+ (post-Sylwetka)
 
-> **Status:** Proposal v0.1 — milestone outlines for discussion; each becomes a full CC spec (like M6/M7) once approved
+> **Status:** EXECUTED — every milestone below shipped 2026-08-16 (M8 `v0.9-dno` → M12 `v0.13-gusla`), each via its own full spec: `WYRAJ_M8_DNO.md`, `WYRAJ_M9_KOLO_ROKU.md`, `WYRAJ_M10_ZLECENIA.md`, `WYRAJ_M11_GLOSY.md`, `WYRAJ_M12_GUSLA.md`. Kept as the design rationale of record; the Parking Lot below is what remains open.
+> *(original header: Proposal v0.1 — milestone outlines for discussion; each becomes a full CC spec once approved)*
 > **Baseline:** M0–M7 + Próg live on `main` (verified against repo, Aug 2026): full loop wieś→puszcza→bagna→3 crypt levels, EN/PL, meta-progression, LLM narrator, Sylwetka pane
 > **Ordering rationale:** finish the game before widening it — M8 gives Wyraj an ending; M9–M10 deepen the living world; M11 gives it a voice; M12 opens the data to others. Public release/reach is deliberately parked (see Parking Lot).
 

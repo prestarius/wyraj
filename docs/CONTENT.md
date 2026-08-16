@@ -140,6 +140,44 @@ if the species has an entry here, and only if the `weapon_named:` rule
 for that species exists in the narration packs (the announcement prose
 carries the name in each language). Add all three together.
 
+## Errands — `data/errands/*.yml` (M10)
+
+The wieś's asks, 1–3 assembled per run, at most one per giver:
+
+```yaml
+syn_mlynarza:
+  giver: mlynarz          # villager role
+  kind: hunt              # hunt | fetch — no escorts, ever
+  target: utopiec         # monster key (hunt) / item key (fetch)
+  proof: utopcowa_luska   # hunt only: guaranteed drop while active
+  depth: 2
+  reward: { denary: 70, reputation: 1 }
+  patience: 3             # ignored runs before the fate resolves (0 = none)
+  fate: mlyn_pusty        # village flag this failure feeds ("" = rep only)
+```
+
+Every errand needs `errand_heard/<key>` and `errand_completed/<key>` rules
+in both narration packs — the ask *is* the content. A fate needs its
+`village_fate/<flag>` announcement too.
+
+## Audio — `data/audio/` (M11)
+
+`sounds.yml` maps names to files (never globbed): `beds:` per ambient
+scene, `events:` keyed by narration rule keys (`attack_resolved/player_kill`),
+`voices:` per monster key for distance voicing. Every asset file must have
+an entry in `CREDITS.yml` (`file/author/source_url/license` — CC0/CC-BY/
+CC-BY-SA only; NC/ND fails CI). The shipped starter set is synthesized by
+`tools/gen_sounds.py`; replace files one by one with curated recordings
+and update the credits by hand. Sparse is the aesthetic — unmapped events
+are silent on purpose.
+
+## Data packs — `examples/pack-pomorski/` (M12)
+
+Everything above can also ship as a third-party pack: a folder shaped
+like `data/` plus a `pack.yml` manifest, validated by
+`uv run wyraj --validate-pack`. See `docs/MODDING.md` for the merge rules
+and the authoring walkthrough — the in-repo example pack is the template.
+
 ## Intro — `data/intro/{en,pl}/`
 
 Title taglines (`title_lines.yml`), the paged prologue with per-origin

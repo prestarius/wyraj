@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project
 
-**Wyraj** — a narrated roguelike in Slavic dark fantasy: ADOM-class systemic depth fused with rich adventure prose. Specs: `docs/WYRAJ_PROJECT.md` (core, M0–M5), `docs/WYRAJ_M6_POWROTY.md` (meta-progression), `docs/WYRAJ_PROG_SPEC.md` (intro/onboarding), `docs/WYRAJ_M7_SYLWETKA.md` (M7 character pane & quickslots), `docs/WYRAJ_M8_DNO.md` (M8 ending/victory), `docs/WYRAJ_M9_KOLO_ROKU.md` (M9 time/weather/festivals), `docs/WYRAJ_ROADMAP_M8PLUS.md` (M9–M12 outlines, proposal) — read the relevant one before non-trivial work. `docs/IMPLEMENTATION_PLAN.md` is the backlog and status board (Epics 1–12 are DONE through M9 "Koło Roku"; Epics 13–15 = M10–M12 are planned outlines).
+**Wyraj** — a narrated roguelike in Slavic dark fantasy: ADOM-class systemic depth fused with rich adventure prose. Specs: `docs/WYRAJ_PROJECT.md` (core, M0–M5), `docs/WYRAJ_M6_POWROTY.md` (meta-progression), `docs/WYRAJ_PROG_SPEC.md` (intro/onboarding), `docs/WYRAJ_M7_SYLWETKA.md` (M7 character pane & quickslots), `docs/WYRAJ_M8_DNO.md` (M8 ending/victory), `docs/WYRAJ_M9_KOLO_ROKU.md` (M9 time/weather/festivals), `docs/WYRAJ_M10_ZLECENIA.md` (M10 errands/village fates), `docs/WYRAJ_M11_GLOSY.md` (M11 sound), `docs/WYRAJ_M12_GUSLA.md` + `docs/MODDING.md` (M12 data packs), `docs/WYRAJ_ROADMAP_M8PLUS.md` (the executed roadmap) — read the relevant one before non-trivial work. `docs/IMPLEMENTATION_PLAN.md` is the backlog and status board (**all planned epics 1–15 = M0–M12 are DONE** as of 2026-08-16; what remains is the parked release-engineering milestone and open decision #3, overworld travel).
 
 Licensing (decided 2026-08-14): AGPL-3.0 for code, CC-BY-SA 4.0 for `data/` content, CLA for contributors. Maintainer is pseudonymous — **"Prestarius" everywhere**; never introduce a real name into the repo.
 
@@ -30,7 +30,7 @@ Python 3.12+, `uv`-managed, Textual TUI. Fully bilingual EN/PL: narration packs 
 
 ## Working rules (from spec §12)
 
-- Keep `main` playable; feature branch per story, merge `--no-ff`, tag milestone cuts (`v0.8-sylwetka` is current).
+- Keep `main` playable; feature branch per story, merge `--no-ff`, tag milestone cuts (`v0.13-gusla` is current).
 - Prefer many small data files over clever engine features; when mechanics and narration quality conflict, narration wins.
 - **Ask Prestarius before:** adding dependencies beyond spec §3 (+httpx already sanctioned), changing the event schema, or altering the repo layout.
 - Conventional commits; update CHANGELOG per milestone cut.
