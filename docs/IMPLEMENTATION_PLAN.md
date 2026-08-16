@@ -196,10 +196,12 @@ Outline-level on purpose (spec §12: no early scaffolding) — each gets a full
 CC spec and story breakdown when its milestone starts. Recommended order
 M8 → M9 → M10 → M11 → M12; M11 may slide earlier (no prerequisites past M0).
 
-- **Epic 11 — M8 "Dno"** (the Bottom): crypt levels 4–6 with escalating
-  darkness, the Wij as a narrated multi-phase encounter, 2–3 run-state
-  epilogues, victory in `meta.yml` + "Głębiej" NG+ modifiers. Large — the
-  game gains a win condition. **First on approval.**
+- **Epic 11 — M8 "Dno"** (the Bottom) — **SPEC READY: `WYRAJ_M8_DNO.md`**,
+  awaiting Prestarius's read + open decisions 20–25. Stories US 11.1–11.7
+  per spec §7: depth tiers (6–8, darkness escalation, no crane below 6) →
+  Wij vault & sługi → WijState/gaze light-inversion → the rite & victory →
+  epilogues ×2 languages → Głębiej modifier → balance sim & polish. Large —
+  the game gains a win condition.
 - **Epic 12 — M9 "Koło Roku"** (Wheel of the Year): day/night, weather,
   festival days (Noc Kupały, Dziady, Gromnica) on a seeded per-run calendar.
 - **Epic 13 — M10 "Zlecenia"** (Errands): rumor-driven procedural errands,
@@ -239,3 +241,9 @@ after M10).
 | 17 | M7: named-weapon threshold + any mechanical bonus? | US 10.5 | default 7 kills, pure flavor |
 | 18 | M7: death portrait — ASCII capture only, or also PNG export? | US 10.6 | ASCII only for v1 |
 | 19 | M7: cross-run quickslot preferences (M6 meta) | post-M7 | per-run binding is part of the ritual |
+| 20 | M8: antagonist — the Wij? | US 11.2 | spec default: Wij (his gaze inverts the light economy) |
+| 21 | M8: rite consumes sól święcona at channel start? | US 11.4 | spec default: yes (feather doctrine) |
+| 22 | M8: new creatures — sługa only, or +1 ambient horror? | US 11.2 | spec default: sługa only |
+| 23 | M8: Głębiej stacking across victories | US 11.6 | spec default: single tier v1 |
+| 24 | M8: 10–20% skilled win-rate target | US 11.7 | spec default: accept |
+| 25 | M8: three epilogues or two? | US 11.5 | spec default: three |
