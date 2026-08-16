@@ -207,6 +207,13 @@ M8 → M9 → M10 → M11 → M12; M11 may slide earlier (no prerequisites past 
   title line, ⁂ origin marks; US 11.6 Głębiej toggle (fov −1, +2 spawns,
   +1 loot, +25% prices); US 11.7 competent-bot sim — CI smoke + WYRAJ_SIM=1
   measurement (1/30 wins at cut; floor ≥1 win, ≤50%). Golden byte-identical.
+  **Cut from spec §1/§6, recorded:** dedicated deep loot table +
+  dziad candle-heavy deep stock (depths 6–7 reuse the kurhany table's
+  per-depth scaling; the vault itself carries no loot by design); the
+  szept "changes sides" one-time whispers (DeepDescended and the Wij
+  events narrate the register shift instead); a bespoke sługa first-
+  sighting line (the generic discovery default fires). All are pure
+  content follow-ups — no engine work needed.
 - **Epic 12 — M9 "Koło Roku"** (Wheel of the Year): day/night, weather,
   festival days (Noc Kupały, Dziady, Gromnica) on a seeded per-run calendar.
 - **Epic 13 — M10 "Zlecenia"** (Errands): rumor-driven procedural errands,
