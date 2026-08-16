@@ -36,6 +36,7 @@ from wyraj.core.game import Game
 from wyraj.core.systems.movement import level_of
 from wyraj.ui.codex_view import build_codex_text
 from wyraj.ui.i18n import t
+from wyraj.ui.item_info import stat_suffix
 
 
 class ConfirmQuitScreen(ModalScreen[bool]):
@@ -119,13 +120,14 @@ class InventoryScreen(ModalScreen[Action | None]):
         super().__init__()
         self.game = game
         inventory = game.world.get(game.player, Inventory) or Inventory()
-        self.entries: list[tuple[str, int, str, str]] = []
+        self.entries: list[tuple[str, int, str, str, str]] = []
         for letter, entity in zip(string.ascii_lowercase, inventory.items, strict=False):
             lore = game.world.get(entity, Lore)
             item = game.world.get(entity, Item)
             name = lore.name if lore else "something"
             kind = item.kind if item else "trinket"
-            self.entries.append((letter, entity, name, kind))
+            suffix = stat_suffix(game.items_catalog.get(item.key)) if item else ""
+            self.entries.append((letter, entity, name, kind, suffix))
 
     def compose(self) -> ComposeResult:
         text = Text()
@@ -142,9 +144,11 @@ class InventoryScreen(ModalScreen[Action | None]):
             "armor": t("verb_wear"),
             "trinket": "",
         }
-        for letter, entity, name, kind in self.entries:
+        for letter, entity, name, kind, suffix in self.entries:
             text.append(f" {letter}", style="bold gold3")
             text.append(f" — {name}")
+            if suffix:
+                text.append(f" {suffix}", style="grey58")
             if entity == wielded:
                 text.append(" " + t("mark_wielded"), style="grey58")
             elif entity == worn:
@@ -159,7 +163,7 @@ class InventoryScreen(ModalScreen[Action | None]):
         if event.key == "escape":
             return  # let it bubble so the Escape binding closes the modal
         event.stop()
-        for letter, entity, _name, kind in self.entries:
+        for letter, entity, _name, kind, _suffix in self.entries:
             if event.key == letter:
                 if kind == "consumable":
                     self.dismiss(UseItem(entity))
@@ -218,15 +222,21 @@ class TradeScreen(ModalScreen[Action | None]):
         for letter, _entity, name, key in self.theirs:
             price = game.price_for(key, self.trader)
             affordable = game._wallet_total() >= price
+            suffix = stat_suffix(game.items_catalog.get(key))
             text.append(f" {letter}", style="bold cyan" if affordable else "grey42")
             text.append(f" — {name} ", style="" if affordable else "grey42")
+            if suffix:
+                text.append(f"{suffix} ", style="grey58" if affordable else "grey42")
             text.append(f"({price})\n", style="gold3" if affordable else "grey42")
         text.append("\n" + t("trade_sell") + "\n", style="grey58")
         if not self.mine:
             text.append(" " + t("trade_nothing") + "\n", style="grey42")
         for letter, _entity, name, key in self.mine:
+            suffix = stat_suffix(game.items_catalog.get(key))
             text.append(f" {letter}", style="bold gold3")
             text.append(f" — {name} ")
+            if suffix:
+                text.append(f"{suffix} ", style="grey58")
             text.append(f"(+{game.sell_price_for(key)})\n", style="gold3")
         text.append("\n" + t("trade_esc"), style="grey42")
         yield Static(text, classes="dialog")
@@ -315,18 +325,20 @@ class StashScreen(ModalScreen[Action | None]):
         super().__init__()
         self.game = game
         player_inv = game.world.get(game.player, Inventory) or Inventory()
-        self.mine: list[tuple[str, int, str]] = []
+        self.mine: list[tuple[str, int, str, str]] = []
         for letter, entity in zip(string.ascii_lowercase, player_inv.items, strict=False):
             lore = game.world.get(entity, Lore)
-            self.mine.append((letter, entity, lore.name if lore else "something"))
-        self.stashed: list[tuple[str, int, str]] = []
+            item = game.world.get(entity, Item)
+            suffix = stat_suffix(game.items_catalog.get(item.key)) if item else ""
+            self.mine.append((letter, entity, lore.name if lore else "something", suffix))
+        self.stashed: list[tuple[str, int, str, str]] = []
         for i, (letter, stashed) in enumerate(
             zip(string.ascii_uppercase, game.meta.stash.items, strict=False)
         ):
             definition = game.items_catalog.get(stashed.item_id)
             name = definition.name if definition else stashed.item_id
             label = f"{name} x{stashed.count}" if stashed.count > 1 else name
-            self.stashed.append((letter, i, label))
+            self.stashed.append((letter, i, label, stat_suffix(definition)))
 
     def compose(self) -> ComposeResult:
         game = self.game
@@ -340,15 +352,21 @@ class StashScreen(ModalScreen[Action | None]):
         text.append(t("stash_stored") + "\n", style="grey58")
         if not self.stashed:
             text.append(" " + t("stash_empty") + "\n", style="grey42")
-        for letter, _i, label in self.stashed:
+        for letter, _i, label, suffix in self.stashed:
             text.append(f" {letter}", style="bold cyan")
-            text.append(f" — {label}\n")
+            text.append(f" — {label}")
+            if suffix:
+                text.append(f" {suffix}", style="grey58")
+            text.append("\n")
         text.append("\n" + t("stash_carrying") + "\n", style="grey58")
         if not self.mine:
             text.append(" " + t("pack_empty") + "\n", style="grey42")
-        for letter, _entity, name in self.mine:
+        for letter, _entity, name, suffix in self.mine:
             text.append(f" {letter}", style="bold gold3")
-            text.append(f" — {name}\n")
+            text.append(f" — {name}")
+            if suffix:
+                text.append(f" {suffix}", style="grey58")
+            text.append("\n")
         upgrades = game.prices.stash_upgrades
         step = (meta.stash.slots_total - 4) // 2
         if step < len(upgrades) and meta.stash.slots_total < 10:
@@ -363,11 +381,11 @@ class StashScreen(ModalScreen[Action | None]):
         if event.key == "u":
             self.dismiss(UpgradeStash())
             return
-        for letter, entity, _name in self.mine:
+        for letter, entity, _name, _suffix in self.mine:
             if event.key == letter:
                 self.dismiss(DepositItem(item=entity))
                 return
-        for letter, index, _label in self.stashed:
+        for letter, index, _label, _suffix in self.stashed:
             if event.key == letter:
                 self.dismiss(WithdrawStash(index=index))
                 return
@@ -402,13 +420,16 @@ class ExamineScreen(ModalScreen[None]):
             text.append(f" ({_hp_word(health)})\n", style="grey58")
             if lore.description:
                 text.append(f"   {lore.description.strip()}\n\n", style="grey66")
-        for entity, (_item, lore, pos) in game.world.query(Item, Lore, Position):
+        for entity, (item, lore, pos) in game.world.query(Item, Lore, Position):
             if level_of(game.world, entity) != game.depth:
                 continue
             if (pos.x, pos.y) not in game.map.visible:
                 continue
             seen_something = True
             text.append(f" {lore.name}", style="gold3")
+            suffix = stat_suffix(game.items_catalog.get(item.key))
+            if suffix:
+                text.append(f" {suffix}", style="grey58")
             text.append(" " + t("lies_here") + "\n", style="grey58")
         for entity, (_hook, lore, pos) in game.world.query(StoryHook, Lore, Position):
             if level_of(game.world, entity) != game.depth:
