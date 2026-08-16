@@ -24,6 +24,7 @@ from pydantic import AliasChoices, BaseModel, Field
 from wyraj.content.paths import data_dir
 from wyraj.core.events import (
     AttackResolved,
+    BliznaEarned,
     CoinsBanked,
     CoinsPicked,
     CraneRefused,
@@ -40,6 +41,7 @@ from wyraj.core.events import (
     ItemBought,
     ItemPickedUp,
     ItemSold,
+    ItemUnequipped,
     ItemUsed,
     ItemWielded,
     ItemWorn,
@@ -58,6 +60,8 @@ from wyraj.core.events import (
     StatusExpired,
     StatusTick,
     TalkedTo,
+    WeaponNamed,
+    WeaponRecognized,
     ZnamiePlaced,
 )
 from wyraj.narration.engine import NarrationLine
@@ -87,6 +91,7 @@ _COMBAT_EVENTS: tuple[type[GameEvent], ...] = (
     StatusTick,
     StatusExpired,
     StarvationHit,
+    BliznaEarned,
 )
 _LOOT_EVENTS: tuple[type[GameEvent], ...] = (
     ItemPickedUp,
@@ -101,6 +106,7 @@ _LOOT_EVENTS: tuple[type[GameEvent], ...] = (
     StashWithdrawn,
     StashUpgraded,
     HeirloomWielded,
+    ItemUnequipped,
 )
 _LORE_EVENTS: tuple[type[GameEvent], ...] = (
     LoreDiscovered,
@@ -114,6 +120,8 @@ _LORE_EVENTS: tuple[type[GameEvent], ...] = (
     CraneSummonCompleted,
     CraneRefused,
     CraneReturn,
+    WeaponNamed,
+    WeaponRecognized,
 )
 
 
@@ -198,6 +206,8 @@ def rule_key(event: GameEvent) -> RuleKey:
             return "shrine_visited", event.god
         case OfferingMade():
             return "offering_made", event.god
+        case WeaponNamed():
+            return "weapon_named", event.species
         case _:
             name = type(event).__name__
             snake = re.sub(r"(?<!^)(?=[A-Z])", "_", name).lower()

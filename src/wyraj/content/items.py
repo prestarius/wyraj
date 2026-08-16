@@ -23,6 +23,7 @@ class ItemDef(BaseModel):
     effect: str | None = None  # consumables
     power: int | None = None  # consumables
     spawn_weight: int = Field(default=1, ge=0)
+    slot: str | None = None  # M7 paper-doll: "torso" (armor default) | "head" | "feet" | "amulet"
     description: str = ""
     forms: dict[str, dict[str, str | bool]] = {}
 
@@ -30,6 +31,11 @@ class ItemDef(BaseModel):
     def check_kind(self) -> "ItemDef":
         if self.kind not in ITEM_KINDS:
             raise ValueError(f"unknown item kind '{self.kind}'")
+        if self.slot is not None:
+            if self.slot not in ("torso", "head", "feet", "amulet"):
+                raise ValueError(f"item '{self.key}': unknown slot '{self.slot}'")
+            if self.kind not in ("armor", "trinket"):
+                raise ValueError(f"item '{self.key}': only armor/trinkets take a slot")
         if self.kind == "weapon" and (self.damage is None or self.damage <= 0):
             raise ValueError(f"weapon '{self.key}' needs positive damage")
         if self.kind == "armor" and (self.protection is None or self.protection <= 0):

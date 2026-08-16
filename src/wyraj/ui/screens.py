@@ -11,10 +11,12 @@ from textual.widgets import Static
 
 from wyraj.core.actions import (
     Action,
+    BindQuickslot,
     BuyItem,
     DepositItem,
     MakeOffering,
     SellItem,
+    UnequipSlot,
     UpgradeStash,
     UseItem,
     WearItem,
@@ -38,6 +40,7 @@ from wyraj.ui.codex_view import build_codex_text
 from wyraj.ui.i18n import t
 from wyraj.ui.item_info import display_name, stat_suffix
 from wyraj.ui.legend_view import build_legend_text
+from wyraj.ui.paper_doll import doll_slots_for
 
 
 class ConfirmQuitScreen(ModalScreen[bool]):
@@ -113,24 +116,26 @@ class DeathScreen(ModalScreen[None]):
 
 
 class InventoryScreen(ModalScreen[Action | None]):
-    """List carried items; a letter uses/wields, escape closes."""
+    """List carried items; a letter uses/wields/wears, `1-4` then a letter binds."""
 
     BINDINGS: ClassVar = [("escape", "close", "Close")]
 
     def __init__(self, game: Game) -> None:
         super().__init__()
         self.game = game
+        self.bind_slot: int | None = None
         inventory = game.world.get(game.player, Inventory) or Inventory()
-        self.entries: list[tuple[str, int, str, str, str]] = []
+        self.entries: list[tuple[str, int, str, str, str, str | None]] = []
         for letter, entity in zip(string.ascii_lowercase, inventory.items, strict=False):
             lore = game.world.get(entity, Lore)
             item = game.world.get(entity, Item)
             definition = game.items_catalog.get(item.key) if item else None
             name = display_name(definition, fallback=lore.name if lore else "something")
             kind = item.kind if item else "trinket"
-            self.entries.append((letter, entity, name, kind, stat_suffix(definition)))
+            slot = definition.slot if definition else None
+            self.entries.append((letter, entity, name, kind, stat_suffix(definition), slot))
 
-    def compose(self) -> ComposeResult:
+    def _text(self) -> Text:
         text = Text()
         text.append(t("pack_title") + "\n\n", style="bold")
         if not self.entries:
@@ -145,7 +150,8 @@ class InventoryScreen(ModalScreen[Action | None]):
             "armor": t("verb_wear"),
             "trinket": "",
         }
-        for letter, entity, name, kind, suffix in self.entries:
+        for letter, entity, name, kind, suffix, slot in self.entries:
+            verb = t("verb_wear") if kind == "trinket" and slot else verbs.get(kind, "")
             text.append(f" {letter}", style="bold gold3")
             text.append(f" — {name}")
             if suffix:
@@ -154,9 +160,76 @@ class InventoryScreen(ModalScreen[Action | None]):
                 text.append(" " + t("mark_wielded"), style="grey58")
             elif entity == worn:
                 text.append(" " + t("mark_worn"), style="grey58")
-            elif verbs.get(kind, ""):
-                text.append(f"  [{verbs[kind]}]", style="grey42")
+            elif verb:
+                text.append(f"  [{verb}]", style="grey42")
             text.append("\n")
+        if self.bind_slot is not None:
+            text.append("\n" + t("pack_bind_prompt", n=self.bind_slot + 1), style="gold3")
+        else:
+            text.append("\n" + t("pack_bind_hint"), style="grey42")
+        text.append("\n" + t("esc_close"), style="grey42")
+        return text
+
+    def compose(self) -> ComposeResult:
+        yield Static(self._text(), classes="dialog")
+
+    def on_key(self, event: events.Key) -> None:
+        if event.key == "escape":
+            return  # let it bubble so the Escape binding closes the modal
+        event.stop()
+        if event.key in ("1", "2", "3", "4"):
+            self.bind_slot = int(event.key) - 1
+            self.query_one(Static).update(self._text())
+            return
+        for letter, entity, _name, kind, _suffix, slot in self.entries:
+            if event.key != letter:
+                continue
+            if self.bind_slot is not None:
+                if kind == "consumable":
+                    self.dismiss(BindQuickslot(index=self.bind_slot, item=entity))
+                return
+            if kind == "consumable":
+                self.dismiss(UseItem(entity))
+            elif kind == "weapon":
+                self.dismiss(WieldItem(entity))
+            elif kind == "armor" or (kind == "trinket" and slot):
+                self.dismiss(WearItem(entity))
+            # slotless trinkets/trophies have no verb — stay open instead of closing
+            return
+
+    def action_close(self) -> None:
+        self.dismiss(None)
+
+
+class EquipScreen(ModalScreen[Action | None]):
+    """`e` — the paper-doll; a slot's letter frees it back into the pack."""
+
+    BINDINGS: ClassVar = [("escape", "close", "Close")]
+
+    SLOT_LETTERS = "abcdef"
+
+    def __init__(self, game: Game) -> None:
+        super().__init__()
+        self.game = game
+        self.slots = doll_slots_for(game)
+
+    def compose(self) -> ComposeResult:
+        text = Text()
+        text.append(t("equip_title") + "\n\n", style="bold")
+        for letter, entry in zip(self.SLOT_LETTERS, self.slots, strict=False):
+            removable = entry.name is not None and entry.slot != "off"
+            text.append(f" {letter}", style="bold gold3" if removable else "grey42")
+            text.append(f" — {t('doll_' + entry.slot):<7}", style="grey58")
+            if entry.name is None:
+                text.append("—\n", style="grey42")
+            else:
+                text.append(entry.name)
+                if entry.epithet:
+                    text.append(f" „{entry.epithet}”", style="italic gold3")
+                if entry.detail:
+                    text.append(f" {entry.detail}", style="grey58")
+                text.append("\n")
+        text.append("\n" + t("equip_hint"), style="grey42")
         text.append("\n" + t("esc_close"), style="grey42")
         yield Static(text, classes="dialog")
 
@@ -164,15 +237,9 @@ class InventoryScreen(ModalScreen[Action | None]):
         if event.key == "escape":
             return  # let it bubble so the Escape binding closes the modal
         event.stop()
-        for letter, entity, _name, kind, _suffix in self.entries:
-            if event.key == letter:
-                if kind == "consumable":
-                    self.dismiss(UseItem(entity))
-                elif kind == "weapon":
-                    self.dismiss(WieldItem(entity))
-                elif kind == "armor":
-                    self.dismiss(WearItem(entity))
-                # trinkets/trophies have no verb — stay open instead of closing
+        for letter, entry in zip(self.SLOT_LETTERS, self.slots, strict=False):
+            if event.key == letter and entry.name is not None and entry.slot != "off":
+                self.dismiss(UnequipSlot(slot=entry.slot))
                 return
 
     def action_close(self) -> None:

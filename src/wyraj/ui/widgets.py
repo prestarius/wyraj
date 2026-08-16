@@ -1,27 +1,25 @@
 """Map and character-panel widgets. Read game state; never mutate it."""
 
+from dataclasses import replace
+
 from rich.text import Text
 from textual.widgets import Static
 
 from wyraj.core.components import (
     Health,
     Hunger,
-    Item,
-    LightSource,
-    Lore,
     Position,
     Purse,
     Renderable,
     StatusEffects,
-    Wearing,
-    Wielding,
 )
 from wyraj.core.game import Game
 from wyraj.core.map import Tile
 from wyraj.core.systems.movement import level_of
 from wyraj.ui.i18n import current_language, t
-from wyraj.ui.item_info import display_name, stat_suffix
-from wyraj.ui.portrait import hp_band, render_portrait
+from wyraj.ui.paper_doll import build_paper_doll, build_quickslot_bar, doll_slots_for
+from wyraj.ui.portrait import compose_portrait, get_art, portrait_state_for
+from wyraj.ui.status_row import build_status_row
 
 # (unicode, ascii) glyphs per terrain, keyed by biome
 WALL_GLYPHS = {
@@ -138,25 +136,25 @@ class MapView(Static):
 
 
 class CharacterPanel(Static):
-    def __init__(self, game: Game, portrait_style: str = "box") -> None:
+    def __init__(self, game: Game, portrait_style: str = "box", use_ascii: bool = False) -> None:
         super().__init__()
         self.game = game
         self.portrait_style = portrait_style
+        self.use_ascii = use_ascii
         self.border_title = game.origin.name
-
-    def _weapon_key(self) -> str | None:
-        wielding = self.game.world.get(self.game.player, Wielding)
-        if wielding is None or wielding.item is None:
-            return None
-        item = self.game.world.get(wielding.item, Item)
-        return item.key if item else None
 
     def render(self) -> Text:
         game = self.game
         health = game.world.expect(game.player, Health)
+        # Short-terminal fallback (spec §1): 4-row portrait, tighter layout,
+        # quickslots kept visible at the expense of decoration.
+        mini = 0 < self.size.height < 36
         text = Text()
         text.append(
-            render_portrait(self.portrait_style, hp_band(health.fraction), self._weapon_key())
+            compose_portrait(
+                portrait_state_for(game, mini=mini),
+                get_art(self.portrait_style, self.use_ascii),
+            )
         )
         text.append("\n\n")
         text.append(
@@ -183,45 +181,42 @@ class CharacterPanel(Static):
             band_styles = {"sated": "grey58", "hungry": "yellow", "starving": "bold red"}
             text.append(f"\n {t('hunger_' + hunger.band)}\n", style=band_styles[hunger.band])
 
-        wielding = game.world.get(game.player, Wielding)
-        if wielding is not None and wielding.item is not None:
-            lore = game.world.get(wielding.item, Lore)
-            if lore is not None:
-                definition = game.items_catalog.get(lore.key)
-                name = display_name(definition, fallback=lore.name)
-                text.append(f" {t('wields', name=name)}", style="grey66")
-                suffix = stat_suffix(definition)
-                if suffix:
-                    text.append(f" {suffix}", style="grey58")
-                text.append("\n")
-
-        wearing = game.world.get(game.player, Wearing)
-        if wearing is not None and wearing.item is not None:
-            armor_lore = game.world.get(wearing.item, Lore)
-            if armor_lore is not None:
-                definition = game.items_catalog.get(armor_lore.key)
-                name = display_name(definition, fallback=armor_lore.name)
-                text.append(f" {t('wears', name=name)}", style="grey66")
-                suffix = stat_suffix(definition)
-                if suffix:
-                    text.append(f" {suffix}", style="grey58")
-                text.append("\n")
-
         statuses = game.world.get(game.player, StatusEffects)
         if statuses is not None and statuses.effects:
-            status_styles = {
-                "bleeding": "red3",
-                "poison": "chartreuse4",
-                "fear": "medium_purple3",
-                "blessing": "light_goldenrod2",
-            }
-            text.append("\n")
-            for effect in statuses.effects:
-                style = status_styles.get(effect.kind, "grey66")
-                label = t("status_" + effect.kind)
-                text.append(f" {label} ({effect.duration})\n", style=style)
+            row = build_status_row(statuses.effects, use_ascii=self.use_ascii)
+            if row is not None:
+                text.append("\n")
+                text.append(row)
+                text.append("\n")
 
-        light = game.world.get(game.player, LightSource)
-        if light is not None:
-            text.append(f"\n {t('gromnica_meter', n=light.turns)}\n", style="light_goldenrod2")
+        width = self.size.width or 40
+        slots = doll_slots_for(game)
+        if mini:  # only filled slots, no stat suffixes
+            slots = tuple(replace(s, detail="") for s in slots if s.name is not None)
+        if slots:
+            text.append("\n")
+            max_name = max(8, width - (16 if mini else 24))
+            text.append(build_paper_doll(slots, use_ascii=self.use_ascii, max_name=max_name))
+        text.append("\n")
+        text.append(build_quickslot_bar(game, use_ascii=self.use_ascii))
+
+        if game.last_foe is not None and not mini:
+            foe, fraction = game.last_foe
+            marks = {
+                "unknown": ("?", "?"),
+                "glimpsed": ("·", "."),
+                "partial": ("◐", "o"),
+                "full": ("●", "*"),
+            }
+            mark = marks.get(game.codex_tier(foe.key), ("?", "?"))[1 if self.use_ascii else 0]
+            word = (
+                "hp_unhurt"
+                if fraction > 0.75
+                else "hp_scratched"
+                if fraction > 0.5
+                else "hp_bloodied"
+                if fraction > 0.25
+                else "hp_near_death"
+            )
+            text.append(f"\n {mark} {foe.name} — {t(word)}\n", style="grey58")
         return text

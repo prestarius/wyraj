@@ -27,3 +27,34 @@ kaftan:
     Layers of wool and linen stitched tight, the poor man's mail. Whoever
     wore it into the barrow did not need it afterward, which says something
     about kaftans and something else about barrows.
+
+baranica:
+  name: "sheepskin baranica"
+  forms:
+    pl: { mian: "baranica", dop: "baranicy", cel: "baranicy", bier: "baranicę", narz: "baranicą", miej: "baranicy" }
+  glyph: "["
+  ascii_glyph: "["
+  style: "tan"
+  kind: armor
+  slot: head
+  protection: 1
+  spawn_weight: 0
+  description: >
+    A shaggy sheepskin cap pulled low over the ears. It will not stop a
+    blade, but it has stopped a great deal of weather, and once, they say,
+    a strzyga's fingernails.
+
+lapcie:
+  name: "bast łapcie"
+  forms:
+    pl: { mian: "łapcie", dop: "łapci", cel: "łapciom", bier: "łapcie", narz: "łapciami", miej: "łapciach" }
+  glyph: "["
+  ascii_glyph: "["
+  style: "tan"
+  kind: armor
+  slot: feet
+  protection: 1
+  spawn_weight: 0
+  description: >
+    Woven bast shoes, the kind every village plaits and every road eats.
+    Quiet on moss, honest in mud, and easier to replace than feet.

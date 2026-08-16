@@ -1,0 +1,44 @@
+# Pure-ASCII portrait for --ascii terminals. Same layer contract; state
+# signaling stays readable without color (marks are plain characters).
+style: ascii
+base:
+  default:
+    - '    ___    '
+    - '   (. .)   '
+    - '    \_/    '
+    - '   /---\   '
+    - '   | ! |   '
+    - '   | ! |   '
+    - '   \-+-/   '
+    - '    | |    '
+    - '   _| |_   '
+  hunched:
+    - '    ___    '
+    - '   (- -)   '
+    - '    \_/    '
+    - '   /---\   '
+    - '   | ! |   '
+    - '   | !!|   '
+    - '   \-+-/   '
+    - '   /   \   '
+    - '           '
+  mini:
+    - '   (. .)   '
+    - '   /---\   '
+    - '   | ! |   '
+    - '   \---/   '
+weapons:
+  noz: [[5, 9, '/']]
+  toporek: [[3, 9, 'F'], [4, 9, '|'], [5, 9, '|']]
+  ciupaga: [[2, 9, '+'], [3, 9, '|'], [4, 9, '|'], [5, 9, '|']]
+armor: [[4, 3, '['], [4, 7, ']'], [5, 3, '['], [5, 7, ']']]
+wounds:
+  bloodied: [[4, 4, 'x']]
+  wounded: [[4, 4, 'x'], [5, 6, 'x']]
+  dying: [[4, 4, 'x'], [5, 6, 'x'], [1, 5, 'x']]
+status_marks:
+  poison: [[2, 1, '~']]
+  blessing: [[0, 9, '+']]
+  wet: [[8, 1, '.'], [8, 9, '.']]
+scars: [[1, 5, '/'], [2, 7, '\'], [7, 3, 'x']]
+belt: [[6, 1, 'o'], [6, 9, 'o']]

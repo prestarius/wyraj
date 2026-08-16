@@ -1,0 +1,45 @@
+# Box-drawing portrait (default art direction — won open decision #5).
+# Layer contract: base → weapons/armor overlays → wounds per band →
+# status_marks (non-color redundancy) → scars (first N applied for N blizny).
+style: box
+base:
+  default:
+    - "   ╭───╮   "
+    - "   │· ·│   "
+    - "   ╰─┬─╯   "
+    - "  ╭──┴──╮  "
+    - "  │  ¦  │  "
+    - "  │  ¦  │  "
+    - "  ╰─┬─┬─╯  "
+    - "    │ │    "
+    - "    ╨ ╨    "
+  hunched:
+    - "   ╭───╮   "
+    - "   │─ ─│   "
+    - "   ╰─┬─╯   "
+    - "  ╭──┴──╮  "
+    - "  │  ¦  │  "
+    - "  │ ¦¦  │  "
+    - "  ╰─┬─┬─╯  "
+    - "   ╱   ╲   "
+    - "           "
+  mini:
+    - "   ╭───╮   "
+    - "   │· ·│   "
+    - "  ╭┴───┴╮  "
+    - "  ╰─────╯  "
+weapons:
+  noz: [[5, 9, "╱"]]
+  toporek: [[3, 9, "⊦"], [4, 9, "│"], [5, 9, "│"]]
+  ciupaga: [[2, 9, "†"], [3, 9, "│"], [4, 9, "│"], [5, 9, "│"]]
+armor: [[3, 2, "╔"], [3, 8, "╗"], [4, 2, "║"], [4, 8, "║"], [5, 2, "║"], [5, 8, "║"]]
+wounds:
+  bloodied: [[4, 3, "×"]]
+  wounded: [[4, 3, "×"], [5, 7, "×"]]
+  dying: [[4, 3, "×"], [5, 7, "×"], [1, 5, "×"]]
+status_marks:
+  poison: [[2, 1, "~"]]
+  blessing: [[0, 9, "+"]]
+  wet: [[8, 1, "░"], [8, 9, "░"]]
+scars: [[1, 5, "╱"], [2, 4, "╲"], [5, 4, "╳"]]
+belt: [[6, 1, "▪"], [6, 9, "▪"]]

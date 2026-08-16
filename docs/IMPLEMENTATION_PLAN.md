@@ -151,6 +151,45 @@ Deviation note: intro content lives under `data/intro/{en,pl}/` rather than `dat
 
 ---
 
+## Epic 10 — M7 "Sylwetka": character pane & quickslots — **DONE 2026-08-16** — spec `WYRAJ_M7_SYLWETKA.md`
+
+Goal: the right-hand pane becomes the portrait of a soul in trouble — layered state-reactive
+portrait, equipment paper-doll, status row, quickslots `1–4`. Feature branch `feat/m7-sylwetka`;
+each story keeps `main` playable. Everything the pane shows is a projection of ECS state.
+
+### US 10.1 — Portrait compositor (spec §2, §7.1) — **DONE 2026-08-16**
+- 10.1.1 — Art moves to `data/portrait/{box,half,ascii}.yml`, pydantic-validated in `content/portrait.py`; all styles implement the same layer contract
+- 10.1.2 — Pure compositor `(PortraitState, art) → Text`: base figure (per-origin + hunched posture variant) → equipment overlays (weapon marks, armor outline, gromnica halo wash) → wound decals (4 bands: healthy / bloodied <2/3 / wounded <1/3 / dying <10%) → status decals (each with a non-color mark, spec §6.1) → blizna scar marks
+- 10.1.3 — `CharacterPanel` renders via the compositor from ECS (`Wielding`/`Wearing`/`LightSource`/`StatusEffects`); `--ascii` selects the ascii art
+- **Verify:** matrix test (styles × bands × statuses × scars) renders; monochrome (plain-text) outputs stay pairwise distinguishable; ascii output is pure ASCII.
+
+### US 10.2 — Equipment paper-doll (spec §3) — **DONE 2026-08-16**
+- Six slots (head/torso/weapon/offhand/amulet/feet): core components + equip rules (offhand = shield xor light source), pane rows with enchant/curse coding (+ redundant glyph), gromnica burn turns, `e`/Tab unequip-swap flow
+- **Verify:** pilot equips/swaps keyboard-only; core tests for slot rules.
+
+### US 10.3 — Status row (spec §4) — **DONE 2026-08-16**
+- Pure projection of `StatusEffects` with turn counters, color families + glyphs; overflow → 3 + `+N more`
+- **Verify:** fixture renders incl. >4 statuses.
+
+### US 10.4 — Quickslots (spec §5) — **DONE 2026-08-16** (golden transcript unchanged — the scripted walk never binds)
+- `core/systems/quickslots.py` bind/use/clear/auto-refill (`quickslots.auto_refill` knob), inventory `1–4` binds, in-game `1–4` uses / `Shift+1–4` clears; `QuickslotBound/Cleared/Used/AutoRefilled` events + EN/PL narration rules + fixtures; `QuickslotBar` widget with use-flash; in-run save integration
+- **Verify:** pilot bind → use → auto-refill → clear cycle; golden transcript regenerated intentionally.
+
+### US 10.5 — Fabular layer (spec §2.5–6, §6.2; M6 integration) — **DONE 2026-08-16**
+- Blizna tracking (survive dying → permanent-for-run scar, narrator notes it once), trophy-belt glyphs, named-weapon epithets (kill-count threshold knob, `data/narration/*/epithets.yml`), heirloom ⟲ markers + dziad recognition
+- **Verify:** scripted run reaching dying twice → two blizny on the portrait; epithet earned at threshold shows in pane and log.
+
+### US 10.6 — Morgue death-portrait capture (spec §6.2) — **DONE 2026-08-16**
+- Final composited portrait (scars, wounds, gear) written into the morgue file
+- **Verify:** scripted death leaves the portrait block in the morgue entry (two-blizna case per spec DoD).
+
+### US 10.7 — Polish pass (spec §7.7, §6.1) — **DONE 2026-08-16 (with recorded cuts)**
+- Shipped: short-terminal fallback (4-row mini portrait, filled slots only, no suffixes, quickslots always visible), last-foe mini-line with codex-tier mark, color-blind monochrome checks in the portrait/status/doll test matrix, `--ascii` degradation everywhere
+- **Cut, recorded:** Tab focus-cycling (the pane is a single projection widget — `e` + in-pack `1-4` binding already cover keyboard-only flows); enchant/curse color coding (no identification/curse system exists yet); burden indicator (no stamina system exists — the spec's Sta bar is aspirational); quickslot use-flash animation
+- **Verify:** pilot suite green; monochrome matrix green.
+
+---
+
 ## Open decisions blocking future work (spec §13)
 
 | # | Decision | Needed by | Spec recommendation |
@@ -168,3 +207,8 @@ Deviation note: intro content lives under `data/intro/{en,pl}/` rather than `dat
 | 13 | Próg: drifting bird glyphs | US 8.1 | prototyped in — judge by feel |
 | 14 | Próg: szept in-log vs hint bar | US 8.3 | in-log dim italics (spec assumption) |
 | 5 | Portrait art direction | US 2.6 | **prototyped in M1** — compare **RESOLVED 2026-08-15: box-drawing wins** — box is the default (`--portrait half` remains as an option); YAML layer files are a later cleanup |
+| 15 | M7: offhand shield xor light — or belt-hung gromnica (weaker radius)? | US 10.2 | spec default: strict xor |
+| 16 | M7: quickslot auto-refill default | US 10.4 | spec default: on (`quickslots.auto_refill: true`) |
+| 17 | M7: named-weapon threshold + any mechanical bonus? | US 10.5 | default 7 kills, pure flavor |
+| 18 | M7: death portrait — ASCII capture only, or also PNG export? | US 10.6 | ASCII only for v1 |
+| 19 | M7: cross-run quickslot preferences (M6 meta) | post-M7 | per-run binding is part of the ritual |

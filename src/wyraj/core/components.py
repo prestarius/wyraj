@@ -158,6 +158,40 @@ class Wearing:
 
 
 @dataclass(frozen=True)
+class WornExtras:
+    """M7 paper-doll slots beyond torso/weapon (offhand is the lit gromnica)."""
+
+    head: int | None = None  # entity ids
+    amulet: int | None = None
+    feet: int | None = None
+
+
+@dataclass(frozen=True)
+class Quickslots:
+    """M7 quickslots: bindings by item key (stack-aware, auto-refilling)."""
+
+    slot1: str | None = None
+    slot2: str | None = None
+    slot3: str | None = None
+    slot4: str | None = None
+
+    def key_at(self, index: int) -> str | None:
+        return (self.slot1, self.slot2, self.slot3, self.slot4)[index]
+
+    def with_key(self, index: int, key: str | None) -> "Quickslots":
+        keys = [self.slot1, self.slot2, self.slot3, self.slot4]
+        keys[index] = key
+        return Quickslots(*keys)
+
+
+@dataclass(frozen=True)
+class Epithet:
+    """A weapon that earned a name (M7 §6.2): species it is the bane of."""
+
+    species: str
+
+
+@dataclass(frozen=True)
 class StatusEffect:
     kind: str  # "bleeding" | "poison" | "fear" | "blessing"
     duration: int  # turns remaining

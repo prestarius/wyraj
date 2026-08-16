@@ -6,6 +6,7 @@ from wyraj.content.bestiary import load_bestiary
 from wyraj.content.items import load_items
 from wyraj.core.events import (
     AttackResolved,
+    BliznaEarned,
     CoinsBanked,
     CoinsPicked,
     CraneRefused,
@@ -23,6 +24,7 @@ from wyraj.core.events import (
     ItemBought,
     ItemPickedUp,
     ItemSold,
+    ItemUnequipped,
     ItemUsed,
     ItemWielded,
     ItemWorn,
@@ -32,6 +34,7 @@ from wyraj.core.events import (
     MoveBlocked,
     OfferingMade,
     Outcome,
+    QuickslotBound,
     Rested,
     ShrineVisited,
     StarvationHit,
@@ -42,6 +45,8 @@ from wyraj.core.events import (
     StatusExpired,
     StatusTick,
     TalkedTo,
+    WeaponNamed,
+    WeaponRecognized,
 )
 from wyraj.narration.engine import NarrationEngine, NarrationLine
 from wyraj.narration.forms import build_form_registry
@@ -56,6 +61,17 @@ REGISTRY = build_form_registry({**load_bestiary(), **load_items()})
 
 def fixture_event(event_key: str, subkey: str | None) -> GameEvent:
     """Build an event that maps to the given pack rule."""
+    if event_key == "item_unequipped":
+        return ItemUnequipped(actor=PLAYER, item=CIUPAGA)
+    if event_key == "quickslot_bound":
+        return QuickslotBound(actor=PLAYER, item=ODWAR, index=0)
+    if event_key == "blizna_earned":
+        return BliznaEarned(actor=PLAYER, count=1)
+    if event_key == "weapon_named":
+        assert subkey is not None
+        return WeaponNamed(actor=PLAYER, weapon=CIUPAGA, species=subkey)
+    if event_key == "weapon_recognized":
+        return WeaponRecognized(weapon=CIUPAGA, species="wilk")
     if event_key == "attack_resolved":
         assert subkey is not None
         side, _, outcome = subkey.partition("_")
