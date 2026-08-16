@@ -97,6 +97,76 @@ def test_missing_sounds_yml_loads_empty_catalog(tmp_path) -> None:
     assert load_audio_catalog(tmp_path) == AudioCatalog()
 
 
+# ---- US 14.2: catalog & starter assets ------------------------------------
+
+
+def test_catalog_files_exist_and_are_credited() -> None:
+    from wyraj.content.audio import audio_dir, load_audio_credits
+
+    catalog = load_audio_catalog()
+    assert catalog.beds and catalog.events and catalog.voices
+    credited = {entry.file for entry in load_audio_credits()}
+    root = audio_dir()
+    referenced = [
+        spec.file
+        for group in (catalog.beds, catalog.events, catalog.voices)
+        for spec in group.values()
+    ]
+    for rel in referenced:
+        assert (root / rel).exists(), f"missing asset {rel}"
+        assert rel in credited, f"uncredited asset {rel}"
+    # Every shipped asset file is credited, referenced or not.
+    for path in root.rglob("*.wav"):
+        assert str(path.relative_to(root)) in credited, f"uncredited file {path.name}"
+
+
+def test_credits_carry_no_nc_nd_licenses() -> None:
+    from wyraj.content.audio import load_audio_credits
+
+    for entry in load_audio_credits():
+        assert "NC" not in entry.license and "ND" not in entry.license, entry.file
+
+
+def test_catalog_event_keys_name_real_events() -> None:
+    import re
+
+    from wyraj.core import events as events_module
+    from wyraj.core.events import GameEvent
+
+    valid = {
+        re.sub(r"(?<!^)(?=[A-Z])", "_", name).lower()
+        for name, obj in vars(events_module).items()
+        if isinstance(obj, type) and issubclass(obj, GameEvent) and obj is not GameEvent
+    }
+    for key in load_audio_catalog().events:
+        base = key.split("/", 1)[0]
+        assert base in valid, f"'{key}' names no known event"
+
+
+def test_catalog_voices_name_real_monsters() -> None:
+    from wyraj.content.bestiary import load_bestiary
+
+    bestiary = load_bestiary()
+    for key in load_audio_catalog().voices:
+        assert key in bestiary, key
+
+
+def test_every_bed_key_is_resolvable() -> None:
+    catalog = load_audio_catalog()
+    for bed in (
+        "wies",
+        "puszcza",
+        "puszcza_noc",
+        "bagna",
+        "bagna_noc",
+        "kurhany",
+        "kurhany_deep",
+        "dno",
+        "kupala",
+    ):
+        assert bed in catalog.beds, bed
+
+
 def test_event_sound_fallback_chain() -> None:
     catalog = AudioCatalog(
         events={
