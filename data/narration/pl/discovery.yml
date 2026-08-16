@@ -27,3 +27,7 @@ lore_discovered:
     - weight: 1
       importance: high
       pl: "Małe, krzywe, jednookie — licho we własnej osobie. Nie wołaj licha. I broń Boże za nim nie idź."
+  sluga:
+    - weight: 1
+      importance: high
+      pl: "Grobowe płótno, dłonie starte na płasko, chód o jednym jedynym celu. Nie patrzy na ciebie. Nie ty jesteś kamieniem, któremu służy."

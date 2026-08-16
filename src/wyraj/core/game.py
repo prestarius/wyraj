@@ -435,7 +435,11 @@ class Game:
                 water_adjacent.remove((x, y))
             self.spawn_monster(chosen, x, y, depth)
 
-        table = self.loot_tables.get(biome)
+        table = None
+        if depth >= LAST_SKY_DEPTH:  # M8 §1: the deep table — candles, salt, road food
+            table = self.loot_tables.get(f"{biome}_deep")
+        if table is None:
+            table = self.loot_tables.get(biome)
         if table is not None:
             item_keys = sorted(table.weights)
             item_weights = [table.weights[k] for k in item_keys]

@@ -7,6 +7,6 @@ repeat_interval: 2
 stock_per_visit: 4
 tiers:
   1: [odwar, chleb, gromnica, sol_swiecona]
-  2: [mocny_odwar, zurawie_pioro, kaftan]
-  3: [ciupaga, zurawie_pioro, mocny_odwar]
+  2: [mocny_odwar, zurawie_pioro, kaftan, gromnica]
+  3: [ciupaga, zurawie_pioro, mocny_odwar, gromnica, sol_swiecona]
 tier_unlocks: { 2: 3, 3: 6 }   # tier → required reputation
