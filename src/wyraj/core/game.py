@@ -100,6 +100,8 @@ from wyraj.core.events import (
     DziadRecognized,
     EntityDied,
     EntityRef,
+    ErrandCompleted,
+    ErrandHeard,
     EventBus,
     FestivalDawned,
     ItemBought,
@@ -145,7 +147,7 @@ from wyraj.core.refs import ref_for
 from wyraj.core.rng import RngStreams
 from wyraj.core.scheduler import TurnScheduler
 from wyraj.core.systems import ai, combat, hunger, items, movement, quickslots, status
-from wyraj.persistence.meta import MetaState, StashedItem, save_meta
+from wyraj.persistence.meta import MetaState, StashedItem, VillagerMemory, save_meta
 from wyraj.procgen.bagna import generate_bagna
 from wyraj.procgen.forest import generate_forest
 from wyraj.procgen.kurhany import generate_kurhan
@@ -547,6 +549,7 @@ class Game:
             )
         self._populate_level(depth, random.Random(level_seed ^ 0xA5A5))
         self._maybe_spawn_dziad(depth)
+        self._stamp_errand_items(depth)
 
     def spawn_item(self, definition: ItemDef, x: int, y: int, depth: int = 0) -> Entity:
         entity = self.world.create(
@@ -705,6 +708,7 @@ class Game:
                         )
                         if villager.role == "dziad_wedrowny":
                             self._dziad_greets_weapon()
+                        self._errand_talk(villager.role, target)
                     else:
                         target_lore = self.world.get(target, Lore)
                         if (
@@ -844,6 +848,12 @@ class Game:
             self._raise_codex_tier(event.entity.key, "full" if kills >= 3 else "partial")
         if event.position is None:
             return
+        for key, state in sorted(self.errands.items()):
+            errand = self.errands_catalog[key]
+            if state == "heard" and errand.kind == "hunt" and errand.target == event.entity.key:
+                # The ask makes the proof certain, once (M10 §2).
+                self.errands[key] = "proof"
+                self.spawn_item(self.items_catalog[errand.proof], *event.position, event.depth)
         spec = self.drops.get(event.entity.key)
         if spec is None:
             return
@@ -1266,6 +1276,63 @@ class Game:
             chosen.append(pick)
             eligible = [d for d in eligible if d.giver != pick.giver]
         return {d.key: "offered" for d in sorted(chosen, key=lambda d: d.key)}
+
+    def _errand_talk(self, role: str, villager: Entity) -> None:
+        """Bump flow (M10 §2): first bump speaks the ask (heard = taken);
+        a later bump with the proof in hand completes it."""
+        giver_ref = ref_for(self.world, villager)
+        for key in list(self.errands):
+            errand = self.errands_catalog[key]
+            if errand.giver != role:
+                continue
+            status = self.errands[key]
+            if status in ("heard", "proof"):
+                self._try_complete_errand(errand, giver_ref)
+            elif status == "offered":
+                self.errands[key] = "heard"
+                self.bus.publish(ErrandHeard(errand=key, giver=giver_ref))
+
+    def _try_complete_errand(self, errand: ErrandDef, giver_ref: EntityRef) -> None:
+        inventory = self.world.get(self.player, Inventory) or Inventory()
+        proof = next(
+            (
+                e
+                for e in inventory.items
+                if (item := self.world.get(e, Item)) is not None and item.key == errand.proof_item
+            ),
+            None,
+        )
+        if proof is None:
+            return
+        # The giver keeps the proof; the reward lands in the banked wallet
+        # (villagers live at depth 0 — village money is meta money).
+        remaining = tuple(i for i in inventory.items if i != proof)
+        self.world.add(self.player, Inventory(items=remaining))
+        self.world.destroy(proof)
+        self.errands[errand.key] = "done"
+        self.meta.currency.denary += errand.reward.denary
+        memory = self.meta.villagers.setdefault(errand.giver, VillagerMemory())
+        memory.reputation += errand.reward.reputation
+        memory.errands_done += 1
+        self.bus.publish(
+            ErrandCompleted(errand=errand.key, giver=giver_ref, reward=errand.reward.denary)
+        )
+        self.bus.publish(
+            MetaTransaction(kind="errand_done", detail=f"{errand.key}:+{errand.reward.denary}")
+        )
+        self._save_meta()
+
+    def _stamp_errand_items(self, depth: int) -> None:
+        """Fetch targets are stamped into their depth at generation (M10 §1) —
+        own hash-seeded RNG, so level population draws stay untouched."""
+        for key, state in sorted(self.errands.items()):
+            errand = self.errands_catalog[key]
+            if errand.kind != "fetch" or errand.depth != depth or state == "done":
+                continue
+            digest = hashlib.sha256(f"{self.seed}:errand_item:{key}".encode()).digest()
+            rng = random.Random(int.from_bytes(digest[:8], "big"))
+            x, y = rng.choice(self.levels[depth].floor_tiles())
+            self.spawn_item(self.items_catalog[errand.target], x, y, depth)
 
     def _mark_dziad_trade(self, trader: Entity) -> None:
         villager = self.world.get(trader, Villager)
