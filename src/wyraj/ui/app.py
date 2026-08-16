@@ -10,6 +10,7 @@ from textual.binding import Binding
 from textual.containers import Horizontal
 from textual.widgets import Footer, RichLog
 
+from wyraj.content.audio import load_audio_catalog
 from wyraj.content.intro import load_szept
 from wyraj.core.actions import (
     Action,
@@ -34,6 +35,7 @@ from wyraj.narration.templates import TemplateNarrator, load_pack
 from wyraj.persistence.history import record_run
 from wyraj.persistence.morgue import write_morgue
 from wyraj.persistence.save import delete_save, save_game
+from wyraj.ui.audio import AudioBackend, AudioSystem, AudioUnavailable, PygameBackend
 from wyraj.ui.i18n import t
 from wyraj.ui.screens import (
     CodexScreen,
@@ -114,6 +116,8 @@ class WyrajApp(App[str]):
         hints: bool = True,
         quickslot_auto_refill: bool = True,
         glebiej: bool = False,
+        audio_config: dict | None = None,
+        mute: bool = False,
     ) -> None:
         super().__init__()
         self.game = game if game is not None else Game(seed, origin=origin, glebiej=glebiej)
@@ -149,6 +153,25 @@ class WyrajApp(App[str]):
             sink=self._on_szept,
             enabled=hints,
         )
+        # M11 "Głosy": one more listener on the bus; absent or refused =
+        # identically silent, one dim note aside.
+        self.audio: AudioSystem | None = None
+        self._audio_note = False
+        cfg = audio_config or {}
+        if bool(cfg.get("enabled", True)) and not mute:
+            try:
+                backend: AudioBackend = PygameBackend()
+            except AudioUnavailable:
+                self._audio_note = True  # noted once at launch, then never again
+            else:
+                self.audio = AudioSystem(
+                    self.game,
+                    load_audio_catalog(),
+                    backend,
+                    master=float(cfg.get("master", 0.8)),
+                    ambient=float(cfg.get("ambient", 0.7)),
+                    sfx=float(cfg.get("sfx", 0.8)),
+                )
 
     def compose(self) -> ComposeResult:
         with Horizontal(id="top"):
@@ -165,6 +188,12 @@ class WyrajApp(App[str]):
         intro = self.game.origin.intro_for(self.lang).strip().replace("\n", " ")
         log.write(Text(intro, style="italic grey74"))
         log.write(Text(t("intro_second"), style="italic grey58"))
+        if self._audio_note:
+            log.write(Text(t("audio_missing"), style="italic grey42"))
+
+    def on_unmount(self) -> None:
+        if self.audio is not None:
+            self.audio.shutdown()
 
     def _on_szept(self, text: str) -> None:
         if self.is_running:

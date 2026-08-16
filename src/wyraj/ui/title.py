@@ -137,6 +137,10 @@ class OptionsScreen(ModalScreen[str | None]):
         text.append(t("options_title") + "\n\n", style="bold")
         hints = "on" if self.config.get("hints", True) else "off"
         text.append(f" h — {t('options_hints')}: {hints}\n")
+        raw_audio = self.config.get("audio")
+        audio_cfg = raw_audio if isinstance(raw_audio, dict) else {}
+        audio = "on" if audio_cfg.get("enabled", True) else "off"
+        text.append(f" a — {t('options_audio')}: {audio}\n")
         text.append(f" s — {t('options_speed')}: {self._current('text_speed', 'normal')}\n")
         text.append(f" p — {t('options_portrait')}: {self._current('portrait', 'box')}\n")
         text.append(f" l — {t('options_lang')}: {self._current('lang', 'en')}\n")
@@ -171,6 +175,13 @@ class OptionsScreen(ModalScreen[str | None]):
         if event.key == "h":
             self.config["hints"] = not self.config.get("hints", True)
             save_config({"hints": self.config["hints"]})
+        elif event.key == "a":
+            audio_cfg = (
+                dict(self.config["audio"]) if isinstance(self.config.get("audio"), dict) else {}
+            )
+            audio_cfg["enabled"] = not audio_cfg.get("enabled", True)
+            self.config["audio"] = audio_cfg
+            save_config({"audio": audio_cfg})
         elif event.key == "s":
             new = "instant" if self._current("text_speed", "normal") == "normal" else "normal"
             self.config["text_speed"] = new

@@ -12,6 +12,11 @@ dependencies = [
     "httpx>=0.28.1",
 ]
 
+[project.optional-dependencies]
+# M11 "Głosy": sound is optional by design — without it the game runs
+# identically silent. pygame-ce is the maintained pygame fork (spec §1).
+sound = ["pygame-ce>=2.5.8"]
+
 [project.scripts]
 wyraj = "wyraj.app:main"
 
@@ -43,6 +48,11 @@ python_version = "3.12"
 mypy_path = "src"
 packages = ["wyraj"]
 strict = true
+
+[[tool.mypy.overrides]]
+# pygame-ce is the optional `sound` extra — absent from the dev env by design.
+module = ["pygame", "pygame.*"]
+ignore_missing_imports = true
 
 [[tool.mypy.overrides]]
 # Strictness is required only on core/ and narration/ (spec §11); relax the
