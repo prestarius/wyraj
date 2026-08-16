@@ -1,15 +1,24 @@
 talked_to:
   innkeeper:
     - weight: 2
+      tags: [known_face]
+      en: "Dobrava sets a bowl down before you ask. \"Sit. The house owes you, and this house pays its debts before they're called in.\""
+    - weight: 2
       en: "Dobrava the karczmarka looks you over like a wet dog on her doorstep. \"There's a bed and a fire, wanderer. Rest while resting's free.\""
     - weight: 1
       en: "\"Eat something,\" says the karczmarka, in the tone of a woman who has buried people who didn't."
   trader:
     - weight: 2
+      tags: [known_face]
+      en: "Miłosz doesn't reach for the scale when you come up. \"For you? The honest prices. Don't tell the wieś I keep two kinds.\""
+    - weight: 2
       en: "Miłosz the handlarz spreads his wares with a flourish. \"Trade for trade, friend. Coin is for towns; out here we deal in useful things.\""
     - weight: 1
       en: "The handlarz squints at your pack. \"Everything has a price. Out here the price is usually something you'll miss later.\""
   gossip:
+    - weight: 2
+      tags: [known_face]
+      en: "Old Świętosław doesn't call you wanderer anymore. \"The wieś talks about you at the church door,\" he says. \"For once, the talk is on your side.\""
     - weight: 2
       en: "Old Świętosław leans on his stick. \"The strzyga counts your nights, wanderer. Three she watches, on the fourth she comes. Keep a fire.\""
     - weight: 2
@@ -26,10 +35,16 @@ talked_to:
       en: "\"The lights over the bagna are souls,\" he says. \"Whose souls? Follow them and find out. No? Wise.\""
   kowal:
     - weight: 2
+      tags: [known_face]
+      en: "Radzim greets you the way he greets good iron — by name, and by making room at the forge. From the kowal, that is a feast day."
+    - weight: 2
       en: "Radzim the kowal looks up from the anvil, decides you are neither work nor weather, and nods once. It is more than most get."
     - weight: 1
       en: "The kowal turns a horseshoe in the coals. \"If it's edges you need, I sell them. If it's advice — the edge is cheaper and worth more.\""
   mlynarz:
+    - weight: 2
+      tags: [known_face]
+      en: "Bogusz straightens when he sees you, and for a heartbeat there is a miller in his face again, and not only a father. \"You,\" he says, and it means thank you."
     - weight: 2
       en: "Bogusz the młynarz stands with flour on his sleeves and his eyes on the gate. Millers used to be counted rich here. He is not counting anything now."
     - weight: 1

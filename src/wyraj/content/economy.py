@@ -39,9 +39,17 @@ class StockEntry(BaseModel):
     chance: int = Field(default=100, ge=0, le=100)
 
 
+class RepTier(BaseModel):
+    """The good shelf (M10 §3): extra stock the wieś shows a trusted face."""
+
+    reputation: int = Field(ge=1)  # total village reputation required
+    items: list[StockEntry] = []
+
+
 class VillageShop(BaseModel):
     guaranteed: list[StockEntry] = []
     rolls: list[StockEntry] = []
+    reputation_tiers: list[RepTier] = []
 
 
 def load_drops(root: Path | None = None) -> dict[str, DropSpec]:

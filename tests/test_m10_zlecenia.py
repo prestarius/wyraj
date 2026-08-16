@@ -220,6 +220,52 @@ def test_unheard_errand_grants_no_proof() -> None:
     assert game.errands["syn_mlynarza"] == "offered"
 
 
+# ---- US 13.4: reputation & the good shelf --------------------------------
+
+
+def _trader_stock_keys(game: Game) -> list[str]:
+    from wyraj.core.components import Inventory, Item
+
+    trader = _find_villager(game, "trader")
+    return [game.world.expect(e, Item).key for e in game.world.expect(trader, Inventory).items]
+
+
+def test_reputation_unlocks_the_good_shelf() -> None:
+    from wyraj.persistence.meta import VillagerMemory
+
+    plain = _trader_stock_keys(Game(seed=SEED, meta_autosave=False))
+    assert "szkaplerz" not in plain and "baranica" not in plain
+
+    meta = MetaState()
+    meta.villagers["kowal"] = VillagerMemory(reputation=2)
+    meta.villagers["mlynarz"] = VillagerMemory(reputation=1)
+    trusted = _trader_stock_keys(Game(seed=SEED, meta=meta, meta_autosave=False))
+    assert "szkaplerz" in trusted and "baranica" not in trusted
+    # Rolled stock is untouched by the meta gate (no extra RNG draws).
+    assert trusted[: len(plain)] == plain
+
+    meta.villagers["gossip"] = VillagerMemory(reputation=3)
+    best = _trader_stock_keys(Game(seed=SEED, meta=meta, meta_autosave=False))
+    assert "szkaplerz" in best and "baranica" in best
+
+
+def test_known_face_tag_from_reputation() -> None:
+    from wyraj.core.events import EntityRef, TalkedTo
+    from wyraj.narration.context import ContextEnricher
+    from wyraj.persistence.meta import VillagerMemory
+
+    game = Game(seed=SEED, meta_autosave=False)
+    game.errands = {"syn_mlynarza": "heard"}
+    game.meta.villagers["kowal"] = VillagerMemory(reputation=3)
+    enricher = ContextEnricher(game)
+    villager = EntityRef(entity=5, key="kowal", name="Radzim the kowal")
+    tags = enricher.enrich(TalkedTo(villager=villager, role="kowal"))
+    assert "known_face" in tags
+    assert "errand_syn_mlynarza" in tags
+    stranger = enricher.enrich(TalkedTo(villager=villager, role="mlynarz"))
+    assert "known_face" not in stranger
+
+
 def test_errand_state_survives_save(tmp_path) -> None:
     from wyraj.persistence.save import load_game, save_game
 

@@ -356,6 +356,13 @@ class Game:
             for entry in self.village_shop.rolls:
                 if self.rng.loot.randint(1, 100) <= entry.chance:
                     stock += [self.spawn_stock_item(entry.item) for _ in range(entry.count)]
+            # The good shelf (M10 §3): no RNG draws — meta-gated guarantees
+            # appended after the rolls, so existing stock stays identical.
+            total_rep = sum(m.reputation for m in self.meta.villagers.values())
+            for tier in self.village_shop.reputation_tiers:
+                if total_rep >= tier.reputation:
+                    for entry in tier.items:
+                        stock += [self.spawn_stock_item(entry.item) for _ in range(entry.count)]
             self.world.add(entity, Inventory(items=tuple(stock)))
         return entity
 

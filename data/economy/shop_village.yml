@@ -12,3 +12,15 @@ rolls:
   - { item: ciupaga, chance: 20 }
   - { item: mocny_odwar, chance: 30 }
   - { item: zurawie_pioro, chance: 45 }   # 0–1 per run (spec §6)
+
+# The good shelf (M10 §3): guaranteed extras once the wieś trusts you —
+# thresholds are TOTAL reputation summed across the named villagers.
+reputation_tiers:
+  - reputation: 3
+    items:
+      - { item: szkaplerz }
+      - { item: mocny_odwar }
+  - reputation: 6
+    items:
+      - { item: baranica }
+      - { item: zurawie_pioro }
