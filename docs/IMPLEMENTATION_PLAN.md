@@ -223,9 +223,15 @@ M8 → M9 → M10 → M11 → M12; M11 may slide earlier (no prerequisites past 
   US 12.4 the four festival rituals (half-burn, fern flower, free rest,
   the talkable dead + Peaceful truce); US 12.5 pane calendar line + sky
   tints; US 12.6 first-night szept, docs, sim floor re-verified (2/30).
-- **Epic 13 — M10 "Zlecenia"** (Errands): rumor-driven procedural errands,
-  named-villager reputation, off-screen failure states that change the
-  village across deaths.
+- **Epic 13 — M10 "Zlecenia"** (Errands) — **spec drafted 2026-08-16, awaiting
+  go/no-go** — spec `WYRAJ_M10_ZLECENIA.md` (open decisions 31–35).
+  US 13.1 errand model & pure seeded assembly (data/errands, 1–3 per run);
+  US 13.2 two new villagers (Radzim kowal, Bogusz młynarz); US 13.3 the loop
+  (guaranteed proof drops, fetch stamping, bump hand-in, banked rewards);
+  US 13.4 `meta.villagers` reputation + rep-gated village stock; US 13.5
+  fates — patience counters in `apply_death_to_meta`, three village flags,
+  next-run announcement; US 13.6 codex Zlecenia tab, gossip escalation,
+  docs, sims.
 - **Epic 14 — M11 "Głosy"** (Voices): optional-dependency AudioSystem on the
   event bus — ambient beds, sparse SFX, creature voicing at a distance;
   backend choice (pygame.mixer vs miniaudio) to be re-verified at spec time.
@@ -271,3 +277,8 @@ after M10).
 | 28 | M9: kwiat paproci = full heal | US 12.4 | spec default: full heal |
 | 29 | M9: time passes underground | US 12.1 | spec default: yes (folkloric) |
 | 30 | M9: sanction one golden regeneration | US 12.1 | spec default: yes (calendar events force it) |
+| 31 | M10: new villagers — Radzim kowal + Bogusz młynarz | US 13.2 | spec default: both, these names |
+| 32 | M10: acceptance model — heard = taken, no accept/decline | US 13.1 | spec default: yes (a word given binds) |
+| 33 | M10: patience — ignored runs before a fate resolves | US 13.5 | spec default: 3 |
+| 34 | M10: fates irreversible (no redemption errand) | US 13.5 | spec default: irreversible v1 |
+| 35 | M10: reward band 40–90 denary; golden regen only if walk bumps a villager | US 13.3/13.6 | spec default: accept |
