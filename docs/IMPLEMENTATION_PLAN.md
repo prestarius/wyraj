@@ -196,12 +196,17 @@ Outline-level on purpose (spec §12: no early scaffolding) — each gets a full
 CC spec and story breakdown when its milestone starts. Recommended order
 M8 → M9 → M10 → M11 → M12; M11 may slide earlier (no prerequisites past M0).
 
-- **Epic 11 — M8 "Dno"** (the Bottom) — **SPEC READY: `WYRAJ_M8_DNO.md`**,
-  awaiting Prestarius's read + open decisions 20–25. Stories US 11.1–11.7
-  per spec §7: depth tiers (6–8, darkness escalation, no crane below 6) →
-  Wij vault & sługi → WijState/gaze light-inversion → the rite & victory →
-  epilogues ×2 languages → Głębiej modifier → balance sim & polish. Large —
-  the game gains a win condition.
+- **Epic 11 — M8 "Dno"** (the Bottom) — **DONE 2026-08-16** — spec
+  `WYRAJ_M8_DNO.md`, built with all spec defaults (decisions 20–25).
+  US 11.1 depth tiers 6–8 (darkness 3/2/1, no sky below 6, DeepDescended);
+  US 11.2 authored vault + sługa `lift` behavior + niche respawns;
+  US 11.3 lifting meter, phase events, gaze light-inversion (lit = seen,
+  dark = hidden, douse-by-reuse), unkillable Wij; US 11.4 salt-consuming
+  rite channel → victory, VictoryRecord meta + victory morgue file;
+  US 11.5 three epilogues ×2 languages on the prologue renderer, permanent
+  title line, ⁂ origin marks; US 11.6 Głębiej toggle (fov −1, +2 spawns,
+  +1 loot, +25% prices); US 11.7 competent-bot sim — CI smoke + WYRAJ_SIM=1
+  measurement (1/30 wins at cut; floor ≥1 win, ≤50%). Golden byte-identical.
 - **Epic 12 — M9 "Koło Roku"** (Wheel of the Year): day/night, weather,
   festival days (Noc Kupały, Dziady, Gromnica) on a seeded per-run calendar.
 - **Epic 13 — M10 "Zlecenia"** (Errands): rumor-driven procedural errands,

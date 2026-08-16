@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project
 
-**Wyraj** — a narrated roguelike in Slavic dark fantasy: ADOM-class systemic depth fused with rich adventure prose. Specs: `docs/WYRAJ_PROJECT.md` (core, M0–M5), `docs/WYRAJ_M6_POWROTY.md` (meta-progression), `docs/WYRAJ_PROG_SPEC.md` (intro/onboarding), `docs/WYRAJ_M7_SYLWETKA.md` (M7 character pane & quickslots), `docs/WYRAJ_M8_DNO.md` (M8 ending/victory, spec ready), `docs/WYRAJ_ROADMAP_M8PLUS.md` (M9–M12 outlines, proposal) — read the relevant one before non-trivial work. `docs/IMPLEMENTATION_PLAN.md` is the backlog and status board (Epics 1–10 are DONE: v0.7 + polish + M7 "Sylwetka"; Epics 11–15 = M8–M12 are planned outlines).
+**Wyraj** — a narrated roguelike in Slavic dark fantasy: ADOM-class systemic depth fused with rich adventure prose. Specs: `docs/WYRAJ_PROJECT.md` (core, M0–M5), `docs/WYRAJ_M6_POWROTY.md` (meta-progression), `docs/WYRAJ_PROG_SPEC.md` (intro/onboarding), `docs/WYRAJ_M7_SYLWETKA.md` (M7 character pane & quickslots), `docs/WYRAJ_M8_DNO.md` (M8 ending/victory), `docs/WYRAJ_ROADMAP_M8PLUS.md` (M9–M12 outlines, proposal) — read the relevant one before non-trivial work. `docs/IMPLEMENTATION_PLAN.md` is the backlog and status board (Epics 1–11 are DONE: v0.7 + polish + M7 "Sylwetka" + M8 "Dno"; Epics 12–15 = M9–M12 are planned outlines).
 
 Licensing (decided 2026-08-14): AGPL-3.0 for code, CC-BY-SA 4.0 for `data/` content, CLA for contributors. Maintainer is pseudonymous — **"Prestarius" everywhere**; never introduce a real name into the repo.
 
@@ -23,7 +23,7 @@ Python 3.12+, `uv`-managed, Textual TUI. Fully bilingual EN/PL: narration packs 
 
 - **`core/` never imports from `ui/`.** Core emits typed `GameEvent` dataclasses (facts, not text) on an event bus; UI, narration, and the szept hint system subscribe. The game runs headless (tests, sims).
 - **Deterministic core.** Same seed + same meta-state + same inputs = same run. Named seeded streams (`worldgen`, `combat`, `loot`, `narration`); per-level generation is a pure function of `sha256(seed, depth)`. No wall-clock in core. The LLM narrator is cosmetic-only.
-- **World chain:** wieś(0) → puszcza(1) → bagna(2) → kurhany(3–5); entities carry `OnLevel`, off-level actors are frozen.
+- **World chain:** wieś(0) → puszcza(1) → bagna(2) → kurhany(3–8, no sky shafts below 6, the Wij's vault at 8); entities carry `OnLevel`, off-level actors are frozen.
 - **Meta-progression:** `~/.wyraj/meta.yml` survives death and mutates only at defined transaction points (bank/stash/purchase/offering/codex/death), each publishing `MetaTransaction`; HMAC flags hand-edits without punishing. On-body purse and items are always lost on death.
 - **Data-driven content.** Monsters, items, hooks, loot, economy, origins, narration packs → YAML under `data/`, pydantic-validated in `content/`. Intro/onboarding content is `data/intro/`, portrait layer art `data/portrait/`, weapon epithets `data/epithets/` (NONE of these belong in `data/narration/` — the pack loader eats every YAML there). Adding content must not require engine changes.
 - **Narration pipeline:** `GameEvent → ContextEnricher(tags) → buffer → TurnEnded → TurnComposer paragraph`. New event type ⇒ add a `rule_key` mapping, EN + PL pack rules, and a fixture in `tests/test_narration_templates.py` (the PL-parity and render tests enforce all of it). Paragraphs carry a cosmetic `category` (combat/lore/loot/ambient, mapped in `category_of` in `templates.py`) used only for log tinting — unmapped events default to ambient.

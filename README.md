@@ -9,10 +9,10 @@ leszy, strzyga, utopiec, bies, licho.
 
 ![Wyraj screenshot](docs/screenshot.svg)
 
-**Status:** pre-alpha. Milestones M0–M7 plus the intro ("Próg") are
-complete: the full loop — village, forest, marsh, three crypt levels,
-death, and what survives it — is playable in English and Polish, with
-the M7 "Sylwetka" character pane and quickslots on top.
+**Status:** pre-alpha, and **winnable**. Milestones M0–M8 plus the intro
+("Próg") are complete: village, forest, marsh, six crypt levels, the Wij
+waiting at the bottom, death, victory, and what survives either — fully
+playable in English and Polish.
 
 ## What makes it different
 
@@ -34,6 +34,13 @@ the M7 "Sylwetka" character pane and quickslots on top.
   village, the codex keeps what your deaths taught you, and some deaths
   unlock new origins ("die to the strzyga three times…"). Carry-over is
   heirlooms, not a savings account — a 50-run simulation enforces it.
+- **An ending in the dark — "Dno".** Below the last collapsed ceiling
+  there is no crane home, sight shrinks to a single tile, and the Wij
+  lies in his stone cradle while grave-servants labor to lift his lids.
+  He has no health bar; his opened gaze kills what it sees — and it sees
+  by your candle. The game that taught you *light is life* asks you to
+  finish it in the dark, pressing the lids shut with blessed salt. Win,
+  and one of three epilogues plays; the title screen remembers forever.
 - **Crane flight.** No teleports: hold a crane feather under open sky,
   stand still for six turns while nothing watches, and a wedge of birds
   carries you home. In the crypts, only where the ceiling has collapsed.
