@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project
 
-**Wyraj** — a narrated roguelike in Slavic dark fantasy: ADOM-class systemic depth fused with rich adventure prose. Specs: `docs/WYRAJ_PROJECT.md` (core, M0–M5), `docs/WYRAJ_M6_POWROTY.md` (meta-progression), `docs/WYRAJ_PROG_SPEC.md` (intro/onboarding), `docs/WYRAJ_M7_SYLWETKA.md` (M7 character pane & quickslots), `docs/WYRAJ_M8_DNO.md` (M8 ending/victory), `docs/WYRAJ_ROADMAP_M8PLUS.md` (M9–M12 outlines, proposal) — read the relevant one before non-trivial work. `docs/IMPLEMENTATION_PLAN.md` is the backlog and status board (Epics 1–11 are DONE: v0.7 + polish + M7 "Sylwetka" + M8 "Dno"; Epics 12–15 = M9–M12 are planned outlines).
+**Wyraj** — a narrated roguelike in Slavic dark fantasy: ADOM-class systemic depth fused with rich adventure prose. Specs: `docs/WYRAJ_PROJECT.md` (core, M0–M5), `docs/WYRAJ_M6_POWROTY.md` (meta-progression), `docs/WYRAJ_PROG_SPEC.md` (intro/onboarding), `docs/WYRAJ_M7_SYLWETKA.md` (M7 character pane & quickslots), `docs/WYRAJ_M8_DNO.md` (M8 ending/victory), `docs/WYRAJ_M9_KOLO_ROKU.md` (M9 time/weather/festivals, spec ready), `docs/WYRAJ_ROADMAP_M8PLUS.md` (M9–M12 outlines, proposal) — read the relevant one before non-trivial work. `docs/IMPLEMENTATION_PLAN.md` is the backlog and status board (Epics 1–11 are DONE: v0.7 + polish + M7 "Sylwetka" + M8 "Dno"; Epics 12–15 = M9–M12 are planned outlines).
 
 Licensing (decided 2026-08-14): AGPL-3.0 for code, CC-BY-SA 4.0 for `data/` content, CLA for contributors. Maintainer is pseudonymous — **"Prestarius" everywhere**; never introduce a real name into the repo.
 

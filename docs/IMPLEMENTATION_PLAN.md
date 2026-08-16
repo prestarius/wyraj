@@ -213,8 +213,12 @@ M8 → M9 → M10 → M11 → M12; M11 may slide earlier (no prerequisites past 
   CORE_TRIGGERS so the farewell never waits on them); bespoke sługa
   first-sighting line EN/PL. Sim after: 2/30 wins (7%). The vault
   itself still carries no loot — by design.
-- **Epic 12 — M9 "Koło Roku"** (Wheel of the Year): day/night, weather,
-  festival days (Noc Kupały, Dziady, Gromnica) on a seeded per-run calendar.
+- **Epic 12 — M9 "Koło Roku"** (Wheel of the Year) — **SPEC READY:
+  `WYRAJ_M9_KOLO_ROKU.md`**, awaiting Prestarius's read + open decisions
+  26–30. Stories US 12.1–12.6 per spec §6: pure-function clock (240-turn
+  day, 12-day wheel, seeded start) → night/weather mechanics → sky-aware
+  spawns (południca) → four festivals → pane wheel & sky tints → polish.
+  Note: calendar boundary events force one sanctioned golden regeneration.
 - **Epic 13 — M10 "Zlecenia"** (Errands): rumor-driven procedural errands,
   named-villager reputation, off-screen failure states that change the
   village across deaths.
@@ -258,3 +262,8 @@ after M10).
 | 23 | M8: Głębiej stacking across victories | US 11.6 | spec default: single tier v1 |
 | 24 | M8: 10–20% skilled win-rate target | US 11.7 | spec default: accept |
 | 25 | M8: three epilogues or two? | US 11.5 | spec default: three |
+| 26 | M9: 240-turn day, 12-day wheel | US 12.1 | spec default: accept |
+| 27 | M9: południca as the one new creature | US 12.3 | spec default: yes |
+| 28 | M9: kwiat paproci = full heal | US 12.4 | spec default: full heal |
+| 29 | M9: time passes underground | US 12.1 | spec default: yes (folkloric) |
+| 30 | M9: sanction one golden regeneration | US 12.1 | spec default: yes (calendar events force it) |
