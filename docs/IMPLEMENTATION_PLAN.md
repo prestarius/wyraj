@@ -238,9 +238,17 @@ M8 → M9 → M10 → M11 → M12; M11 may slide earlier (no prerequisites past 
   at 2/30; meta sim green). Deviation noted: the cold-forge "arrival line"
   is carried by the fate announcement + gossip variants, not a separate
   arrival rule.
-- **Epic 14 — M11 "Głosy"** (Voices): optional-dependency AudioSystem on the
-  event bus — ambient beds, sparse SFX, creature voicing at a distance;
-  backend choice (pygame.mixer vs miniaudio) to be re-verified at spec time.
+- **Epic 14 — M11 "Głosy"** (Voices) — **spec drafted 2026-08-16, awaiting
+  go/no-go** — spec `WYRAJ_M11_GLOSY.md` (open decisions 36–40). Backend
+  re-verified on the web 2026-08-16: **pygame-ce ≥ 2.5.8** as the `sound`
+  extra (upstream pygame dormant; miniaudio has no mixer), no fallback —
+  degrade to silence. US 14.1 backend Protocol + Null/Pygame backends,
+  config/`--mute`/Options; US 14.2 `data/audio/` catalog (rule_key-keyed
+  `sounds.yml`) + CREDITS.yml + synthesized starter assets; US 14.3
+  ambient beds (biome × depth × phase, dno heartbeat); US 14.4 sparse
+  event SFX (~14 mappings, crane arrival is the one big sound); US 14.5
+  deterministic distance voicing (local sha256, zero game-RNG draws);
+  US 14.6 polish/docs. Golden byte-identical throughout.
 - **Epic 15 — M12 "Gusła"** (Folk Magic): data-pack modding — pack manifest,
   merge semantics, `--validate-pack`, example pack; data only, no scripting.
 
@@ -288,3 +296,8 @@ after M10).
 | 33 | M10: patience — ignored runs before a fate resolves | US 13.5 | spec default: 3 |
 | 34 | M10: fates irreversible (no redemption errand) | US 13.5 | spec default: irreversible v1 |
 | 35 | M10: reward band 40–90 denary; golden regen only if walk bumps a villager | US 13.3/13.6 | spec default: accept |
+| 36 | M11: backend pygame-ce ≥ 2.5.8, no fallback (degrade to silence) | US 14.1 | spec default: confirmed by research |
+| 37 | M11: placement — `ui/audio.py`, no new top-level package | US 14.1 | spec default: ui/audio.py |
+| 38 | M11: v1 assets — synthesized starter set + generator script | US 14.2 | spec default: synthesized, curate later |
+| 39 | M11: audio on by default when extra installed | US 14.1 | spec default: on (installing is consent) |
+| 40 | M11: voicing knobs — modulus 17, radius 12 | US 14.5 | spec default: accept as starting points |
