@@ -36,6 +36,8 @@ from wyraj.core.events import (
     DziadRecognized,
     EntityDied,
     EntityRef,
+    ErrandCompleted,
+    ErrandHeard,
     FestivalDawned,
     GameEvent,
     HeirloomWielded,
@@ -69,6 +71,7 @@ from wyraj.core.events import (
     StatusTick,
     TalkedTo,
     TalkedToDead,
+    VillageFateResolved,
     WeaponNamed,
     WeaponRecognized,
     WeatherChanged,
@@ -148,6 +151,9 @@ _LORE_EVENTS: tuple[type[GameEvent], ...] = (
     FestivalDawned,
     KupalaBloom,
     TalkedToDead,
+    ErrandHeard,
+    ErrandCompleted,
+    VillageFateResolved,
 )
 
 
@@ -242,6 +248,12 @@ def rule_key(event: GameEvent) -> RuleKey:
             return "weather_changed", event.kind
         case FestivalDawned():
             return "festival_dawned", event.festival
+        case ErrandHeard():
+            return "errand_heard", event.errand
+        case ErrandCompleted():
+            return "errand_completed", event.errand
+        case VillageFateResolved():
+            return "village_fate", event.fate
         case _:
             name = type(event).__name__
             snake = re.sub(r"(?<!^)(?=[A-Z])", "_", name).lower()

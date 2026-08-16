@@ -199,3 +199,29 @@ def test_equip_screen_unequips_via_letter() -> None:
             assert kaftan in game.world.expect(game.player, Inventory).items
 
     asyncio.run(run())
+
+
+def test_codex_tab_cycles_to_zlecenia() -> None:
+    """M10 §5: Tab flips the codex to the errand ledger and back."""
+
+    async def run() -> None:
+        app = WyrajApp(seed=42)
+        async with app.run_test(size=(100, 40)) as pilot:
+            app.game.errands = {"syn_mlynarza": "heard"}
+            screen = CodexScreen(app.game)
+            app.push_screen(screen)
+            await pilot.pause()
+            assert not screen.show_errands
+            await pilot.press("tab")
+            await pilot.pause()
+            assert screen.show_errands
+            rendered = screen._text().plain
+            assert "utopiec" in rendered and "heard" in rendered
+            await pilot.press("tab")
+            await pilot.pause()
+            assert not screen.show_errands
+            await pilot.press("escape")
+            await pilot.pause()
+            assert len(app.screen_stack) == 1
+
+    asyncio.run(run())

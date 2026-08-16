@@ -107,7 +107,7 @@ def test_village_is_safe_and_staffed() -> None:
     game = Game(seed=42)
     assert not [e for e in game.world.entities_with(AI) if level_of(game.world, e) == 0]
     roles = {game.world.expect(e, Villager).role for e, _ in game.world.query(Villager)}
-    assert roles == {"innkeeper", "trader", "gossip"}
+    assert roles == {"innkeeper", "trader", "gossip", "kowal", "mlynarz"}
 
 
 def test_goto_depth_helper_darkness() -> None:

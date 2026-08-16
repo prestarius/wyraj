@@ -1,0 +1,76 @@
+# M10 "Zlecenia": prośby, wypowiedziane raz, i rozliczenia. Usłyszane = przyjęte.
+
+errand_heard:
+  syn_mlynarza:
+    - weight: 1
+      importance: high
+      pl: "Ręce młynarza przestają udawać, że pracują. „Utopiec wziął mi Jaśka przy jazie. Przeszukali staw, znaleźli czapkę. Zabij go — zabij i przynieś mi łuskę z jego grzbietu, żebym wiedział, że woda to znowu tylko woda.”"
+    - weight: 1
+      importance: high
+      pl: "„Ja teraz słyszę wszystko, co mówi strumień” — cicho mówi Bogusz. — „Wciągnęło mi syna pod wodę. Przynieś mi łuskę z utopcowego grzbietu, a zapłacę, ile młyn zapłacić może.”"
+  kadzielnica_kaplicznika:
+    - weight: 1
+      importance: high
+      pl: "Stary Świętosław łapie cię za rękaw. „Kaplicznik poszedł pod kurhany ze swoją kadzielnicą i kurhany zatrzymały obu. Druga krypta w dół, jeśli jego duch ma jakieś maniery. Odnieś kadzielnicę — kapliczka bez dymu to tylko kamień.”"
+    - weight: 1
+      importance: high
+      pl: "„Nad kapliczką był kiedyś dym” — mówi dziad. — „Kaplicznik nosił go w mosiężnej kadzielnicy, aż zaniósł ją do drugiej krypty i tyle go widzieli. Przynieś ją do domu, wędrowcze. Bogowie zauważają, co przestaje przychodzić.”"
+  wilki_przy_mielerzach:
+    - weight: 1
+      importance: high
+      pl: "Radzim odkłada młot, co znaczy, że sprawa jest poważna. „Wilki przy mielerzach. Nie ma węgla, nie ma ognia, nie ma kuźni. Przetrzebij je w puszczy i przynieś mi kieł, przybiję nad drzwiami — reszta watahy dobrze czyta ten znak.”"
+    - weight: 1
+      importance: high
+      pl: "„Mielerze stoją zimne” — mówi kowal. — „Węglarze nie wrócą, póki wilki trzymają polany. Kieł na odrzwiach by ich przekonał. Przynieś jeden.”"
+  czwarta_noc:
+    - weight: 1
+      importance: high
+      pl: "Dobrava nachyla się nad szynkwasem. „Coś liczy noce moich gości. Trzy patrzy, czwartej łóżko zostaje puste — to rachunki strzygi. Znajdź ją w puszczy i skończ to liczenie. Przynieś ząb; poznam po cieple.”"
+    - weight: 1
+      importance: high
+      pl: "„Ja trzymam łóżka, wędrowcze, a ostatnio tracę to, co w nich śpi” — mówi karczmarka. — „Czwarta noc przychodzi i bierze. Zabij strzygę i przynieś mi jej ząb — zapłacę srebrem i wiecznym milczeniem o twoim rachunku.”"
+  wosk_na_handel:
+    - weight: 1
+      importance: high
+      pl: "Miłosz waży pustą szalkę. „Grobowy wosk, przyjacielu. Świecarze w górze rzeki płacą potrójnie i o nic nie pytają. Martwiaki pod kurhanami noszą go jak drugą skórę — zeskrob trochę z któregoś i obaj wyjdziemy na swoje.”"
+    - weight: 1
+      importance: high
+      pl: "„Zlecenie” — mówi handlarz, smakując słowo. — „Grobowy wosk, jedna porządna bryłka. Z martwiaka, spod kurhanów. Nie opowiadaj mi, jak poszło; tylko nie przynoś ciepłego.”"
+
+errand_completed:
+  syn_mlynarza:
+    - weight: 1
+      importance: high
+      pl: "Bogusz bierze łuskę w obie ręce, jak człowiek bierze chleb po złej zimie. „To znaczy, że woda to tylko woda.” Odlicza {reward} denarów i nie wyciera twarzy, póki nie odwrócisz wzroku."
+  kadzielnica_kaplicznika:
+    - weight: 1
+      importance: high
+      pl: "Świętosław zawiesza kadzielnicę na łańcuchu i buja nią raz, pustą. „Pamięta” — mówi z zadowoleniem i wciska ci {reward} denarów, jakby to ty robił mu łaskę. Bo robiłeś."
+  wilki_przy_mielerzach:
+    - weight: 1
+      importance: high
+      pl: "Radzim obraca kieł raz i bez słowa przybija go nad drzwiami. Potem, bo kuźnia ma swoje prawa, odlicza ci na dłoń {reward} denarów — pełną wagą, bez pośpiechu."
+  czwarta_noc:
+    - weight: 1
+      importance: high
+      pl: "Dobrava unosi ząb pod światło ognia i kiwa głową temu, co w nim widzi. „Czwarte noce to teraz po prostu noce.” Na szynkwas spada {reward} denarów, a następne piwo to już wyłącznie jej sprawa."
+  wosk_na_handel:
+    - weight: 1
+      importance: high
+      pl: "Miłosz waży grobowy wosk, wącha i nie pyta. „Przyjemność robić uczciwy handel” — mówi zupełnie bez ironii i odlicza {reward} denarów."
+
+# Oznajmienie (M10 §4): raz, przy pierwszym kroku biegu po tym, jak los
+# rozstrzygnął się za sceną. Wieś zmieniła się, kiedy było po tobie.
+village_fate:
+  mlyn_pusty:
+    - weight: 1
+      importance: high
+      pl: "Młyńskie koło stoi nieruchomo na strumieniu. Młyn stoi teraz pusty — Bogusz czekał na wieść, że woda to tylko woda, wieść nie przyszła, a któregoś ranka wieś obudziła się na otwarte drzwi i mąkę siwiejącą na kamieniach."
+  ciemna_kapliczka:
+    - weight: 1
+      importance: high
+      pl: "Nad kapliczką nie ma dymu i żaden nie nadchodzi. Kadzielnica została pod kurhanami; kapliczka trzyma teraz gołe kamienne ramiona, a wieś mija ją szybciej niż kiedyś."
+  zimna_kuznia:
+    - weight: 1
+      importance: high
+      pl: "Kuźnia jest zimna i zamieciona do czysta, co jest gorsze niż zimna i porzucona. Radzim nie doczekał się, aż wilki odejdą od jego mielerzy — spakował młoty i ruszył do miasta, gdzie ostrza przyjeżdżają wozem."

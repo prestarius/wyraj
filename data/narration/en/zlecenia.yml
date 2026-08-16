@@ -1,0 +1,76 @@
+# M10 "Zlecenia": the asks, spoken once, and the hand-ins. Heard = taken.
+
+errand_heard:
+  syn_mlynarza:
+    - weight: 1
+      importance: high
+      en: "The młynarz's hands stop pretending to work. \"The utopiec took my Jasiek at the weir. They dragged the pond and found his cap. Kill it — kill it and bring me a scale off its hide, so I know the water is only water again.\""
+    - weight: 1
+      importance: high
+      en: "\"I hear everything the stream says now,\" Bogusz says quietly. \"It took my son under. Bring me a scale from the utopiec's back and I'll pay what a mill can pay.\""
+  kadzielnica_kaplicznika:
+    - weight: 1
+      importance: high
+      en: "Old Świętosław grips your sleeve. \"The shrine-keeper went under the mounds with his kadzielnica and the mounds kept both. Second crypt down, if his ghost has any manners. Bring the censer back — a shrine without smoke is just stone.\""
+    - weight: 1
+      importance: high
+      en: "\"There was smoke over the kapliczka once,\" the dziad says. \"The keeper carried it in a brass kadzielnica, and carried it into the second crypt, and that was that. Fetch it home, wanderer. The gods notice what stops arriving.\""
+  wilki_przy_mielerzach:
+    - weight: 1
+      importance: high
+      en: "Radzim sets down the hammer, which means it matters. \"Wilki at the charcoal pits. No charcoal, no fire, no forge. Thin them out in the puszcza and bring me a fang to nail over the door — the rest of the pack reads that sign well enough.\""
+    - weight: 1
+      importance: high
+      en: "\"My mielerze stand cold,\" the kowal says. \"The burners won't go back while the wilki hold the clearings. A fang on my door-post would talk them home. Bring one.\""
+  czwarta_noc:
+    - weight: 1
+      importance: high
+      en: "Dobrava leans close over the counter. \"Something counts my lodgers' nights. Three it watches, on the fourth a bed goes empty — that's a strzyga's arithmetic. Find her in the puszcza and end the count. Bring the tooth; I'll know it warm.\""
+    - weight: 1
+      importance: high
+      en: "\"I keep beds, wanderer, and lately I keep losing what's in them,\" the karczmarka says. \"The fourth night comes and takes. Kill the strzyga and bring me her tooth — I'll pay in silver, and in never mentioning your tab again.\""
+  wosk_na_handel:
+    - weight: 1
+      importance: high
+      en: "Miłosz weighs an empty scale-pan. \"Grave-wax, friend. The candle-makers upriver pay triple and ask nothing. The martwiaki under the mounds wear it like a second skin — scrape some off one and we both come out ahead.\""
+    - weight: 1
+      importance: high
+      en: "\"A commission,\" the handlarz says, tasting the word. \"Grobowy wosk, one good lump. Off a martwiak, under the kurhany. Don't tell me how it went; just don't bring it warm.\""
+
+errand_completed:
+  syn_mlynarza:
+    - weight: 1
+      importance: high
+      en: "Bogusz takes the scale in both hands, the way a man takes bread after a bad winter. \"So the water is only water.\" He counts out {reward} denary and doesn't wipe his face until you look away."
+  kadzielnica_kaplicznika:
+    - weight: 1
+      importance: high
+      en: "Świętosław hangs the kadzielnica from its chain and swings it once, empty. \"It remembers,\" he says, satisfied, and presses {reward} denary on you as if it were you doing him the favor. It was."
+  wilki_przy_mielerzach:
+    - weight: 1
+      importance: high
+      en: "Radzim turns the fang over once and nails it above the door without a word. Then, because the forge has rules, he counts {reward} denary into your palm — full weight, no hurry."
+  czwarta_noc:
+    - weight: 1
+      importance: high
+      en: "Dobrava holds the tooth up against the firelight and nods at whatever she sees in it. \"Fourth nights are just nights now.\" {reward} denary land on the counter, and the next beer is nobody's business but hers."
+  wosk_na_handel:
+    - weight: 1
+      importance: high
+      en: "Miłosz weighs the grave-wax, sniffs it, and does not ask. \"Pleasure doing honest trade,\" he says, entirely unironically, and counts out {reward} denary."
+
+# The telling (M10 §4): spoken once, at the first step of the run after a
+# fate resolved off-screen. The village changed while you were dead.
+village_fate:
+  mlyn_pusty:
+    - weight: 1
+      importance: high
+      en: "The mill wheel stands still on the stream. The mill stands empty now — Bogusz waited for word that the water was only water, and word never came, and one morning the wieś woke to a door left open and flour going grey on the stones."
+  ciemna_kapliczka:
+    - weight: 1
+      importance: high
+      en: "No smoke over the kapliczka, and none coming. The censer stayed under the mounds; the shrine keeps its stone shoulders bare now, and the wieś walks past it faster than it used to."
+  zimna_kuznia:
+    - weight: 1
+      importance: high
+      en: "The forge is cold and swept clean, which is worse than cold and abandoned. Radzim waited for the wilki to leave his charcoal pits, then packed his hammers and left for a town where edges arrive by cart."

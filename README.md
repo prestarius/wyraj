@@ -9,10 +9,11 @@ leszy, strzyga, utopiec, bies, licho.
 
 ![Wyraj screenshot](docs/screenshot.svg)
 
-**Status:** pre-alpha, and **winnable**. Milestones M0–M9 plus the intro
+**Status:** pre-alpha, and **winnable**. Milestones M0–M10 plus the intro
 ("Próg") are complete: village, forest, marsh, six crypt levels, the Wij
-waiting at the bottom, death, victory, what survives either — and now a
-turning year above it all — fully playable in English and Polish.
+waiting at the bottom, death, victory, what survives either, a turning
+year above it all — and a village that asks things of you and remembers
+whether you did them — fully playable in English and Polish.
 
 ## What makes it different
 
@@ -41,6 +42,14 @@ turning year above it all — fully playable in English and Polish.
   the fern flowers once on Noc Kupały, Dożynki feeds you free, and on
   Dziady the dead walk under truce and will *talk*. Your seed decides
   which day the story starts on. The południca only exists at midday.
+- **A village that remembers — "Zlecenia".** Rumors grow teeth: each run
+  the wieś asks one to three things of you — the miller's son taken by
+  the utopiec, the dead shrine-keeper's censer two crypts down, wolves
+  at the smith's charcoal pits. Hearing an ask binds it; proof is a
+  trophy carried back; pay lands in the banked wallet and in named
+  villagers' memory of you, which opens the trader's good shelf. Ignore
+  an ask across enough deaths and it resolves without you: the mill
+  empties, the forge goes cold, and the wieś you return to is smaller.
 - **An ending in the dark — "Dno".** Below the last collapsed ceiling
   there is no crane home, sight shrinks to a single tile, and the Wij
   lies in his stone cradle while grave-servants labor to lift his lids.
@@ -125,8 +134,10 @@ Design specs: `docs/WYRAJ_PROJECT.md` (core game),
 `docs/WYRAJ_M6_POWROTY.md` (meta-progression),
 `docs/WYRAJ_PROG_SPEC.md` (intro & onboarding),
 `docs/WYRAJ_M7_SYLWETKA.md` (character pane & quickslots),
-`docs/WYRAJ_ROADMAP_M8PLUS.md` (what comes next: an ending, the wheel
-of the year, errands, voices, modding);
+`docs/WYRAJ_M8_DNO.md` (the ending), `docs/WYRAJ_M9_KOLO_ROKU.md`
+(time, weather, festivals), `docs/WYRAJ_M10_ZLECENIA.md` (errands
+and the village that remembers),
+`docs/WYRAJ_ROADMAP_M8PLUS.md` (what comes next: voices, modding);
 roadmap and status: `docs/IMPLEMENTATION_PLAN.md`.
 
 ## License

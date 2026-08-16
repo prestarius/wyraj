@@ -50,6 +50,24 @@ class DziadMemory(BaseModel):
     unlocked_stock_tiers: list[int] = [1]
 
 
+class VillagerMemory(BaseModel):
+    """A named villager's memory of this soul (M10 §3), keyed by role."""
+
+    model_config = ConfigDict(extra="allow")
+    reputation: int = 0
+    errands_done: int = 0
+    errands_failed: int = 0
+
+
+class VillageState(BaseModel):
+    """The village across deaths (M10 §4): patience counters and what came to pass."""
+
+    model_config = ConfigDict(extra="allow")
+    fates: dict[str, int] = {}  # fate flag → ignored-run count
+    resolved: list[str] = []  # flags that have come to pass, forever
+    announced: list[str] = []  # flags the player has been told about
+
+
 class Codex(BaseModel):
     model_config = ConfigDict(extra="allow")
     known: dict[str, str] = {}  # monster key → unknown|glimpsed|partial|full
@@ -80,6 +98,8 @@ class MetaState(BaseModel):
     dziad: DziadMemory = Field(default_factory=DziadMemory)
     codex: Codex = Field(default_factory=Codex)
     unlocks: Unlocks = Field(default_factory=Unlocks)
+    villagers: dict[str, VillagerMemory] = {}
+    village: VillageState = Field(default_factory=VillageState)
     achievements: dict[str, int] = {}
     prologue_seen: bool = False
     szept_seen: list[str] = []

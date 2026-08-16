@@ -112,6 +112,8 @@ def save_game(game: Game, path: Path | None = None) -> Path:
         "wij_phase": getattr(game, "wij_phase", "buried"),
         "wij_lift": getattr(game, "wij_lift", 0),
         "wij_respawn": getattr(game, "_wij_respawn", 12),
+        "errands": getattr(game, "errands", {}),
+        "fates_announced": getattr(game, "_fates_announced", False),
         "player": game.player,
         "rng": game.rng.get_states(),
         "levels": {str(depth): _encode_map(m) for depth, m in game.levels.items()},
@@ -187,9 +189,13 @@ def load_game(path: Path | None = None) -> Game | None:
     game.quickslot_auto_refill = True  # the config knob is re-applied by the app
     game.epithets_catalog = load_epithets()
     # M8 "Dno" run state
+    from wyraj.content.errands import load_errands
     from wyraj.core.game import MAX_DEPTH, WIJ_RESPAWN_TURNS, _level_seed
     from wyraj.procgen.vault import generate_vault
 
+    game.errands_catalog = load_errands()
+    game.errands = dict(payload.get("errands", {}))
+    game._fates_announced = payload.get("fates_announced", False)
     game.glebiej = payload.get("glebiej", False)
     game.kupala_bloomed = payload.get("kupala_bloomed", False)
     game.victory = False

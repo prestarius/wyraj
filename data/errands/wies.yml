@@ -1,0 +1,54 @@
+# Errand templates (M10 "Zlecenia" §1). 1-3 are drawn per run, at most one
+# per giver, weighted, deterministic per (seed, meta). Rewards are paid into
+# the banked wallet; reputation goes to meta.villagers by giver role.
+# A fate is the village flag that resolves after `patience` ignored runs.
+
+syn_mlynarza:
+  giver: mlynarz
+  kind: hunt
+  target: utopiec
+  proof: utopcowa_luska
+  depth: 2
+  reward: { denary: 70, reputation: 1 }
+  patience: 3
+  fate: mlyn_pusty
+  weight: 3
+
+kadzielnica_kaplicznika:
+  giver: gossip
+  kind: fetch
+  target: kadzielnica
+  depth: 4
+  reward: { denary: 90, reputation: 1 }
+  patience: 3
+  fate: ciemna_kapliczka
+  weight: 2
+
+wilki_przy_mielerzach:
+  giver: kowal
+  kind: hunt
+  target: wilk
+  proof: wilczy_kiel
+  depth: 1
+  reward: { denary: 45, reputation: 1 }
+  patience: 3
+  fate: zimna_kuznia
+  weight: 3
+
+czwarta_noc:
+  giver: innkeeper
+  kind: hunt
+  target: strzyga
+  proof: zab_strzygi
+  depth: 1
+  reward: { denary: 80, reputation: 1 }
+  weight: 2
+
+wosk_na_handel:
+  giver: trader
+  kind: hunt
+  target: martwiak
+  proof: grobowy_wosk
+  depth: 3
+  reward: { denary: 55, reputation: 1 }
+  weight: 2

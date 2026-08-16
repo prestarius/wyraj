@@ -147,6 +147,22 @@ one new save field is `kupala_bloomed`. This is also why the golden
 transcript was regenerated exactly once at M9: a breathing calendar
 necessarily enters the event log.
 
+## The village that remembers (M10 "Zlecenia")
+
+Errands are assembled once per run — a weighted 1–3 draw from
+`data/errands/` seeded by `sha256(seed, "errands")` and filtered by the
+meta's resolved village fates, so the same seed with the same meta always
+asks the same things. Assembly is silent; the world publishes nothing
+until a villager is bumped (`ErrandHeard`, heard = taken). Fetch targets
+are stamped into their level from their own hash-seeded RNG so worldgen
+draws stay untouched. Failure is settled where death already writes meta
+(`apply_death_to_meta`): heard-but-undone feeds per-villager memory and
+fate counters, and a fate that reaches its patience resolves once,
+forever — announced on the next run's first step in the wieś and never
+again. All of it rides existing machinery: trophies as proof, the banked
+wallet as pay, `Variant.tags` as rumor escalation, `MetaTransaction` as
+the audit trail.
+
 ## The ending (M8 "Dno")
 
 The Wij is engine-honest: a lifting meter on `Game`, sługa monsters with a

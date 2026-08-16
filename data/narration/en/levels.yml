@@ -11,3 +11,15 @@ level_changed:
       en: "You climb back toward the living air, and the weight of the earth slides off your shoulders."
     - weight: 1
       en: "Up the worn steps, out from under the mound. Even the grey sky of the puszcza feels generous now."
+
+waited:
+  - weight: 3
+    en: "You hold still and let the turn pass. The world, unimpressed, keeps moving."
+  - weight: 2
+    en: "You wait — listening, counting, breathing. Nothing asks you to stop."
+  - weight: 2
+    tags: [darkness]
+    en: "You stand in the dark and let it get used to you."
+  - weight: 2
+    tags: [player_dying]
+    en: "You hold still, mostly because holding still is what you have left."

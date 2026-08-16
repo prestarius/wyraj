@@ -19,6 +19,7 @@ from wyraj.content.economy import (
     load_village_shop,
 )
 from wyraj.content.epithets import load_epithets
+from wyraj.content.errands import ErrandDef, load_errands
 from wyraj.content.hooks import HookDef, load_hooks
 from wyraj.content.items import ItemDef, load_items
 from wyraj.content.loot import load_loot_tables
@@ -99,6 +100,8 @@ from wyraj.core.events import (
     DziadRecognized,
     EntityDied,
     EntityRef,
+    ErrandCompleted,
+    ErrandHeard,
     EventBus,
     FestivalDawned,
     ItemBought,
@@ -129,6 +132,8 @@ from wyraj.core.events import (
     TalkedTo,
     TalkedToDead,
     TurnEnded,
+    VillageFateResolved,
+    Waited,
     WeaponNamed,
     WeaponRecognized,
     WeatherChanged,
@@ -144,7 +149,7 @@ from wyraj.core.refs import ref_for
 from wyraj.core.rng import RngStreams
 from wyraj.core.scheduler import TurnScheduler
 from wyraj.core.systems import ai, combat, hunger, items, movement, quickslots, status
-from wyraj.persistence.meta import MetaState, StashedItem, save_meta
+from wyraj.persistence.meta import MetaState, StashedItem, VillagerMemory, save_meta
 from wyraj.procgen.bagna import generate_bagna
 from wyraj.procgen.forest import generate_forest
 from wyraj.procgen.kurhany import generate_kurhan
@@ -180,6 +185,12 @@ RITE_TURNS = 6  # zamknięcie powiek: turns of pressing
 RITE_ITEM = "sol_swiecona"  # consumed the moment the rite begins
 GLEBIEJ_SPAWN_BONUS = 2
 GLEBIEJ_LOOT_BONUS = 1
+
+# M10 "Zlecenia" tuning (spec §1, §4)
+ERRANDS_MIN = 1
+ERRANDS_MAX = 3
+# A giver leaves the wieś when their chain's fate resolves (M10 §4).
+ROLE_FATES = {"mlynarz": "mlyn_pusty", "kowal": "zimna_kuznia"}
 
 # M9 "Koło Roku" tuning (spec §2)
 SURFACE_PHASE_FOV = {"swit": 6, "dzien": 8, "zmierzch": 6, "noc": 5}
@@ -237,6 +248,11 @@ class Game:
         self.meta_autosave = meta_autosave
         self.dziad_shop = load_dziad_shop()
         self.offerings = load_offerings()
+        # M10 "Zlecenia": what the wieś asks of this run. Assembly is silent —
+        # an errand exists in the world before it exists in the log (spec §1).
+        self.errands_catalog = load_errands()
+        self.errands: dict[str, str] = self._assemble_errands()  # key → offered|heard|proof|done
+        self._fates_announced = False
         # Knowledge survives death (M6 §8.1): pre-known kinds are not
         # re-discovered, and their entries open at their earned tier.
         self.codex_seen |= set(self.meta.codex.known)
@@ -286,6 +302,8 @@ class Game:
         )
 
         for role, vx, vy in layout.npc_posts:
+            if ROLE_FATES.get(role, "") in self.meta.village.resolved:
+                continue  # they left with their fate (M10 §4)
             self.spawn_villager(role, vx, vy)
         for kind, sx, sy in layout.special_posts:
             self._spawn_special(kind, sx, sy)
@@ -310,6 +328,17 @@ class Game:
             "old Świętosław",
             "The village dziad. He remembers the woods from before the woods went wrong.",
         ),
+        "kowal": (
+            "kowal",
+            "Radzim the kowal",
+            "The smith. He talks the way he hammers — seldom, and only where it bends.",
+        ),
+        "mlynarz": (
+            "mlynarz",
+            "Bogusz the młynarz",
+            "The miller, in from his mill on the stream outside the palisade. "
+            "Flour on his sleeves, and lately something heavier on the rest of him.",
+        ),
     }
 
     def spawn_villager(self, role: str, x: int, y: int) -> Entity:
@@ -323,12 +352,30 @@ class Game:
             Lore(key=key, name=name, description=description),
         )
         if role == "trader":
+            # A resolved fate thins the shelves for good (M10 §4).
+            removed = {
+                item
+                for fate, keys in self.village_shop.fate_removals.items()
+                if fate in self.meta.village.resolved
+                for item in keys
+            }
             stock: list[Entity] = []
             for entry in self.village_shop.guaranteed:
+                if entry.item in removed:
+                    continue
                 stock += [self.spawn_stock_item(entry.item) for _ in range(entry.count)]
             for entry in self.village_shop.rolls:
+                if entry.item in removed:
+                    continue
                 if self.rng.loot.randint(1, 100) <= entry.chance:
                     stock += [self.spawn_stock_item(entry.item) for _ in range(entry.count)]
+            # The good shelf (M10 §3): no RNG draws — meta-gated guarantees
+            # appended after the rolls, so existing stock stays identical.
+            total_rep = sum(m.reputation for m in self.meta.villagers.values())
+            for tier in self.village_shop.reputation_tiers:
+                if total_rep >= tier.reputation:
+                    for entry in tier.items:
+                        stock += [self.spawn_stock_item(entry.item) for _ in range(entry.count)]
             self.world.add(entity, Inventory(items=tuple(stock)))
         return entity
 
@@ -522,6 +569,7 @@ class Game:
             )
         self._populate_level(depth, random.Random(level_seed ^ 0xA5A5))
         self._maybe_spawn_dziad(depth)
+        self._stamp_errand_items(depth)
 
     def spawn_item(self, definition: ItemDef, x: int, y: int, depth: int = 0) -> Entity:
         entity = self.world.create(
@@ -602,6 +650,7 @@ class Game:
         player's turn again (or the player is dead)."""
         if self.game_over:
             return
+        self._announce_fates()
         self._tick_rite(action)
         flight_completed = False
         if not self.game_over:  # a completed rite ends the run mid-step
@@ -680,6 +729,7 @@ class Game:
                         )
                         if villager.role == "dziad_wedrowny":
                             self._dziad_greets_weapon()
+                        self._errand_talk(villager.role, target)
                     else:
                         target_lore = self.world.get(target, Lore)
                         if (
@@ -767,7 +817,11 @@ class Game:
                 if entity is not None:
                     self._use_quickslot(index, entity)
             case Wait():
-                pass
+                if (
+                    self.world.get(self.player, Channeling) is None
+                    and self.world.get(self.player, Rite) is None
+                ):
+                    self.bus.publish(Waited(actor=ref_for(self.world, self.player)))
 
     def _advance_until_player_turn(self) -> None:
         if movement.level_of(self.world, self.player) != self.depth:
@@ -819,6 +873,12 @@ class Game:
             self._raise_codex_tier(event.entity.key, "full" if kills >= 3 else "partial")
         if event.position is None:
             return
+        for key, state in sorted(self.errands.items()):
+            errand = self.errands_catalog[key]
+            if state == "heard" and errand.kind == "hunt" and errand.target == event.entity.key:
+                # The ask makes the proof certain, once (M10 §2).
+                self.errands[key] = "proof"
+                self.spawn_item(self.items_catalog[errand.proof], *event.position, event.depth)
         spec = self.drops.get(event.entity.key)
         if spec is None:
             return
@@ -1198,6 +1258,7 @@ class Game:
         counters = self.meta.achievements
         counters["runs"] = counters.get("runs", 0) + 1
         counters["deepest_level"] = max(counters.get("deepest_level", 0), self.max_depth_reached)
+        self._settle_errands_into_meta()
         if self.death_by_key:
             key = f"{self.death_by_key}_deaths"
             counters[key] = counters.get(key, 0) + 1
@@ -1219,6 +1280,120 @@ class Game:
         self.bus.publish(MetaTransaction(kind="death", detail=self.death_cause or ""))
         self._save_meta()
         return newly_unlocked
+
+    # ---- M10 "Zlecenia" ---------------------------------------------------
+
+    def _assemble_errands(self) -> dict[str, str]:
+        """Pure weighted draw of 1-3 errands from (seed, meta) — no shared RNG
+        streams, at most one ask per giver (M10 §1)."""
+        resolved = set(self.meta.village.resolved)
+        eligible = [
+            d
+            for d in sorted(self.errands_catalog.values(), key=lambda d: d.key)
+            if (not d.fate or d.fate not in resolved)
+            and ROLE_FATES.get(d.giver, "") not in resolved
+        ]
+        digest = hashlib.sha256(f"{self.seed}:errands".encode()).digest()
+        rng = random.Random(int.from_bytes(digest[:8], "big"))
+        count = rng.randint(ERRANDS_MIN, ERRANDS_MAX)
+        chosen: list[ErrandDef] = []
+        while eligible and len(chosen) < count:
+            pick = rng.choices(eligible, weights=[d.weight for d in eligible])[0]
+            chosen.append(pick)
+            eligible = [d for d in eligible if d.giver != pick.giver]
+        return {d.key: "offered" for d in sorted(chosen, key=lambda d: d.key)}
+
+    def _errand_talk(self, role: str, villager: Entity) -> None:
+        """Bump flow (M10 §2): first bump speaks the ask (heard = taken);
+        a later bump with the proof in hand completes it."""
+        giver_ref = ref_for(self.world, villager)
+        for key in list(self.errands):
+            errand = self.errands_catalog[key]
+            if errand.giver != role:
+                continue
+            status = self.errands[key]
+            if status in ("heard", "proof"):
+                self._try_complete_errand(errand, giver_ref)
+            elif status == "offered":
+                self.errands[key] = "heard"
+                self.bus.publish(ErrandHeard(errand=key, giver=giver_ref))
+
+    def _try_complete_errand(self, errand: ErrandDef, giver_ref: EntityRef) -> None:
+        inventory = self.world.get(self.player, Inventory) or Inventory()
+        proof = next(
+            (
+                e
+                for e in inventory.items
+                if (item := self.world.get(e, Item)) is not None and item.key == errand.proof_item
+            ),
+            None,
+        )
+        if proof is None:
+            return
+        # The giver keeps the proof; the reward lands in the banked wallet
+        # (villagers live at depth 0 — village money is meta money).
+        remaining = tuple(i for i in inventory.items if i != proof)
+        self.world.add(self.player, Inventory(items=remaining))
+        self.world.destroy(proof)
+        self.errands[errand.key] = "done"
+        self.meta.currency.denary += errand.reward.denary
+        memory = self.meta.villagers.setdefault(errand.giver, VillagerMemory())
+        memory.reputation += errand.reward.reputation
+        memory.errands_done += 1
+        self.bus.publish(
+            ErrandCompleted(errand=errand.key, giver=giver_ref, reward=errand.reward.denary)
+        )
+        self.bus.publish(
+            MetaTransaction(kind="errand_done", detail=f"{errand.key}:+{errand.reward.denary}")
+        )
+        self._save_meta()
+
+    def _announce_fates(self) -> None:
+        """The telling (M10 §4): a fate resolved between runs is spoken once,
+        on the first step of the next run, standing in the changed wieś."""
+        if self._fates_announced:
+            return
+        self._fates_announced = True
+        if self.depth != 0:
+            return
+        told = False
+        for fate in self.meta.village.resolved:
+            if fate not in self.meta.village.announced:
+                self.meta.village.announced.append(fate)
+                self.bus.publish(VillageFateResolved(fate=fate))
+                told = True
+        if told:
+            self._save_meta()
+
+    def _settle_errands_into_meta(self) -> None:
+        """Heard-but-undone feeds the giver's memory and the fate counters
+        (M10 §4). Called when a run ends, before the final meta save."""
+        for key, state in sorted(self.errands.items()):
+            if state not in ("heard", "proof"):
+                continue
+            errand = self.errands_catalog[key]
+            memory = self.meta.villagers.setdefault(errand.giver, VillagerMemory())
+            memory.errands_failed += 1
+            self.bus.publish(MetaTransaction(kind="errand_failed", detail=key))
+            if not errand.fate or errand.fate in self.meta.village.resolved:
+                continue
+            count = self.meta.village.fates.get(errand.fate, 0) + 1
+            self.meta.village.fates[errand.fate] = count
+            if count >= errand.patience:
+                self.meta.village.resolved.append(errand.fate)
+                self.bus.publish(MetaTransaction(kind="village_fate", detail=errand.fate))
+
+    def _stamp_errand_items(self, depth: int) -> None:
+        """Fetch targets are stamped into their depth at generation (M10 §1) —
+        own hash-seeded RNG, so level population draws stay untouched."""
+        for key, state in sorted(self.errands.items()):
+            errand = self.errands_catalog[key]
+            if errand.kind != "fetch" or errand.depth != depth or state == "done":
+                continue
+            digest = hashlib.sha256(f"{self.seed}:errand_item:{key}".encode()).digest()
+            rng = random.Random(int.from_bytes(digest[:8], "big"))
+            x, y = rng.choice(self.levels[depth].floor_tiles())
+            self.spawn_item(self.items_catalog[errand.target], x, y, depth)
 
     def _mark_dziad_trade(self, trader: Entity) -> None:
         villager = self.world.get(trader, Villager)
@@ -1493,6 +1668,8 @@ class Game:
     def apply_victory_to_meta(self) -> None:
         from wyraj.persistence.meta import VictoryRecord
 
+        # Even a sealed Wij doesn't excuse a broken word (M10 §4).
+        self._settle_errands_into_meta()
         self.meta.victories.append(
             VictoryRecord(
                 origin=self.origin.key,

@@ -10,11 +10,12 @@ from wyraj.core.map import GameMap, Tile
 
 # '#' hut wall, '.' ground, '>' path into the puszcza,
 # 'K' karczmarka (innkeeper), 'T' handlarz (trader), 'G' dziad (gossip),
-# 'S' skrzynia (stash chest), 'P' żerdź (crane perch),
-# 'R' Perun shrine, 'W' Weles shrine, '@' player start.
+# 'F' kowal (smith, at his open-air forge), 'M' młynarz (miller, in from his
+# mill outside the palisade), 'S' skrzynia (stash chest), 'P' żerdź (crane
+# perch), 'R' Perun shrine, 'W' Weles shrine, '@' player start.
 _TEMPLATE = """
 ##############################
-#............................#
+#.M..........................#
 #..#####...#####....#####....#
 #..#...#...#...#....#...#....#
 #..#.K.#...#.T.#....#...#....#
@@ -28,7 +29,7 @@ _TEMPLATE = """
 #...#.S..#...................#
 #...#....#..................>#
 #...##.###...................#
-#............................#
+#.F..........................#
 ##############################
 """
 
@@ -41,7 +42,7 @@ class VillageLayout:
     special_posts: tuple[tuple[str, int, int], ...] = ()  # (kind, x, y)
 
 
-_ROLES = {"K": "innkeeper", "T": "trader", "G": "gossip"}
+_ROLES = {"K": "innkeeper", "T": "trader", "G": "gossip", "F": "kowal", "M": "mlynarz"}
 _SPECIALS = {"S": "skrzynia", "P": "perch", "R": "shrine_perun", "W": "shrine_weles"}
 
 

@@ -1,15 +1,24 @@
 talked_to:
   innkeeper:
     - weight: 2
+      tags: [known_face]
+      pl: "Dobrava stawia przed tobą miskę, zanim zdążysz poprosić. „Siadaj. Ten dom ma u ciebie dług, a ten dom płaci długi, zanim się o nie upomną.”"
+    - weight: 2
       pl: "Dobrava, karczmarka, mierzy cię wzrokiem jak zmokłego psa na progu. „Jest łóżko i jest ogień, wędrowcze. Odpoczywaj, póki odpoczynek darmowy.”"
     - weight: 1
       pl: "„Zjedz coś” — mówi karczmarka tonem kobiety, która grzebała już takich, co nie zjedli."
   trader:
     - weight: 2
+      tags: [known_face]
+      pl: "Miłosz nie sięga po wagę, kiedy podchodzisz. „Dla ciebie? Ceny uczciwe. Tylko nie mów wsi, że trzymam dwa cenniki.”"
+    - weight: 2
       pl: "Miłosz, handlarz, rozkłada towar szerokim gestem. „Rzecz za rzecz, przyjacielu. Moneta jest dla miast; tu, na końcu świata, płaci się tym, co użyteczne.”"
     - weight: 1
       pl: "Handlarz zerka na twój tobołek. „Wszystko ma cenę. Tutaj ceną bywa zwykle to, czego ci później zabraknie.”"
   gossip:
+    - weight: 2
+      tags: [known_face]
+      pl: "Stary Świętosław nie mówi już do ciebie „wędrowcze”. „Wieś gada o tobie pod kościelnymi drzwiami” — powiada. — „Pierwszy raz gada po twojej stronie.”"
     - weight: 2
       pl: "Stary Świętosław opiera się na kiju. „Strzyga liczy twoje noce, wędrowcze. Trzy patrzy, czwartej przychodzi. Pilnuj ognia.”"
     - weight: 2
@@ -24,6 +33,46 @@ talked_to:
       pl: "„Pod kurhanami ciemność jest starsza od ognia” — szepcze stary. „Weź gromnicę. Weź dwie.”"
     - weight: 1
       pl: "„Światełka nad bagnami to dusze” — powiada. „Czyje? Idź za nimi, to się dowiesz. Nie? Mądrze.”"
+    - weight: 3
+      tags: [errand_syn_mlynarza]
+      pl: "„Bogusz nie sypia” — mówi dziad. „Chodzi nad jaz i z powrotem, co noc. Utopiec trzyma się mokrego mchu, pamiętaj — zmuś go, żeby wyszedł do ciebie na suche.”"
+    - weight: 3
+      tags: [errand_kadzielnica_kaplicznika]
+      pl: "Świętosław stuka kijem, dwa razy. „Kadzielnica, wędrowcze. Druga krypta. Umarłym niepotrzebna, bogom jej brak, a między tymi dwiema prawdami człowiek mógłby zrobić jedną rzecz słuszną.”"
+    - weight: 3
+      tags: [errand_wilki_przy_mielerzach]
+      pl: "„Radzim o ciebie pyta” — mówi stary. „Nie słowami — pyta tym, jak trzyma palenisko przygaszone. Wilków najmniej w samo południe, jeśli zamierzasz dotrzymać słowa.”"
+    - weight: 3
+      tags: [errand_czwarta_noc]
+      pl: "„Dobrava liczy teraz gości na palcach” — mruczy dziad. „Strzyga patrzy zza linii drzew. Najpierw ogień, potem ząb — ta kolejność działa.”"
+    - weight: 3
+      tags: [errand_wosk_na_handel]
+      pl: "„Robisz Miłoszowi grobowe sprawunki” — mówi Świętosław bez podziwu. „Jak będziesz skrobać wosk, pamiętaj o soli. Martwiak o niej pamięta i na tym cała rzecz polega.”"
+    - weight: 3
+      tags: [fate_mlyn_pusty]
+      pl: "„Młyn stoi teraz pusty” — mówi Świętosław i zostawia to tak, bo dodać nie ma czego, a na czyje słowo młyn czekał, wiecie oboje."
+    - weight: 3
+      tags: [fate_ciemna_kapliczka]
+      pl: "„Nad kapliczką nie ma dymu” — mówi dziad, nie patrząc na ciebie. „Bogowie też prowadzą rachunki, wędrowcze. Porządniejsze od moich.”"
+    - weight: 3
+      tags: [fate_zimna_kuznia]
+      pl: "„Od teraz noś przy sobie osełkę” — mówi Świętosław. „Kuźnia zimna. Radzim zmęczył się obietnicami — naszymi i twoimi.”"
+  kowal:
+    - weight: 2
+      tags: [known_face]
+      pl: "Radzim wita cię tak, jak wita dobre żelazo — po imieniu i robiąc miejsce przy palenisku. U kowala to jest święto."
+    - weight: 2
+      pl: "Radzim, kowal, podnosi wzrok znad kowadła, uznaje, że nie jesteś ani robotą, ani pogodą, i kiwa głową. Raz. Więcej mało kto dostaje."
+    - weight: 1
+      pl: "Kowal obraca podkowę w węglach. „Jak ci trzeba ostrza, to sprzedam. Jak rady — ostrze tańsze, a warte więcej.”"
+  mlynarz:
+    - weight: 2
+      tags: [known_face]
+      pl: "Bogusz prostuje się na twój widok i przez jedno uderzenie serca znów ma w twarzy młynarza, nie tylko ojca. „Ty” — mówi, a znaczy to: dziękuję."
+    - weight: 2
+      pl: "Bogusz, młynarz, stoi z mąką na rękawach i oczami przy bramie. Młynarzy liczono tu kiedyś do bogatych. On już niczego nie liczy."
+    - weight: 1
+      pl: "„Strumień dalej obraca koło” — mówi młynarz, do ciebie albo do siebie. „Koło nie pyta, co się stało. To w kole najlepsze.”"
 
 rested:
   - weight: 2

@@ -16,12 +16,13 @@ from textual.widgets import Static
 
 from wyraj.content.bestiary import load_bestiary
 from wyraj.content.economy import load_drops, load_prices
+from wyraj.content.errands import load_errands
 from wyraj.content.intro import load_title_lines
 from wyraj.content.items import load_items
 from wyraj.persistence.config import load_config, save_config
 from wyraj.persistence.history import recent_runs
 from wyraj.persistence.meta import MetaState
-from wyraj.ui.codex_view import build_codex_text
+from wyraj.ui.codex_view import build_codex_text, build_errands_text
 from wyraj.ui.i18n import current_language, t
 
 BANNER = """\
@@ -46,27 +47,47 @@ class _Bird:
 
 
 class CodexMenuScreen(ModalScreen[None]):
-    BINDINGS: ClassVar = [("escape", "close", "Close"), ("c", "close", "Close")]
+    BINDINGS: ClassVar = [
+        ("escape", "close", "Close"),
+        ("c", "close", "Close"),
+        ("tab", "toggle_tab", "Zlecenia"),
+    ]
 
     def __init__(self, meta: MetaState) -> None:
         super().__init__()
         self.meta = meta
+        self.show_errands = False
 
-    def compose(self) -> ComposeResult:
+    def _text(self) -> Text:
+        if self.show_errands:
+            # No Game here: the title view reads from meta alone (M10 §5).
+            return build_errands_text(
+                catalog=load_errands(),
+                run_errands=None,
+                meta=self.meta,
+                bestiary=load_bestiary(),
+                items_catalog=load_items(),
+            )
         prices = load_prices()
 
         def sell_price(key: str) -> int:
             return max(1, round(prices.buy.get(key, 10) * prices.sell_ratio))
 
-        text = build_codex_text(
+        return build_codex_text(
             bestiary=load_bestiary(),
             items_catalog=load_items(),
             drops=load_drops(),
             sell_price_for=sell_price,
             tier_of=lambda key: self.meta.codex.known.get(key, "unknown"),
         )
+
+    def compose(self) -> ComposeResult:
         with Middle(), Center():
-            yield Static(text)
+            yield Static(self._text())
+
+    def action_toggle_tab(self) -> None:
+        self.show_errands = not self.show_errands
+        self.query_one(Static).update(self._text())
 
     def action_close(self) -> None:
         self.dismiss(None)

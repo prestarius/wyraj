@@ -223,15 +223,21 @@ M8 → M9 → M10 → M11 → M12; M11 may slide earlier (no prerequisites past 
   US 12.4 the four festival rituals (half-burn, fern flower, free rest,
   the talkable dead + Peaceful truce); US 12.5 pane calendar line + sky
   tints; US 12.6 first-night szept, docs, sim floor re-verified (2/30).
-- **Epic 13 — M10 "Zlecenia"** (Errands) — **spec drafted 2026-08-16, awaiting
-  go/no-go** — spec `WYRAJ_M10_ZLECENIA.md` (open decisions 31–35).
-  US 13.1 errand model & pure seeded assembly (data/errands, 1–3 per run);
-  US 13.2 two new villagers (Radzim kowal, Bogusz młynarz); US 13.3 the loop
-  (guaranteed proof drops, fetch stamping, bump hand-in, banked rewards);
-  US 13.4 `meta.villagers` reputation + rep-gated village stock; US 13.5
-  fates — patience counters in `apply_death_to_meta`, three village flags,
-  next-run announcement; US 13.6 codex Zlecenia tab, gossip escalation,
-  docs, sims.
+- **Epic 13 — M10 "Zlecenia"** (Errands) — **DONE 2026-08-16** — spec
+  `WYRAJ_M10_ZLECENIA.md`, built with all spec defaults (decisions 31–35).
+  US 13.1 errand model & pure seeded assembly (data/errands, 1–3 per run,
+  one per giver, silent); US 13.2 Radzim kowal + Bogusz młynarz (golden
+  regenerated once — entity-id shift only, the walk bumps no one); US 13.3
+  the loop (heard = taken on bump, guaranteed proof at the corpse, fetch
+  stamping via hash-seeded RNG, banked rewards + `errand_done`); US 13.4
+  `meta.villagers` + rep-gated good shelf + known_face recognition; US 13.5
+  fates (patience 3 in `apply_death_to_meta`/victory, three flags with
+  spawn/stock/narration consequences, told once ever on the next run's
+  first step, morgue lines); US 13.6 codex Zlecenia tab (in-run + meta-only
+  title view), gossip escalation variants, docs, sims (dno sim unchanged
+  at 2/30; meta sim green). Deviation noted: the cold-forge "arrival line"
+  is carried by the fate announcement + gossip variants, not a separate
+  arrival rule.
 - **Epic 14 — M11 "Głosy"** (Voices): optional-dependency AudioSystem on the
   event bus — ambient beds, sparse SFX, creature voicing at a distance;
   backend choice (pygame.mixer vs miniaudio) to be re-verified at spec time.

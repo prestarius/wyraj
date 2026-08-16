@@ -37,7 +37,7 @@ from wyraj.core.components import (
 from wyraj.core.game import Game
 from wyraj.core.map import Tile
 from wyraj.core.systems.movement import level_of
-from wyraj.ui.codex_view import build_codex_text
+from wyraj.ui.codex_view import build_codex_text, build_errands_text
 from wyraj.ui.i18n import t
 from wyraj.ui.item_info import display_name, stat_suffix
 from wyraj.ui.legend_view import build_legend_text
@@ -576,24 +576,43 @@ class LegendScreen(ModalScreen[None]):
 
 
 class CodexScreen(ModalScreen[None]):
-    """Bestiary codex: folklore entries unlocked by seeing the creature."""
+    """Codex: bestiary folklore plus the Zlecenia ledger (Tab cycles)."""
 
-    BINDINGS: ClassVar = [("escape", "close", "Close"), ("c", "close", "Close")]
+    BINDINGS: ClassVar = [
+        ("escape", "close", "Close"),
+        ("c", "close", "Close"),
+        ("tab", "toggle_tab", "Zlecenia"),
+    ]
 
     def __init__(self, game: Game) -> None:
         super().__init__()
         self.game = game
+        self.show_errands = False
 
-    def compose(self) -> ComposeResult:
+    def _text(self) -> Text:
         game = self.game
-        text = build_codex_text(
+        if self.show_errands:
+            return build_errands_text(
+                catalog=game.errands_catalog,
+                run_errands=game.errands,
+                meta=game.meta,
+                bestiary=game.bestiary,
+                items_catalog=game.items_catalog,
+            )
+        return build_codex_text(
             bestiary=game.bestiary,
             items_catalog=game.items_catalog,
             drops=game.drops,
             sell_price_for=game.sell_price_for,
             tier_of=game.codex_tier,
         )
-        yield Static(text, classes="dialog")
+
+    def compose(self) -> ComposeResult:
+        yield Static(self._text(), classes="dialog")
+
+    def action_toggle_tab(self) -> None:
+        self.show_errands = not self.show_errands
+        self.query_one(Static).update(self._text())
 
     def action_close(self) -> None:
         self.dismiss(None)

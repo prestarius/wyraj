@@ -1,10 +1,16 @@
 shrine_visited:
   perun:
     - weight: 2
+      tags: [fate_ciemna_kapliczka]
+      pl: "Słup Peruna stoi poznaczony bliznami i bez dymu. Żadna kadzielnica nie zabujała tu, odkąd kurhany zatrzymały kadzielnicę kaplicznika, a żelazne gwoździe po cichu rdzewieją."
+    - weight: 2
       pl: "Kapliczka Peruna: dębowy słup poznaczony piorunami, żelazne gwoździe wbite rzędami. Powietrze pachnie burzami, których jeszcze nie było."
     - weight: 1
       pl: "Słup Peruna patrzy w niebo, jak żołnierz patrzy na drogę. Ofiara nie przeszłaby niezauważona."
   weles:
+    - weight: 2
+      tags: [fate_ciemna_kapliczka]
+      pl: "Kamień Welesa leży nisko i bez dymu, wełnę rozplotła pogoda. Bóg niskich miejsc jest cierpliwy wobec umarłych; żywym po prostu trzyma otwartą stronę w rejestrze."
     - weight: 2
       pl: "Kapliczka Welesa przycupnęła nisko, w połowie w cieniu, owinięta wełną i starymi rogami. Bóg zaświatów trzyma tu swoje drzwi — i swój rejestr."
     - weight: 1
