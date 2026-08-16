@@ -22,6 +22,7 @@ VALID_KEYS = {
     "hints",
     "text_speed",
     "quickslots",  # M7: {auto_refill: bool}
+    "audio",  # M11: {enabled: bool, master: float, ambient: float, sfx: float}
 }
 
 

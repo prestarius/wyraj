@@ -9,11 +9,12 @@ leszy, strzyga, utopiec, bies, licho.
 
 ![Wyraj screenshot](docs/screenshot.svg)
 
-**Status:** pre-alpha, and **winnable**. Milestones M0–M10 plus the intro
+**Status:** pre-alpha, and **winnable**. Milestones M0–M11 plus the intro
 ("Próg") are complete: village, forest, marsh, six crypt levels, the Wij
 waiting at the bottom, death, victory, what survives either, a turning
-year above it all — and a village that asks things of you and remembers
-whether you did them — fully playable in English and Polish.
+year above it all, a village that asks things of you and remembers
+whether you did them — and, optionally, a voice — fully playable in
+English and Polish.
 
 ## What makes it different
 
@@ -50,6 +51,13 @@ whether you did them — fully playable in English and Polish.
   villagers' memory of you, which opens the trader's good shelf. Ignore
   an ask across enough deaths and it resolves without you: the mill
   empties, the forge goes cold, and the wieś you return to is smaller.
+- **A voice, if you want one — "Głosy".** `uv sync --extra sound` and the
+  world murmurs: wind in the puszcza, marsh-blubs, near-silence under the
+  mounds, a heartbeat at the bottom; sparse folk-horror SFX (the crane's
+  arrival is the one big sound); and unseen creatures voicing at a
+  distance — you hear the pack before you see it. Sound is a bus listener
+  like the narrator: without the extra the game is byte-identically
+  silent, and it never carries information the narration doesn't.
 - **An ending in the dark — "Dno".** Below the last collapsed ceiling
   there is no crane home, sight shrinks to a single tile, and the Wij
   lies in his stone cradle while grave-servants labor to lift his lids.
@@ -136,8 +144,8 @@ Design specs: `docs/WYRAJ_PROJECT.md` (core game),
 `docs/WYRAJ_M7_SYLWETKA.md` (character pane & quickslots),
 `docs/WYRAJ_M8_DNO.md` (the ending), `docs/WYRAJ_M9_KOLO_ROKU.md`
 (time, weather, festivals), `docs/WYRAJ_M10_ZLECENIA.md` (errands
-and the village that remembers),
-`docs/WYRAJ_ROADMAP_M8PLUS.md` (what comes next: voices, modding);
+and the village that remembers), `docs/WYRAJ_M11_GLOSY.md` (sound),
+`docs/WYRAJ_ROADMAP_M8PLUS.md` (what comes next: modding);
 roadmap and status: `docs/IMPLEMENTATION_PLAN.md`.
 
 ## License

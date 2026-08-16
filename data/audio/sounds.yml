@@ -1,0 +1,42 @@
+# M11 "Głosy" sound catalog (spec §3). Event keys are narration rule keys —
+# flat "event/subkey" strings, bare event name as fallback. Unmapped events
+# are silent by design; sparse is the aesthetic. Files are relative to
+# data/audio/ and listed in CREDITS.yml.
+
+beds:
+  wies: { file: beds/wies.wav, volume: 0.45 }
+  puszcza: { file: beds/puszcza.wav, volume: 0.55 }
+  puszcza_noc: { file: beds/puszcza_noc.wav, volume: 0.55 }
+  bagna: { file: beds/bagna.wav, volume: 0.55 }
+  bagna_noc: { file: beds/bagna_noc.wav, volume: 0.5 }
+  kurhany: { file: beds/kurhany.wav, volume: 0.4 }
+  kurhany_deep: { file: beds/kurhany_deep.wav, volume: 0.45 }
+  dno: { file: beds/dno.wav, volume: 0.6 }
+  kupala: { file: beds/kupala.wav, volume: 0.5 }
+
+events:
+  attack_resolved/player_hit: { file: sfx/hit.wav, volume: 0.55 }
+  attack_resolved/player_crit: { file: sfx/hit.wav, volume: 0.75 }
+  attack_resolved/player_kill: { file: sfx/kill.wav, volume: 0.7 }
+  attack_resolved/enemy_hit: { file: sfx/hurt.wav, volume: 0.6 }
+  attack_resolved/enemy_crit: { file: sfx/hurt.wav, volume: 0.8 }
+  entity_died/player: { file: sfx/death.wav, volume: 0.9 }
+  item_picked_up: { file: sfx/pickup.wav, volume: 0.4 }
+  quickslot_used: { file: sfx/tick.wav, volume: 0.35 }
+  item_used/light: { file: sfx/candle_lit.wav, volume: 0.6 }
+  light_extinguished: { file: sfx/candle_out.wav, volume: 0.65 }
+  level_changed/down: { file: sfx/stairs_down.wav, volume: 0.6 }
+  level_changed/up: { file: sfx/stairs_up.wav, volume: 0.6 }
+  crane_summon_completed: { file: sfx/crane.wav, volume: 0.9 } # the one big sound
+  lightning_struck: { file: sfx/thunder.wav, volume: 0.7 }
+  wij_stirred: { file: sfx/wij_stirred.wav, volume: 0.8 }
+  wij_lid_lifted: { file: sfx/wij_lid.wav, volume: 0.85 }
+  wij_gaze_opened: { file: sfx/wij_gaze.wav, volume: 0.9 }
+  rite_completed: { file: sfx/rite.wav, volume: 0.9 }
+
+voices:
+  wilk: { file: voices/wilk.wav, volume: 0.7 }
+  strzyga: { file: voices/strzyga.wav, volume: 0.7 }
+  martwiak: { file: voices/martwiak.wav, volume: 0.65 }
+  bies: { file: voices/bies.wav, volume: 0.7 }
+  utopiec: { file: voices/utopiec.wav, volume: 0.65 }

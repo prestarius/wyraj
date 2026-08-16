@@ -38,6 +38,9 @@ def main() -> None:
         default=None,
         help="narration mode: deterministic templates (default) or LLM garnish",
     )
+    parser.add_argument(
+        "--mute", action="store_true", help="run silent this session (sound stays configured)"
+    )
     parser.add_argument("--history", action="store_true", help="show recent runs and exit")
     parser.add_argument(
         "--reset-intro",
@@ -88,6 +91,7 @@ def main() -> None:
             config.get("narrator") if config.get("narrator") in ("template", "llm") else "template"
         )
     llm_config = config.get("llm") if isinstance(config.get("llm"), dict) else {}
+    audio_config: dict[str, Any] = config["audio"] if isinstance(config.get("audio"), dict) else {}
 
     from wyraj.ui.i18n import set_language
 
@@ -118,6 +122,8 @@ def main() -> None:
             hints=bool(config.get("hints", True)),
             quickslot_auto_refill=auto_refill,
             glebiej=glebiej,
+            audio_config=audio_config,
+            mute=args.mute,
         ).run()
 
     def show_epilogue(key: str) -> None:

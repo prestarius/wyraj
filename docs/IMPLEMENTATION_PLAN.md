@@ -238,17 +238,20 @@ M8 → M9 → M10 → M11 → M12; M11 may slide earlier (no prerequisites past 
   at 2/30; meta sim green). Deviation noted: the cold-forge "arrival line"
   is carried by the fate announcement + gossip variants, not a separate
   arrival rule.
-- **Epic 14 — M11 "Głosy"** (Voices) — **spec drafted 2026-08-16, awaiting
-  go/no-go** — spec `WYRAJ_M11_GLOSY.md` (open decisions 36–40). Backend
-  re-verified on the web 2026-08-16: **pygame-ce ≥ 2.5.8** as the `sound`
-  extra (upstream pygame dormant; miniaudio has no mixer), no fallback —
-  degrade to silence. US 14.1 backend Protocol + Null/Pygame backends,
-  config/`--mute`/Options; US 14.2 `data/audio/` catalog (rule_key-keyed
-  `sounds.yml`) + CREDITS.yml + synthesized starter assets; US 14.3
-  ambient beds (biome × depth × phase, dno heartbeat); US 14.4 sparse
-  event SFX (~14 mappings, crane arrival is the one big sound); US 14.5
-  deterministic distance voicing (local sha256, zero game-RNG draws);
-  US 14.6 polish/docs. Golden byte-identical throughout.
+- **Epic 14 — M11 "Głosy"** (Voices) — **DONE 2026-08-16** — spec
+  `WYRAJ_M11_GLOSY.md`, built with all spec defaults (decisions 36–40).
+  Backend re-verified on the web 2026-08-16: **pygame-ce ≥ 2.5.8** as the
+  `sound` extra (upstream pygame dormant; miniaudio has no mixer), no
+  fallback — degrade to silence. US 14.1 backend Protocol + Null/Pygame
+  backends in `ui/audio.py`, config/`--mute`/Options toggle/launch note;
+  US 14.2 rule_key-keyed `sounds.yml` + CREDITS.yml + 30 synthesized
+  starter assets (stdlib `tools/gen_sounds.py`, CI credit/license
+  checks); US 14.3 ambient beds (one at a time, night/Kupała variants,
+  dno heartbeat); US 14.4 18 sparse SFX mappings (crane arrival = the
+  one big sound); US 14.5 deterministic distance voicing (local sha256;
+  provably zero game-RNG draws); US 14.6 docs, real-backend smoke on
+  macOS (bed + SFX through CoreAudio). Golden byte-identical throughout;
+  suites pass with and without the extra installed.
 - **Epic 15 — M12 "Gusła"** (Folk Magic): data-pack modding — pack manifest,
   merge semantics, `--validate-pack`, example pack; data only, no scripting.
 
