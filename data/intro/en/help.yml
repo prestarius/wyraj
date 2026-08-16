@@ -4,6 +4,7 @@ keys:
   - ".                      wait      g  gather what lies here"
   - "i  pack                x  examine what you see"
   - "c  codex               r  rest (in the wieś only)"
+  - "L  legend of the signs"
   - "> / <                  stairs down / up"
   - "s  save and quit       q  quit    ?  this page"
 world:

@@ -12,6 +12,7 @@ from wyraj.ui.screens import (
     DeathScreen,
     ExamineScreen,
     InventoryScreen,
+    LegendScreen,
     ShrineScreen,
     StashScreen,
     TradeScreen,
@@ -41,6 +42,9 @@ def test_app_boots_and_waits_advance_turns() -> None:
             await pilot.press("i")
             assert isinstance(app.screen, InventoryScreen)
             await pilot.press("escape")
+            await pilot.press("L")
+            assert isinstance(app.screen, LegendScreen)
+            await pilot.press("escape")
             assert len(app.screen_stack) == 1  # escape must actually close the modal
             assert app.game.turn == start_turn + 3  # modals cost no turns
 
@@ -58,6 +62,7 @@ def test_escape_closes_every_modal() -> None:
                 StashScreen(app.game),
                 ShrineScreen(app.game, "weles"),
                 TradeScreen(app.game, app.game.player),
+                LegendScreen(app.game),
             ]
             for modal in modals:
                 app.push_screen(modal)

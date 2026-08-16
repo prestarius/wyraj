@@ -20,7 +20,7 @@ from wyraj.core.game import Game
 from wyraj.core.map import Tile
 from wyraj.core.systems.movement import level_of
 from wyraj.ui.i18n import current_language, t
-from wyraj.ui.item_info import stat_suffix
+from wyraj.ui.item_info import display_name, stat_suffix
 from wyraj.ui.portrait import hp_band, render_portrait
 
 # (unicode, ascii) glyphs per terrain, keyed by biome
@@ -187,8 +187,10 @@ class CharacterPanel(Static):
         if wielding is not None and wielding.item is not None:
             lore = game.world.get(wielding.item, Lore)
             if lore is not None:
-                text.append(f" {t('wields', name=lore.name)}", style="grey66")
-                suffix = stat_suffix(game.items_catalog.get(lore.key))
+                definition = game.items_catalog.get(lore.key)
+                name = display_name(definition, fallback=lore.name)
+                text.append(f" {t('wields', name=name)}", style="grey66")
+                suffix = stat_suffix(definition)
                 if suffix:
                     text.append(f" {suffix}", style="grey58")
                 text.append("\n")
@@ -197,8 +199,10 @@ class CharacterPanel(Static):
         if wearing is not None and wearing.item is not None:
             armor_lore = game.world.get(wearing.item, Lore)
             if armor_lore is not None:
-                text.append(f" {t('wears', name=armor_lore.name)}", style="grey66")
-                suffix = stat_suffix(game.items_catalog.get(armor_lore.key))
+                definition = game.items_catalog.get(armor_lore.key)
+                name = display_name(definition, fallback=armor_lore.name)
+                text.append(f" {t('wears', name=name)}", style="grey66")
+                suffix = stat_suffix(definition)
                 if suffix:
                     text.append(f" {suffix}", style="grey58")
                 text.append("\n")

@@ -32,6 +32,7 @@ from wyraj.ui.screens import (
     ExamineScreen,
     HelpScreen,
     InventoryScreen,
+    LegendScreen,
     ShrineScreen,
     StashScreen,
     TradeScreen,
@@ -74,6 +75,7 @@ class WyrajApp(App[str]):
         Binding("i", "inventory", "Inventory"),
         Binding("x", "examine", "Examine"),
         Binding("c", "codex", "Codex"),
+        Binding("L", "legend", "Legend"),
         Binding("s", "save_quit", "Save+Quit"),
         Binding("r", "rest", "Rest"),
         Binding("question_mark", "help", "Help", key_display="?"),
@@ -231,6 +233,9 @@ class WyrajApp(App[str]):
 
     def action_codex(self) -> None:
         self.push_screen(CodexScreen(self.game))
+
+    def action_legend(self) -> None:
+        self.push_screen(LegendScreen(self.game, self.use_ascii))
 
     def action_inventory(self) -> None:
         def on_result(action: Action | None) -> None:

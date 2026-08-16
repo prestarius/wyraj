@@ -36,7 +36,8 @@ from wyraj.core.game import Game
 from wyraj.core.systems.movement import level_of
 from wyraj.ui.codex_view import build_codex_text
 from wyraj.ui.i18n import t
-from wyraj.ui.item_info import stat_suffix
+from wyraj.ui.item_info import display_name, stat_suffix
+from wyraj.ui.legend_view import build_legend_text
 
 
 class ConfirmQuitScreen(ModalScreen[bool]):
@@ -124,10 +125,10 @@ class InventoryScreen(ModalScreen[Action | None]):
         for letter, entity in zip(string.ascii_lowercase, inventory.items, strict=False):
             lore = game.world.get(entity, Lore)
             item = game.world.get(entity, Item)
-            name = lore.name if lore else "something"
+            definition = game.items_catalog.get(item.key) if item else None
+            name = display_name(definition, fallback=lore.name if lore else "something")
             kind = item.kind if item else "trinket"
-            suffix = stat_suffix(game.items_catalog.get(item.key)) if item else ""
-            self.entries.append((letter, entity, name, kind, suffix))
+            self.entries.append((letter, entity, name, kind, stat_suffix(definition)))
 
     def compose(self) -> ComposeResult:
         text = Text()
@@ -208,7 +209,10 @@ class TradeScreen(ModalScreen[Action | None]):
             lore = self.game.world.get(entity, Lore)
             item = self.game.world.get(entity, Item)
             key = item.key if item else ""
-            result.append((letter, entity, lore.name if lore else "something", key))
+            name = display_name(
+                self.game.items_catalog.get(key), fallback=lore.name if lore else "something"
+            )
+            result.append((letter, entity, name, key))
         return result
 
     def compose(self) -> ComposeResult:
@@ -329,14 +333,15 @@ class StashScreen(ModalScreen[Action | None]):
         for letter, entity in zip(string.ascii_lowercase, player_inv.items, strict=False):
             lore = game.world.get(entity, Lore)
             item = game.world.get(entity, Item)
-            suffix = stat_suffix(game.items_catalog.get(item.key)) if item else ""
-            self.mine.append((letter, entity, lore.name if lore else "something", suffix))
+            definition = game.items_catalog.get(item.key) if item else None
+            name = display_name(definition, fallback=lore.name if lore else "something")
+            self.mine.append((letter, entity, name, stat_suffix(definition)))
         self.stashed: list[tuple[str, int, str, str]] = []
         for i, (letter, stashed) in enumerate(
             zip(string.ascii_uppercase, game.meta.stash.items, strict=False)
         ):
             definition = game.items_catalog.get(stashed.item_id)
-            name = definition.name if definition else stashed.item_id
+            name = display_name(definition, fallback=stashed.item_id)
             label = f"{name} x{stashed.count}" if stashed.count > 1 else name
             self.stashed.append((letter, i, label, stat_suffix(definition)))
 
@@ -426,8 +431,9 @@ class ExamineScreen(ModalScreen[None]):
             if (pos.x, pos.y) not in game.map.visible:
                 continue
             seen_something = True
-            text.append(f" {lore.name}", style="gold3")
-            suffix = stat_suffix(game.items_catalog.get(item.key))
+            definition = game.items_catalog.get(item.key)
+            text.append(f" {display_name(definition, fallback=lore.name)}", style="gold3")
+            suffix = stat_suffix(definition)
             if suffix:
                 text.append(f" {suffix}", style="grey58")
             text.append(" " + t("lies_here") + "\n", style="grey58")
@@ -443,6 +449,29 @@ class ExamineScreen(ModalScreen[None]):
         if not seen_something:
             text.append(t("examine_nothing") + "\n", style="grey58")
         text.append("\n" + t("esc_close"), style="grey42")
+        yield Static(text, classes="dialog")
+
+    def action_close(self) -> None:
+        self.dismiss(None)
+
+
+class LegendScreen(ModalScreen[None]):
+    """What every mark on the map means; creatures appear as the codex learns them."""
+
+    BINDINGS: ClassVar = [("escape", "close", "Close"), ("L", "close", "Close")]
+
+    def __init__(self, game: Game, use_ascii: bool = False) -> None:
+        super().__init__()
+        self.game = game
+        self.use_ascii = use_ascii
+
+    def compose(self) -> ComposeResult:
+        text = build_legend_text(
+            items_catalog=self.game.items_catalog,
+            bestiary=self.game.bestiary,
+            tier_of=self.game.codex_tier,
+            use_ascii=self.use_ascii,
+        )
         yield Static(text, classes="dialog")
 
     def action_close(self) -> None:

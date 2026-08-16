@@ -4,6 +4,7 @@ keys:
   - ".                        czekaj    g  podnieś, co tu leży"
   - "i  tobołek               x  przyjrzyj się temu, co widzisz"
   - "c  kodeks                r  odpocznij (tylko we wsi)"
+  - "L  legenda znaków"
   - "> / <                    schody w dół / w górę"
   - "s  zapisz i wyjdź        q  wyjdź    ?  ta strona"
 world:
