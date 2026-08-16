@@ -14,6 +14,7 @@ from wyraj.core.events import (
     CraneSummonCompleted,
     CraneSummonInterrupted,
     CraneSummonStarted,
+    DeepDescended,
     DziadRecognized,
     EntityDied,
     EntityRef,
@@ -36,6 +37,10 @@ from wyraj.core.events import (
     Outcome,
     QuickslotBound,
     Rested,
+    RiteCompleted,
+    RiteInterrupted,
+    RiteStarted,
+    SeenByWij,
     ShrineVisited,
     StarvationHit,
     StashDeposited,
@@ -47,6 +52,10 @@ from wyraj.core.events import (
     TalkedTo,
     WeaponNamed,
     WeaponRecognized,
+    WijAttackFutile,
+    WijGazeOpened,
+    WijLidLifted,
+    WijStirred,
 )
 from wyraj.narration.engine import NarrationEngine, NarrationLine
 from wyraj.narration.forms import build_form_registry
@@ -72,6 +81,25 @@ def fixture_event(event_key: str, subkey: str | None) -> GameEvent:
         return WeaponNamed(actor=PLAYER, weapon=CIUPAGA, species=subkey)
     if event_key == "weapon_recognized":
         return WeaponRecognized(weapon=CIUPAGA, species="wilk")
+    if event_key == "deep_descended":
+        return DeepDescended(depth=7)
+    if event_key == "wij_stirred":
+        return WijStirred(lift=25)
+    if event_key == "wij_lid_lifted":
+        return WijLidLifted(lift=60)
+    if event_key == "wij_gaze_opened":
+        return WijGazeOpened(lift=100)
+    if event_key == "seen_by_wij":
+        return SeenByWij(actor=PLAYER, damage=6)
+    if event_key == "wij_attack_futile":
+        return WijAttackFutile(actor=PLAYER)
+    if event_key == "rite_started":
+        return RiteStarted(actor=PLAYER, turns=6)
+    if event_key == "rite_interrupted":
+        assert subkey is not None
+        return RiteInterrupted(actor=PLAYER, reason=subkey)
+    if event_key == "rite_completed":
+        return RiteCompleted(actor=PLAYER, turn=800)
     if event_key == "attack_resolved":
         assert subkey is not None
         side, _, outcome = subkey.partition("_")

@@ -90,4 +90,12 @@ def test_item_catalog_loads() -> None:
 
 def test_bestiary_roster() -> None:
     game = make_game()
-    assert set(game.bestiary) == {"bies", "wilk", "utopiec", "strzyga", "martwiak", "licho"}
+    assert set(game.bestiary) == {
+        "bies",
+        "wilk",
+        "utopiec",
+        "strzyga",
+        "martwiak",
+        "licho",
+        "sluga",
+    }

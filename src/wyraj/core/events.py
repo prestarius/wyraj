@@ -151,6 +151,61 @@ class WeaponRecognized(GameEvent):
 
 
 @dataclass(frozen=True)
+class DeepDescended(GameEvent):
+    """First descent past the last sky shaft (M8 §1): no crane below this."""
+
+    depth: int
+
+
+@dataclass(frozen=True)
+class WijStirred(GameEvent):
+    lift: int
+
+
+@dataclass(frozen=True)
+class WijLidLifted(GameEvent):
+    lift: int
+
+
+@dataclass(frozen=True)
+class WijGazeOpened(GameEvent):
+    lift: int
+
+
+@dataclass(frozen=True)
+class SeenByWij(GameEvent):
+    """One turn under the open gaze while visible (M8 §2.3)."""
+
+    actor: EntityRef
+    damage: int
+
+
+@dataclass(frozen=True)
+class WijAttackFutile(GameEvent):
+    actor: EntityRef
+
+
+@dataclass(frozen=True)
+class RiteStarted(GameEvent):
+    actor: EntityRef
+    turns: int
+
+
+@dataclass(frozen=True)
+class RiteInterrupted(GameEvent):
+    actor: EntityRef
+    reason: str  # "moved" | "damage"
+
+
+@dataclass(frozen=True)
+class RiteCompleted(GameEvent):
+    """The lids stayed shut: the run is won (M8 §2.4)."""
+
+    actor: EntityRef
+    turn: int
+
+
+@dataclass(frozen=True)
 class HungerChanged(GameEvent):
     actor: EntityRef
     band: str  # "sated" | "hungry" | "starving"

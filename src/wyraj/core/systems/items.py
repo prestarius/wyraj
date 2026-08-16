@@ -28,6 +28,7 @@ from wyraj.core.events import (
     ItemUsed,
     ItemWielded,
     ItemWorn,
+    LightExtinguished,
 )
 from wyraj.core.refs import ref_for
 from wyraj.core.systems.movement import level_of
@@ -76,6 +77,13 @@ def use_item(world: World, bus: EventBus, actor: Entity, item: Entity) -> bool:
             StatusEffect(kind="blessing", duration=consumable.power, power=BLESSING_TO_HIT),
         )
     elif consumable.effect == "light":
+        if world.get(actor, LightSource) is not None:
+            # Already burning: using a light again douses the flame instead
+            # (M8 §2.3 — under the gaze, going dark is survival). The candle
+            # in the pack is untouched; the burning one is forfeit.
+            world.remove(actor, LightSource)
+            bus.publish(LightExtinguished(actor=actor_ref))
+            return True
         world.add(actor, LightSource(turns=consumable.power))
     elif consumable.effect == "feed":
         hunger = world.get(actor, Hunger)

@@ -1,0 +1,54 @@
+deep_descended:
+  - weight: 1
+    importance: high
+    en: "Below this landing the ceilings have never broken. No sky, no cranes, no way home but the way you came — or the way through."
+
+wij_stirred:
+  - weight: 1
+    importance: high
+    en: "The floor moves the way a chest moves. Once. Slowly. The ground remembers how to breathe, and it is remembering it under your feet."
+
+wij_lid_lifted:
+  - weight: 1
+    importance: high
+    en: "Stone grates on stone at the cradle, and a line of grey appears where no light should be. One lid. One eye beneath it, still shut. The hall is brighter now, and you wish it were not."
+
+wij_gaze_opened:
+  - weight: 1
+    importance: high
+    en: "The eye opens. It does not search. It simply begins at one wall and starts toward the other, patient as a scythe, and everything it touches goes quiet."
+
+seen_by_wij:
+  - weight: 2
+    importance: high
+    en: "The gaze crosses you and something in you tears loose — not flesh. Older than flesh."
+  - weight: 2
+    importance: high
+    en: "He sees you. Your candle-flame stands straight up like a hair on a neck, and the seeing is a weight you cannot carry long."
+  - weight: 1
+    importance: high
+    en: "To be seen by him is to be counted. You feel the number land."
+
+wij_attack_futile:
+  - weight: 1
+    en: "Your blow lands on the cradle-stone and means nothing. He was buried by people who knew how to bury. There is no edge for this."
+
+rite_started:
+  - weight: 1
+    importance: high
+    en: "You spill the blessed salt across the lids and set your hands on the stone. It is colder than the dark. You begin to press, and begin to count."
+
+rite_interrupted:
+  damage:
+    - weight: 1
+      importance: high
+      en: "Torn away from the cradle — the salt scatters into the dark, spent for nothing. The lids ease upward behind you like a held breath let go."
+  moved:
+    - weight: 1
+      importance: high
+      en: "You step back and the pressing is undone — the salt sifts uselessly into the seams of the stone. The lids have all the time in the world."
+
+rite_completed:
+  - weight: 1
+    importance: high
+    en: "The lids settle. The salt takes. Somewhere under your hands a patience older than the barrow accepts, for now, the dark it was given — and every sługa in the hall folds down like dropped cloth. It is over. It is, for once, over."

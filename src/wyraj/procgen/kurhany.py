@@ -30,6 +30,7 @@ def generate_kurhan(
     width: int = 48,
     height: int = 30,
     with_down_stairs: bool = True,
+    with_shafts: bool = True,
 ) -> GameMap:
     rng = random.Random(seed)
     tiles = [[Tile.WALL for _x in range(width)] for _y in range(height)]
@@ -96,9 +97,11 @@ def generate_kurhan(
         tiles[dy][dx] = Tile.STAIRS_DOWN
 
     # 1-2 collapsed-ceiling shafts: light wells and the only open sky down
-    # here (crane flight, spec M6 §6.2).
-    floors = [(x, y) for y in range(height) for x in range(width) if tiles[y][x] is Tile.FLOOR]
-    for sx, sy in rng.sample(floors, min(rng.randint(1, 2), len(floors))):
-        tiles[sy][sx] = Tile.SHAFT
+    # here (crane flight, spec M6 §6.2). Below LAST_SKY_DEPTH the ceilings
+    # have never broken (M8 §1) — no shafts, no cranes.
+    if with_shafts:
+        floors = [(x, y) for y in range(height) for x in range(width) if tiles[y][x] is Tile.FLOOR]
+        for sx, sy in rng.sample(floors, min(rng.randint(1, 2), len(floors))):
+            tiles[sy][sx] = Tile.SHAFT
 
     return GameMap(tiles, biome="kurhany")

@@ -1,0 +1,54 @@
+deep_descended:
+  - weight: 1
+    importance: high
+    pl: "Poniżej tego podestu stropy nigdy się nie zapadły. Ani nieba, ani żurawi, ani drogi do domu prócz tej za tobą — albo tej na wylot."
+
+wij_stirred:
+  - weight: 1
+    importance: high
+    pl: "Posadzka unosi się tak, jak unosi się pierś. Raz. Powoli. Ziemia przypomina sobie, jak się oddycha — i przypomina to sobie pod twoimi stopami."
+
+wij_lid_lifted:
+  - weight: 1
+    importance: high
+    pl: "Kamień zgrzyta o kamień przy kolebce i pojawia się pas szarości tam, gdzie nie ma prawa być światła. Jedna powieka. Pod nią oko, wciąż zamknięte. W sali jest teraz jaśniej — i wolisz, żeby nie było."
+
+wij_gaze_opened:
+  - weight: 1
+    importance: high
+    pl: "Oko się otwiera. Nie szuka. Po prostu zaczyna od jednej ściany i rusza ku drugiej, cierpliwe jak kosa, a wszystko, czego dotknie, cichnie."
+
+seen_by_wij:
+  - weight: 2
+    importance: high
+    pl: "Spojrzenie przechodzi przez ciebie i coś się w tobie odrywa — nie ciało. Starszego niż ciało."
+  - weight: 2
+    importance: high
+    pl: "Widzi cię. Płomień gromnicy staje dęba jak włos na karku, a to widzenie jest ciężarem, którego długo nie uniesiesz."
+  - weight: 1
+    importance: high
+    pl: "Jego spojrzenie liczy, a ono nie myli się w rachunkach. Czujesz, jak ta liczba spada na ciebie."
+
+wij_attack_futile:
+  - weight: 1
+    pl: "Cios trafia w kamień kolebki i nic nie znaczy. Grzebali go ludzie, którzy umieli grzebać. Nie ma na to ostrza."
+
+rite_started:
+  - weight: 1
+    importance: high
+    pl: "Sypiesz święconą sól na powieki i kładziesz dłonie na kamieniu. Jest zimniejszy niż ciemność. Zaczynasz przyciskać — i zaczynasz liczyć."
+
+rite_interrupted:
+  damage:
+    - weight: 1
+      importance: high
+      pl: "Coś odrywa cię od kolebki — sól rozsypuje się w mrok, zmarnowana. Powieki za twoimi plecami unoszą się lekko, jak wypuszczony wreszcie oddech."
+  moved:
+    - weight: 1
+      importance: high
+      pl: "Cofasz się i przyciskanie idzie na marne — sól osypuje się bezużytecznie w szczeliny kamienia. Powieki mają cały czas świata."
+
+rite_completed:
+  - weight: 1
+    importance: high
+    pl: "Powieki osiadają. Sól chwyta. Gdzieś pod twoimi dłońmi cierpliwość starsza niż kurhan przyjmuje, na razie, ciemność, którą jej dano — a każdy sługa w sali składa się jak upuszczone płótno. Koniec. Tym razem naprawdę koniec."
