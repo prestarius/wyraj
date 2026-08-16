@@ -1,0 +1,10 @@
+name: "Pack Pomorski"
+key: pomorski
+version: "1.0"
+author: "Prestarius"
+license: "CC-BY-SA-4.0"
+description: >
+  Three coastal horrors from the Pomeranian shore: the drowned bride,
+  the giant who is mostly weather, and the ship-spirit that walked
+  inland when its wreck rotted. The in-repo example pack — copy it,
+  gut it, make your own.

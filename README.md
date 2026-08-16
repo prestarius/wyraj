@@ -9,11 +9,12 @@ leszy, strzyga, utopiec, bies, licho.
 
 ![Wyraj screenshot](docs/screenshot.svg)
 
-**Status:** pre-alpha, and **winnable**. Milestones M0–M11 plus the intro
-("Próg") are complete: village, forest, marsh, six crypt levels, the Wij
-waiting at the bottom, death, victory, what survives either, a turning
-year above it all, a village that asks things of you and remembers
-whether you did them — and, optionally, a voice — fully playable in
+**Status:** pre-alpha, **winnable**, and **moddable**. Milestones M0–M12
+plus the intro ("Próg") are complete: village, forest, marsh, six crypt
+levels, the Wij waiting at the bottom, death, victory, what survives
+either, a turning year above it all, a village that asks things of you
+and remembers whether you did them, an optional voice — and a data-pack
+door for anyone who wants to add their own horrors — fully playable in
 English and Polish.
 
 ## What makes it different
@@ -58,6 +59,14 @@ English and Polish.
   distance — you hear the pack before you see it. Sound is a bus listener
   like the narrator: without the extra the game is byte-identically
   silent, and it never carries information the narration doesn't.
+- **Folk magic for modders — "Gusła".** A pack is a folder shaped like
+  `data/` plus a manifest: new monsters, items, errands, narration —
+  even a whole new language — merged in with one rule (override by key,
+  extend by new key) and validated by `wyraj --validate-pack` with
+  friendly errors. Data only, forever: packs never run code. Start from
+  `examples/pack-pomorski` (the drowned bride, the giant who is mostly
+  weather, the ship-spirit far from any sea) and read
+  [docs/MODDING.md](docs/MODDING.md).
 - **An ending in the dark — "Dno".** Below the last collapsed ceiling
   there is no crane home, sight shrinks to a single tile, and the Wij
   lies in his stone cradle while grave-servants labor to lift his lids.
@@ -145,7 +154,8 @@ Design specs: `docs/WYRAJ_PROJECT.md` (core game),
 `docs/WYRAJ_M8_DNO.md` (the ending), `docs/WYRAJ_M9_KOLO_ROKU.md`
 (time, weather, festivals), `docs/WYRAJ_M10_ZLECENIA.md` (errands
 and the village that remembers), `docs/WYRAJ_M11_GLOSY.md` (sound),
-`docs/WYRAJ_ROADMAP_M8PLUS.md` (what comes next: modding);
+`docs/WYRAJ_M12_GUSLA.md` (data packs) + `docs/MODDING.md` (authoring),
+`docs/WYRAJ_ROADMAP_M8PLUS.md` (the roadmap that got us here);
 roadmap and status: `docs/IMPLEMENTATION_PLAN.md`.
 
 ## License

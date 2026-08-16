@@ -2,7 +2,34 @@
 
 All notable changes to Wyraj. Format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
-## [Unreleased] — M11 "Głosy" (sound)
+## [Unreleased] — M12 "Gusła" (data-pack modding)
+
+### Added
+- **Data packs.** A pack is a folder shaped like `data/` plus a
+  `pack.yml` manifest, enabled via `config.yml → packs:` (ordered, later
+  wins). Data only, forever: nothing is ever imported, exec'd, or
+  eval'd from a pack. One merge rule everywhere — override whole entry
+  by key, extend by new key; narration at rule-key granularity per
+  language; loot per file stem; audio with per-pack file resolution.
+- **Languages are open.** A pack shipping `locale/de.yml` and/or
+  `narration/de/` makes `--lang de` real, English merged underneath;
+  grammar variants accept any language's prose key.
+- **`wyraj --validate-pack PATH`** — every file checked against the real
+  game schemas with friendly per-file, per-field errors; audio files
+  must exist and be credited (NC/ND refused); directories outside the
+  v1 surface are warned; ends with the honest adds/overrides summary
+  and exits 0/1 for pack-author CI.
+- **Pack-aware permadeath.** Saves record the active pack set
+  `(key, version)` and refuse to load under a different one; meta stays
+  tolerant (codex entries from a removed pack go dormant).
+- **Pack Pomorski**, the in-repo example (`examples/pack-pomorski/`,
+  CI-validated): topielica, stolem, and klabaternik, EN+PL with full
+  Polish case tables. Plus `docs/MODDING.md`, the authoring guide.
+- v1 surface: bestiary, items, hooks, loot, errands, epithets,
+  narration, locale, audio. Economy, origins, intro, and portrait stay
+  base-only; biomes and mechanics are code, never content.
+
+## [0.12-glosy] — merged 2026-08-16 — M11 "Głosy" (sound)
 
 ### Added
 - **The game has a voice — optionally.** `uv sync --extra sound` installs

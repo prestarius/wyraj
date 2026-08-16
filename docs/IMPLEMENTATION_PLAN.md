@@ -252,16 +252,20 @@ M8 → M9 → M10 → M11 → M12; M11 may slide earlier (no prerequisites past 
   provably zero game-RNG draws); US 14.6 docs, real-backend smoke on
   macOS (bed + SFX through CoreAudio). Golden byte-identical throughout;
   suites pass with and without the extra installed.
-- **Epic 15 — M12 "Gusła"** (Folk Magic) — **spec drafted 2026-08-16,
-  awaiting go/no-go** — spec `WYRAJ_M12_GUSLA.md` (open decisions 41–45).
+- **Epic 15 — M12 "Gusła"** (Folk Magic) — **DONE 2026-08-16** — spec
+  `WYRAJ_M12_GUSLA.md`, built with all spec defaults (decisions 41–45).
   Data only, forever: packs are YAML + assets, never code. US 15.1 pack
-  core (manifest, `data_roots()` chain, skip-with-note, pack-aware saves);
-  US 15.2 keyed-catalog merging (override whole entry / extend new key);
-  US 15.3 narration/locale/audio merging + dynamic languages (a DE pack
-  becomes possible); US 15.4 `--validate-pack` with friendly errors and
-  an adds/overrides summary; US 15.5 `examples/pack-pomorski/` (topielica,
-  stolem, klabaternik) + `docs/MODDING.md`. Golden/sims pack-free and
-  byte-identical throughout.
+  core (manifest with NC/ND refusal, `data_roots()` chain, skip-with-note,
+  pack-fingerprinted saves that refuse a changed set); US 15.2 keyed
+  catalogs walk the chain (override whole entry / extend new key); US 15.3
+  narration/locale/audio merging + dynamic languages (Variant accepts any
+  language's prose key; DE fixture renders end-to-end with EN fallback);
+  US 15.4 `--validate-pack` (friendly per-file errors, audio credit
+  checks, surface warnings, adds/overrides summary, exit 0/1); US 15.5
+  `examples/pack-pomorski/` (topielica, stolem, klabaternik, EN+PL, CI-
+  validated) + `docs/MODDING.md`. Golden/sims pack-free, byte-identical.
+  Deviation noted: the spec's "voices reusing base files" for the example
+  was dropped — packs resolve audio inside their own dir by design.
 
 Parked (not epics): release engineering & public reach, screen-reader deep
 pass, actual music, Steam, overworld travel (open decision #3 — revisit

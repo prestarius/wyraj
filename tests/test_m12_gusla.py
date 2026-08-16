@@ -407,6 +407,70 @@ def test_validate_pack_cli_exit_codes(tmp_path, monkeypatch, capsys) -> None:
     assert excinfo.value.code == 1
 
 
+# ---- US 15.5: Pack Pomorski ------------------------------------------------
+
+EXAMPLE = Path(__file__).resolve().parents[1] / "examples" / "pack-pomorski"
+
+
+def test_example_pack_validates_in_ci() -> None:
+    from wyraj.content.packs import validate_pack
+
+    report = validate_pack(EXAMPLE)
+    assert report.ok, report.errors
+    assert {"bestiary/topielica", "bestiary/stolem", "bestiary/klabaternik"} <= set(
+        report.adds or []
+    )
+    assert report.overrides == []  # the example adds; it takes nothing over
+
+
+def test_example_pack_discovers_a_topielica_headlessly() -> None:
+    import random
+
+    from wyraj.core.components import Position
+    from wyraj.core.events import LoreDiscovered
+    from wyraj.narration.templates import TemplateNarrator, load_pack
+
+    _activate(EXAMPLE)
+    game = Game(seed=SEED, meta_autosave=False)
+    assert "topielica" in game.bestiary
+    assert any(d.key == "topielica" for d in game._biome_defs("bagna"))
+
+    ppos = game.world.expect(game.player, Position)
+    game.spawn_monster(game.bestiary["topielica"], ppos.x + 2, ppos.y, depth=0)
+    seen: list[LoreDiscovered] = []
+    game.bus.subscribe(LoreDiscovered, seen.append)
+    game._update_player_fov()
+    assert any(event.entity.key == "topielica" for event in seen)
+
+    for lang in ("en", "pl"):
+        from wyraj.content.bestiary import load_bestiary
+        from wyraj.content.items import load_items
+        from wyraj.narration.forms import build_form_registry
+
+        registry = build_form_registry({**load_bestiary(), **load_items()}, lang)
+        narrator = TemplateNarrator(load_pack(lang), random.Random(3), registry)
+        event = next(e for e in seen if e.entity.key == "topielica")
+        lines = narrator.compose(event)
+        assert lines and "opielic" in lines[0].text  # topielica/topielicy, EN or PL
+
+
+def test_example_pack_boots_the_app(monkeypatch) -> None:
+    import asyncio
+
+    from wyraj.ui.app import WyrajApp
+
+    _activate(EXAMPLE)
+
+    async def run() -> None:
+        app = WyrajApp(seed=SEED)
+        async with app.run_test(size=(100, 40)) as pilot:
+            assert "klabaternik" in app.game.bestiary
+            await pilot.press("full_stop")
+            assert app.game.turn == 1
+
+    asyncio.run(run())
+
+
 def test_save_refuses_changed_pack_set(tmp_path) -> None:
     from wyraj.persistence.save import load_game, save_game
 

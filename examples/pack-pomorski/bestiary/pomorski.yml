@@ -1,0 +1,75 @@
+topielica:
+  name: "topielica"
+  glyph: "t"
+  ascii_glyph: "t"
+  style: "pale_turquoise1"
+  hp: 12
+  speed: 90
+  damage: 4
+  to_hit: 65
+  behavior: approach
+  spawn_weight: 2
+  biomes: [bagna]
+  swims: true
+  prefers_water: true
+  attack_status: { kind: fear, chance: 25, duration: 4, power: 0 }
+  epithets: ["the drowned bride"]
+  forms:
+    pl: { mian: "topielica", dop: "topielicy", cel: "topielicy", bier: "topielicę", narz: "topielicą", miej: "topielicy" }
+  weakness: >
+    She cannot cross running water twice — back away over the same stream
+    and she stops at its edge, remembering.
+  description: >
+    A bride who went into the water before the wedding and came out after
+    it, in her own time. She stands in the reeds in what is left of the
+    dress, and she is not waiting for you — you merely happen to be
+    between her and the shore she cannot reach.
+
+stolem:
+  name: "stolem"
+  glyph: "S"
+  ascii_glyph: "S"
+  style: "grey62"
+  hp: 30
+  speed: 60
+  damage: 6
+  to_hit: 55
+  behavior: approach
+  spawn_weight: 1
+  biomes: [puszcza]
+  epithets: ["who is mostly weather"]
+  forms:
+    pl: { mian: "stolem", dop: "stolema", cel: "stolemowi", bier: "stolema", narz: "stolemem", miej: "stolemie" }
+  weakness: >
+    Slow as a season. Anything faster than a standing stone can simply
+    leave — the trick is remembering that in time.
+  description: >
+    The old giants of Pomorze threw boulders at church bells and lost.
+    The ones that remain walk the deep woods like slow bad weather:
+    a darkness between trees, a pressure in the ears, a footprint you
+    could bathe in. He does not hate you. He barely registers you.
+
+klabaternik:
+  name: "klabaternik"
+  glyph: "k"
+  ascii_glyph: "k"
+  style: "gold3"
+  hp: 8
+  speed: 110
+  damage: 3
+  to_hit: 70
+  behavior: ambush
+  spawn_weight: 2
+  biomes: [bagna, puszcza]
+  epithets: ["helpful, until"]
+  forms:
+    pl: { mian: "klabaternik", dop: "klabaternika", cel: "klabaternikowi", bier: "klabaternika", narz: "klabaternikiem", miej: "klabaterniku" }
+  weakness: >
+    Bound to serve whatever vessel he haunts. Name the ship he lost —
+    any ship name will do, he cannot check — and he must stop to grieve.
+  description: >
+    Every ship has its klabaternik, mending planks in the night for a
+    sailor's due of groats and biscuit. This one's ship rotted in a
+    marsh-creek and its crew are mud. He walked inland with his little
+    hammer, still keeping the contract, looking for something to mend.
+    The hammer is very good at unmending. He considers this mending.
