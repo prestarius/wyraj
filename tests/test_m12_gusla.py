@@ -290,6 +290,123 @@ def test_pack_audio_resolves_to_pack_files(tmp_path) -> None:
     assert "pack" not in str(dno)
 
 
+# ---- US 15.4: --validate-pack ----------------------------------------------
+
+
+def test_validate_pack_reports_friendly_errors(tmp_path) -> None:
+    from wyraj.content.packs import validate_pack
+
+    pack = make_pack(
+        tmp_path,
+        bestiary__bad_yml=yaml.safe_dump(
+            {
+                "zly": {
+                    "name": "broken",
+                    "glyph": "z",
+                    "ascii_glyph": "z",
+                    "hp": -5,
+                    "speed": 100,
+                    "damage": 1,
+                    "to_hit": 50,
+                }
+            }
+        ),
+    )
+    report = validate_pack(pack)
+    assert not report.ok
+    assert any("bad.yml" in e and "zly" in e and "hp" in e for e in report.errors or [])
+
+
+def test_validate_pack_summarizes_adds_and_overrides(tmp_path) -> None:
+    from wyraj.content.packs import validate_pack
+
+    pack = make_pack(
+        tmp_path,
+        items__extra_yml=yaml.safe_dump(
+            {
+                "bursztyn": {
+                    "name": "amber lump",
+                    "glyph": "*",
+                    "ascii_glyph": "*",
+                    "kind": "trophy",
+                    "spawn_weight": 0,
+                },
+                "odwar": {
+                    "name": "odwar of yarrow",
+                    "glyph": "!",
+                    "ascii_glyph": "!",
+                    "kind": "consumable",
+                    "effect": "heal",
+                    "power": 8,
+                },
+            }
+        ),
+        narration__en__extra_yml=yaml.safe_dump(
+            {"talked_to": {"gossip": [{"weight": 1, "en": "..."}]}}
+        ),
+    )
+    (pack / "scripts").mkdir()  # outside the surface: warned, never loaded
+    report = validate_pack(pack)
+    assert report.ok
+    assert "items/bursztyn" in (report.adds or [])
+    assert "items/odwar" in (report.overrides or [])
+    assert "narration/en/talked_to/gossip" in (report.overrides or [])
+    assert any("scripts" in w for w in report.warnings or [])
+
+
+def test_validate_pack_checks_audio_files_and_credits(tmp_path) -> None:
+    from wyraj.content.packs import validate_pack
+
+    pack = make_pack(
+        tmp_path,
+        audio__sounds_yml=yaml.safe_dump({"voices": {"wilk": {"file": "voices/ghost.wav"}}}),
+    )
+    report = validate_pack(pack)
+    assert not report.ok
+    assert any("missing file" in e for e in report.errors or [])
+
+    (pack / "audio" / "voices").mkdir(parents=True)
+    (pack / "audio" / "voices" / "ghost.wav").write_bytes(b"RIFF")
+    report = validate_pack(pack)
+    assert any("not in CREDITS.yml" in e for e in report.errors or [])
+
+    (pack / "audio" / "CREDITS.yml").write_text(
+        yaml.safe_dump(
+            [
+                {
+                    "file": "voices/ghost.wav",
+                    "author": "x",
+                    "source_url": "https://example.org",
+                    "license": "CC0",
+                }
+            ]
+        ),
+        encoding="utf-8",
+    )
+    report = validate_pack(pack)
+    assert report.ok
+    assert "audio/voices/wilk" in (report.overrides or [])
+
+
+def test_validate_pack_cli_exit_codes(tmp_path, monkeypatch, capsys) -> None:
+    import pytest
+
+    from wyraj.app import main
+
+    pack = make_pack(tmp_path)
+    monkeypatch.setattr("sys.argv", ["wyraj", "--validate-pack", str(pack)])
+    with pytest.raises(SystemExit) as excinfo:
+        main()
+    assert excinfo.value.code == 0
+    assert "VALID" in capsys.readouterr().out
+
+    (pack / "pack.yml").unlink()
+    monkeypatch.setattr("sys.argv", ["wyraj", "--validate-pack", str(pack)])
+    with pytest.raises(SystemExit) as excinfo:
+        main()
+    assert excinfo.value.code == 1
+
+
 def test_save_refuses_changed_pack_set(tmp_path) -> None:
     from wyraj.persistence.save import load_game, save_game
 

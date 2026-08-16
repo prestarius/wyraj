@@ -45,11 +45,26 @@ def main() -> None:
     )
     parser.add_argument("--history", action="store_true", help="show recent runs and exit")
     parser.add_argument(
+        "--validate-pack",
+        metavar="PATH",
+        default=None,
+        help="validate a data pack (M12) and exit: friendly errors + adds/overrides summary",
+    )
+    parser.add_argument(
         "--reset-intro",
         action="store_true",
         help="forget the prologue and the szept whispers, then exit (progress is kept)",
     )
     args = parser.parse_args()
+
+    if args.validate_pack:
+        from pathlib import Path
+
+        from wyraj.content.packs import validate_pack
+
+        report = validate_pack(Path(args.validate_pack))
+        print("\n".join(report.lines()))
+        raise SystemExit(0 if report.ok else 1)
 
     if args.reset_intro:
         from wyraj.persistence.meta import load_meta as _load_meta
