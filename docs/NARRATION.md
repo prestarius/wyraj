@@ -49,7 +49,9 @@ packs never author it, and it never changes the prose.
 | `light_extinguished` | —                                              |
 | `lore_discovered`| the creature/hook key (e.g. `strzyga`), or `default` |
 | `level_changed`  | `down`, `up`                                       |
-| `talked_to`      | `innkeeper`, `trader`, `gossip` (rumor pool!), `dziad_wedrowny` |
+| `talked_to`      | `innkeeper`, `trader`, `gossip` (rumor pool!), `kowal`, `mlynarz`, `dziad_wedrowny` — village variants may carry `known_face`, `errand_<key>`, `fate_<flag>` tags (M10) |
+| `errand_heard` / `errand_completed` | the errand key (e.g. `syn_mlynarza`)  |
+| `village_fate`   | `mlyn_pusty`, `ciemna_kapliczka`, `zimna_kuznia`   |
 | `rested`         | —                                                  |
 | `item_bought` / `item_sold` | —                                       |
 | `coins_picked` / `coins_banked` | —                                   |

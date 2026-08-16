@@ -34,6 +34,21 @@ talked_to:
     - weight: 1
       en: "\"The lights over the bagna are souls,\" he says. \"Whose souls? Follow them and find out. No? Wise.\""
     - weight: 3
+      tags: [errand_syn_mlynarza]
+      en: "\"Bogusz doesn't sleep,\" the dziad says. \"He walks to the weir and back, every night. The utopiec keeps to the wet moss, remember — make it come to you on the dry.\""
+    - weight: 3
+      tags: [errand_kadzielnica_kaplicznika]
+      en: "Świętosław taps his stick twice. \"The censer, wanderer. Second crypt. The dead don't need it and the gods miss it, and between those two facts a person could do one right thing.\""
+    - weight: 3
+      tags: [errand_wilki_przy_mielerzach]
+      en: "\"Radzim asks after you,\" the old man says. \"Not in words — he asks in the way he keeps the forge banked. Wilki are thinnest at midday, if you mean to keep that promise.\""
+    - weight: 3
+      tags: [errand_czwarta_noc]
+      en: "\"Dobrava counts her lodgers on her fingers now,\" the dziad murmurs. \"The strzyga watches from the tree line. Fire first, tooth after — that's the order that works.\""
+    - weight: 3
+      tags: [errand_wosk_na_handel]
+      en: "\"Doing Miłosz's grave-shopping, are you,\" Świętosław says, unimpressed. \"Mind the salt rule when you scrape the wax. The martwiak minds it, and that is the whole point of it.\""
+    - weight: 3
       tags: [fate_mlyn_pusty]
       en: "\"The mill stands empty now,\" Świętosław says, and lets it sit there, because there is nothing to add and both of you know whose word it waited on."
     - weight: 3

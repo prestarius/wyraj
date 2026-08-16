@@ -344,6 +344,48 @@ def test_morgue_records_the_changed_wies(tmp_path) -> None:
     assert "The wieś, changed: mlyn_pusty" in text
 
 
+# ---- US 13.6: the Zlecenia tab --------------------------------------------
+
+
+def test_errands_tab_renders_in_run_view() -> None:
+    from wyraj.persistence.meta import VillagerMemory
+    from wyraj.ui.codex_view import build_errands_text
+
+    game = Game(seed=SEED, meta_autosave=False)
+    game.errands = {"syn_mlynarza": "heard", "czwarta_noc": "offered", "wosk_na_handel": "done"}
+    game.meta.villagers["mlynarz"] = VillagerMemory(reputation=2, errands_done=2)
+    game.meta.village.resolved.append("zimna_kuznia")
+    text = build_errands_text(
+        catalog=game.errands_catalog,
+        run_errands=game.errands,
+        meta=game.meta,
+        bestiary=game.bestiary,
+        items_catalog=game.items_catalog,
+    ).plain
+    assert "utopiec" in text and "heard" in text
+    assert "done" in text
+    # Unheard asks stay unheard — no journal spoilers.
+    assert "strzyga" not in text
+    assert "Bogusz the młynarz" in text
+    assert "The forge is cold" in text
+
+
+def test_errands_tab_renders_from_meta_alone() -> None:
+    from wyraj.content.errands import load_errands as load_catalog
+    from wyraj.ui.codex_view import build_errands_text
+
+    meta = MetaState()
+    text = build_errands_text(
+        catalog=load_catalog(),
+        run_errands=None,
+        meta=meta,
+        bestiary=load_bestiary(),
+        items_catalog=load_items(),
+    ).plain
+    assert "This journey" not in text
+    assert "No one here knows your name yet." in text
+
+
 def test_errand_state_survives_save(tmp_path) -> None:
     from wyraj.persistence.save import load_game, save_game
 

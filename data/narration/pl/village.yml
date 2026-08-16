@@ -34,6 +34,21 @@ talked_to:
     - weight: 1
       pl: "„Światełka nad bagnami to dusze” — powiada. „Czyje? Idź za nimi, to się dowiesz. Nie? Mądrze.”"
     - weight: 3
+      tags: [errand_syn_mlynarza]
+      pl: "„Bogusz nie sypia” — mówi dziad. „Chodzi nad jaz i z powrotem, co noc. Utopiec trzyma się mokrego mchu, pamiętaj — zmuś go, żeby wyszedł do ciebie na suche.”"
+    - weight: 3
+      tags: [errand_kadzielnica_kaplicznika]
+      pl: "Świętosław stuka kijem, dwa razy. „Kadzielnica, wędrowcze. Druga krypta. Umarłym niepotrzebna, bogom jej brak, a między tymi dwiema prawdami człowiek mógłby zrobić jedną rzecz słuszną.”"
+    - weight: 3
+      tags: [errand_wilki_przy_mielerzach]
+      pl: "„Radzim o ciebie pyta” — mówi stary. „Nie słowami — pyta tym, jak trzyma palenisko przygaszone. Wilków najmniej w samo południe, jeśli zamierzasz dotrzymać słowa.”"
+    - weight: 3
+      tags: [errand_czwarta_noc]
+      pl: "„Dobrava liczy teraz gości na palcach” — mruczy dziad. „Strzyga patrzy zza linii drzew. Najpierw ogień, potem ząb — ta kolejność działa.”"
+    - weight: 3
+      tags: [errand_wosk_na_handel]
+      pl: "„Robisz Miłoszowi grobowe sprawunki” — mówi Świętosław bez podziwu. „Jak będziesz skrobać wosk, pamiętaj o soli. Martwiak o niej pamięta i na tym cała rzecz polega.”"
+    - weight: 3
       tags: [fate_mlyn_pusty]
       pl: "„Młyn stoi teraz pusty” — mówi Świętosław i zostawia to tak, bo dodać nie ma czego, a na czyje słowo młyn czekał, wiecie oboje."
     - weight: 3

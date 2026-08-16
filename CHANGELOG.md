@@ -2,7 +2,39 @@
 
 All notable changes to Wyraj. Format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
-## [Unreleased] — M9 "Koło Roku" (time, weather, festivals)
+## [Unreleased] — M10 "Zlecenia" (errands, the village that remembers)
+
+### Added
+- **Zlecenia.** Each run assembles 1–3 errands from a YAML catalog
+  (`data/errands/`), deterministically from (seed, meta), at most one
+  ask per giver. Two kinds only — hunt (the kill guarantees a proof
+  trophy at the corpse, once) and fetch (the item is stamped into its
+  depth at generation). No escorts, no journal, no dialogue trees:
+  bumping a villager speaks the ask once (heard = taken), bumping again
+  with the proof hands it over.
+- **Two new villagers.** Radzim the kowal at his open-air forge and
+  Bogusz the młynarz, with EN/PL greetings — and reasons to need you.
+- **Villager reputation.** Rewards pay into the banked wallet and into
+  `meta.villagers` (per-role memory: favor, kept, broken). Total village
+  favor opens the trader's good shelf (guaranteed extra stock at rep
+  3 and 6); at favor 3 a villager greets you as a known face.
+- **Village fates.** A chain ignored across 3 runs resolves off-screen,
+  once, forever: the mill empties (Bogusz leaves, bread leaves the
+  shelves), the kapliczka goes dark (shrine lines dim), the forge goes
+  cold (Radzim leaves, weapons thin out). The next run's first step in
+  the wieś announces it — told once, ever — and the morgue records
+  broken words and the changed village.
+- **Codex Zlecenia tab.** Tab cycles bestiary ↔ errand ledger in both
+  the in-run codex and the title-menu codex (the latter reads meta
+  alone); gossip rumors escalate to point at your unfinished business.
+
+### Changed
+- Golden transcript regenerated once (US 13.2): two new villager
+  entities shift later entity ids; normalized diff is id-only.
+- The utopiec finally drops proof (`utopcowa_luska`); prices for the
+  M7 slot pieces (szkaplerz, baranica, łapcie).
+
+## [0.10-kolo-roku] — merged 2026-08-16 — M9 "Koło Roku" (time, weather, festivals)
 
 ### Added
 - **The wheel turns.** A 240-turn day (świt/dzień/zmierzch/noc) on a
