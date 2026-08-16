@@ -5,7 +5,7 @@ from pathlib import Path
 import yaml
 from pydantic import BaseModel, Field, model_validator
 
-from wyraj.content.paths import data_dir
+from wyraj.content.paths import data_roots
 
 ITEM_KINDS = ("weapon", "armor", "consumable", "trinket", "trophy")
 EFFECTS = ("heal", "feed", "bless", "light", "crane")
@@ -49,10 +49,13 @@ class ItemDef(BaseModel):
 
 
 def load_items(root: Path | None = None) -> dict[str, ItemDef]:
-    items_dir = (root or data_dir()) / "items"
     items: dict[str, ItemDef] = {}
-    for path in sorted(items_dir.glob("*.yml")):
-        raw = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
-        for key, fields in raw.items():
-            items[key] = ItemDef(key=key, **fields)
+    for base in [root] if root is not None else data_roots():
+        items_dir = base / "items"
+        if not items_dir.is_dir():
+            continue
+        for path in sorted(items_dir.glob("*.yml")):
+            raw = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+            for key, fields in raw.items():
+                items[key] = ItemDef(key=key, **fields)
     return items

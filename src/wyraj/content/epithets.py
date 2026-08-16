@@ -10,7 +10,7 @@ from pathlib import Path
 import yaml
 from pydantic import BaseModel
 
-from wyraj.content.paths import data_dir
+from wyraj.content.paths import data_roots
 
 
 class EpithetDef(BaseModel):
@@ -22,8 +22,12 @@ class EpithetDef(BaseModel):
 
 
 def load_epithets(root: Path | None = None) -> dict[str, EpithetDef]:
-    path = (root or data_dir()) / "epithets" / "epithets.yml"
-    if not path.exists():
-        return {}
-    raw = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
-    return {species: EpithetDef(**fields) for species, fields in raw.items()}
+    epithets: dict[str, EpithetDef] = {}
+    for base in [root] if root is not None else data_roots():
+        path = base / "epithets" / "epithets.yml"
+        if not path.exists():
+            continue
+        raw = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+        for species, fields in raw.items():
+            epithets[species] = EpithetDef(**fields)
+    return epithets

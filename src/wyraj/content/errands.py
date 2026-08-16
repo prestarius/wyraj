@@ -10,7 +10,7 @@ from pathlib import Path
 import yaml
 from pydantic import BaseModel, Field, model_validator
 
-from wyraj.content.paths import data_dir
+from wyraj.content.paths import data_roots
 
 ERRAND_KINDS = ("hunt", "fetch")
 
@@ -49,10 +49,13 @@ class ErrandDef(BaseModel):
 
 
 def load_errands(root: Path | None = None) -> dict[str, ErrandDef]:
-    errands_dir = (root or data_dir()) / "errands"
     errands: dict[str, ErrandDef] = {}
-    for path in sorted(errands_dir.glob("*.yml")):
-        raw = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
-        for key, fields in raw.items():
-            errands[key] = ErrandDef(key=key, **fields)
+    for base in [root] if root is not None else data_roots():
+        errands_dir = base / "errands"
+        if not errands_dir.is_dir():
+            continue
+        for path in sorted(errands_dir.glob("*.yml")):
+            raw = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+            for key, fields in raw.items():
+                errands[key] = ErrandDef(key=key, **fields)
     return errands

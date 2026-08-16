@@ -10,7 +10,7 @@ from pathlib import Path
 import yaml
 from pydantic import BaseModel, Field
 
-from wyraj.content.paths import data_dir
+from wyraj.content.paths import data_roots
 
 
 class HookDef(BaseModel):
@@ -25,10 +25,13 @@ class HookDef(BaseModel):
 
 
 def load_hooks(root: Path | None = None) -> dict[str, HookDef]:
-    hooks_dir = (root or data_dir()) / "hooks"
     hooks: dict[str, HookDef] = {}
-    for path in sorted(hooks_dir.glob("*.yml")):
-        raw = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
-        for key, fields in raw.items():
-            hooks[key] = HookDef(key=key, **fields)
+    for base in [root] if root is not None else data_roots():
+        hooks_dir = base / "hooks"
+        if not hooks_dir.is_dir():
+            continue
+        for path in sorted(hooks_dir.glob("*.yml")):
+            raw = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+            for key, fields in raw.items():
+                hooks[key] = HookDef(key=key, **fields)
     return hooks

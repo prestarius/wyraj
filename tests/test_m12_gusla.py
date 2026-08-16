@@ -27,7 +27,10 @@ def make_pack(root: Path, key: str = "testowy", **content_files: str) -> Path:
         encoding="utf-8",
     )
     for rel, text in content_files.items():
-        target = pack_dir / rel.replace("__", "/")
+        name = rel.replace("__", "/")
+        if name.endswith("_yml"):
+            name = name[: -len("_yml")] + ".yml"
+        target = pack_dir / name
         target.parent.mkdir(parents=True, exist_ok=True)
         target.write_text(text, encoding="utf-8")
     return pack_dir
@@ -77,6 +80,130 @@ def test_fingerprint_follows_activation(tmp_path) -> None:
     assert active_fingerprint() == [["testowy", "1.0"]]
     activate_packs([])
     assert active_fingerprint() == []
+
+
+# ---- US 15.2: keyed-catalog merging ----------------------------------------
+
+
+def _activate(pack_dir: Path) -> None:
+    activate_packs([Pack(path=pack_dir, manifest=load_manifest(pack_dir))])
+
+
+def test_pack_overrides_and_extends_bestiary(tmp_path) -> None:
+    from wyraj.content.bestiary import load_bestiary
+
+    base = load_bestiary()
+    pack = make_pack(
+        tmp_path,
+        bestiary__coastal_yml=yaml.safe_dump(
+            {
+                "wilk": {  # override whole entry: a coastal wolf is bigger
+                    "name": "wilk morski",
+                    "glyph": "w",
+                    "ascii_glyph": "w",
+                    "hp": 99,
+                    "speed": 100,
+                    "damage": 3,
+                    "to_hit": 60,
+                    "biomes": ["puszcza"],
+                },
+                "topielica": {
+                    "name": "topielica",
+                    "glyph": "t",
+                    "ascii_glyph": "t",
+                    "hp": 12,
+                    "speed": 90,
+                    "damage": 4,
+                    "to_hit": 65,
+                    "biomes": ["bagna"],
+                },
+            }
+        ),
+    )
+    _activate(pack)
+    merged = load_bestiary()
+    assert merged["wilk"].hp == 99 and merged["wilk"].name == "wilk morski"
+    assert "topielica" in merged
+    assert set(merged) == set(base) | {"topielica"}
+    activate_packs([])
+    assert load_bestiary()["wilk"].hp == base["wilk"].hp  # base untouched
+
+
+def test_pack_extends_items_hooks_loot_errands_epithets(tmp_path) -> None:
+    from wyraj.content.epithets import load_epithets
+    from wyraj.content.errands import load_errands
+    from wyraj.content.hooks import load_hooks
+    from wyraj.content.items import load_items
+    from wyraj.content.loot import load_loot_tables
+
+    pack = make_pack(
+        tmp_path,
+        items__extra_yml=yaml.safe_dump(
+            {
+                "bursztyn": {
+                    "name": "amber lump",
+                    "glyph": "*",
+                    "ascii_glyph": "*",
+                    "kind": "trophy",
+                    "spawn_weight": 0,
+                }
+            }
+        ),
+        hooks__extra_yml=yaml.safe_dump(
+            {
+                "wrak": {
+                    "name": "a rotted wreck",
+                    "glyph": "&",
+                    "ascii_glyph": "&",
+                    "biomes": ["bagna"],
+                }
+            }
+        ),
+        loot__bagna_yml=yaml.safe_dump({"count": 9, "weights": {"odwar": 1}}),
+        errands__extra_yml=yaml.safe_dump(
+            {
+                "bursztynowa_prosba": {
+                    "giver": "trader",
+                    "kind": "hunt",
+                    "target": "wilk",
+                    "proof": "wilczy_kiel",
+                    "depth": 1,
+                    "reward": {"denary": 50},
+                }
+            }
+        ),
+        epithets__epithets_yml=yaml.safe_dump(
+            {"utopiec": {"en": "Drowner-bane", "pl": "Topielcza zguba"}}
+        ),
+    )
+    _activate(pack)
+    assert "bursztyn" in load_items()
+    assert "wrak" in load_hooks()
+    assert load_loot_tables()["bagna"].count == 9  # whole-file override by stem
+    assert "bursztynowa_prosba" in load_errands()
+    assert "utopiec" in load_epithets()
+
+
+def test_later_pack_wins(tmp_path) -> None:
+    from wyraj.content.items import load_items
+
+    entry = {
+        "name": "amber lump",
+        "glyph": "*",
+        "ascii_glyph": "*",
+        "kind": "trophy",
+        "spawn_weight": 0,
+    }
+    first = make_pack(tmp_path, "pierwszy", items__a_yml=yaml.safe_dump({"bursztyn": entry}))
+    second = make_pack(
+        tmp_path,
+        "drugi",
+        items__a_yml=yaml.safe_dump({"bursztyn": {**entry, "name": "sea amber"}}),
+    )
+    packs, notes = discover_packs([str(first), str(second)])
+    assert notes == []
+    activate_packs(packs)
+    assert load_items()["bursztyn"].name == "sea amber"
 
 
 def test_save_refuses_changed_pack_set(tmp_path) -> None:
