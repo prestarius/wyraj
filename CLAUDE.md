@@ -25,12 +25,12 @@ Python 3.12+, `uv`-managed, Textual TUI. Fully bilingual EN/PL: narration packs 
 - **Deterministic core.** Same seed + same meta-state + same inputs = same run. Named seeded streams (`worldgen`, `combat`, `loot`, `narration`); per-level generation is a pure function of `sha256(seed, depth)`. No wall-clock in core. The LLM narrator is cosmetic-only.
 - **World chain:** wieś(0) → puszcza(1) → bagna(2) → kurhany(3–5); entities carry `OnLevel`, off-level actors are frozen.
 - **Meta-progression:** `~/.wyraj/meta.yml` survives death and mutates only at defined transaction points (bank/stash/purchase/offering/codex/death), each publishing `MetaTransaction`; HMAC flags hand-edits without punishing. On-body purse and items are always lost on death.
-- **Data-driven content.** Monsters, items, hooks, loot, economy, origins, narration packs → YAML under `data/`, pydantic-validated in `content/`. Intro/onboarding content is `data/intro/` (NOT `data/narration/` — the pack loader eats every YAML there). Adding content must not require engine changes.
+- **Data-driven content.** Monsters, items, hooks, loot, economy, origins, narration packs → YAML under `data/`, pydantic-validated in `content/`. Intro/onboarding content is `data/intro/`, portrait layer art `data/portrait/`, weapon epithets `data/epithets/` (NONE of these belong in `data/narration/` — the pack loader eats every YAML there). Adding content must not require engine changes.
 - **Narration pipeline:** `GameEvent → ContextEnricher(tags) → buffer → TurnEnded → TurnComposer paragraph`. New event type ⇒ add a `rule_key` mapping, EN + PL pack rules, and a fixture in `tests/test_narration_templates.py` (the PL-parity and render tests enforce all of it). Paragraphs carry a cosmetic `category` (combat/lore/loot/ambient, mapped in `category_of` in `templates.py`) used only for log tinting — unmapped events default to ambient.
 
 ## Working rules (from spec §12)
 
-- Keep `main` playable; feature branch per story, merge `--no-ff`, tag milestone cuts (`v0.7-prog` is current).
+- Keep `main` playable; feature branch per story, merge `--no-ff`, tag milestone cuts (`v0.8-sylwetka` is current).
 - Prefer many small data files over clever engine features; when mechanics and narration quality conflict, narration wins.
 - **Ask Prestarius before:** adding dependencies beyond spec §3 (+httpx already sanctioned), changing the event schema, or altering the repo layout.
 - Conventional commits; update CHANGELOG per milestone cut.

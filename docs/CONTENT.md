@@ -46,6 +46,12 @@ Kinds and their required fields:
 - `trinket` — no mechanics, all flavor
 - `trophy` — monster drops with no use but a sell price (see economy)
 
+Armor and trinkets may also declare a paper-doll `slot` (M7): armor
+defaults to `torso` but can claim `head` or `feet` (baranica, łapcie);
+a trinket with `slot: amulet` becomes wearable (szkaplerz). Slotted
+items get a `[wear]` verb in the pack and their protection stacks.
+Consumables are the only quickslot-bindable kind.
+
 Common fields mirror the bestiary (glyph, style, `forms`, `description`).
 `spawn_weight` matters only when a biome has no loot table.
 
@@ -90,6 +96,49 @@ must never buy them.
 - `shop_village.yml` — guaranteed + chance-rolled trader stock per run.
 - `shop_dziad.yml` — spawn chances/pity, reputation-gated stock tiers.
 - `offerings.yml` — shrine costs and the run-scoped favors they buy.
+
+## Portrait art — `data/portrait/*.yml`
+
+One file per art style (`box`, `half`, `ascii`), all implementing the
+same layer contract so `--portrait` and `--ascii` stay swappable:
+
+```yaml
+style: box
+base:                    # named figure variants, "default" required
+  default: [ ...rows... ]
+  hunched: [ ... ]       # used at the wounded/dying HP bands
+  mini: [ ...4 rows... ] # short-terminal fallback
+  # "<origin>" / "<origin>_hunched" override per origin if present
+weapons:                 # item key → patches: [row, col, "char"]
+  toporek: [[3, 9, "⊦"], [4, 9, "│"], [5, 9, "│"]]
+armor: [[3, 2, "╔"], ...]        # torso outline when armored
+wounds: { bloodied: [...], wounded: [...], dying: [...] }
+status_marks:            # the NON-COLOR half of each status decal
+  poison: [[2, 1, "~"]]
+scars: [[1, 5, "╱"], ...]        # first N applied for N blizny
+belt: [[6, 1, "▪"], ...]         # trophy-belt marks (max 2 shown)
+```
+
+Patches are `[row, col, char]` replacements over the base grid;
+out-of-bounds patches are silently skipped (that's how `mini` works).
+Color washes (band tint, poison edges, blessing bold, wet lower third,
+halo) live in code — art files carry glyphs only. The test matrix
+requires every band/status/scar/belt state to stay distinguishable in
+monochrome, so give each state a visible mark.
+
+## Epithets — `data/epithets/epithets.yml`
+
+Named-weapon titles (M7 §6.2), one entry per species, both languages in
+one file because an epithet is a single identity:
+
+```yaml
+wilk: { en: "Wolves' Bane", pl: "Wilcza Zguba" }
+```
+
+A weapon that kills seven of one species earns the epithet — but only
+if the species has an entry here, and only if the `weapon_named:` rule
+for that species exists in the narration packs (the announcement prose
+carries the name in each language). Add all three together.
 
 ## Intro — `data/intro/{en,pl}/`
 

@@ -60,6 +60,11 @@ packs never author it, and it never changes the prose.
 | `crane_summon_interrupted` | `moved`, `damage`                        |
 | `crane_refused`  | `watched`, `no_sky`, `in_village`                  |
 | `shrine_visited` / `offering_made` | `perun`, `weles`                 |
+| `item_unequipped` | —                                                 |
+| `quickslot_bound` | — (`quickslot_cleared/used/refilled` exist but are deliberately silent) |
+| `blizna_earned`  | — (a near-death survived; the scar line)           |
+| `weapon_named`   | the species key (`wilk`, `bies`, …) — the prose carries the epithet |
+| `weapon_recognized` | — (the dziad greets a named weapon)             |
 
 ## Context tags
 

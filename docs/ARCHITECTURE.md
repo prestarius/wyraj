@@ -1,7 +1,7 @@
 # Wyraj — Architecture
 
-Living document; mirrors `WYRAJ_PROJECT.md` §4 (plus the M6 and Próg
-addenda) and tracks reality as of v0.7.
+Living document; mirrors `WYRAJ_PROJECT.md` §4 (plus the M6, Próg, and
+M7 "Sylwetka" addenda) and tracks reality as of v0.8.
 
 ## Layers
 
@@ -23,9 +23,9 @@ addenda) and tracks reality as of v0.7.
 │  Procgen    │ │  Content (data/)                              │
 │ village │   │ │ bestiary, items, hooks, loot, economy,        │
 │ forest │    │ │ origins, narration packs (en/pl),             │
-│ bagna │     │ │ locale catalogs, intro (title/prologue/szept) │
-│ kurhany     │ └───────────────────────────────────────────────┘
-└─────────────┘
+│ bagna │     │ │ locale catalogs, intro (title/prologue/szept),│
+│ kurhany     │ │ portrait art (box/half/ascii), epithets       │
+└─────────────┘ └───────────────────────────────────────────────┘
 ┌───────────────────────────────────────────────────────────────┐
 │  Persistence: run save (gzip JSON, single slot, consumed)     │
 │  meta.yml (survives death) │ history.db │ morgue/ │ config.yml│
@@ -96,6 +96,43 @@ GameEvent ──enrich(context tags)──▶ buffer ──TurnEnded──▶ co
   log uses to tint the paragraph. It never feeds back into gameplay or
   the transcript text.
 
+## Character pane (M7 "Sylwetka")
+
+The right-hand panel is a *projection of ECS state* — no widget owns
+game data. Its pieces are pure text builders, each unit-testable without
+a running Textual app:
+
+- **Portrait compositor** (`ui/portrait.py`): `PortraitState` (built
+  from components by `portrait_state_for(game)`) × per-style art from
+  `data/portrait/{box,half,ascii}.yml` → rich `Text`. Layer order per
+  spec §2: base figure (hunched posture at wounded/dying, per-origin
+  variants supported) → equipment overlays (weapon marks, armor
+  outline, gromnica halo wash) → wound decals over four HP bands
+  (dying < 10%) → status decals → blizna scars → trophy belt. Every
+  color-coded state also carries a non-color mark (color-blind rule);
+  the test matrix asserts monochrome renders stay distinguishable. A
+  4-row `mini` base variant serves short terminals.
+- **Paper-doll** (`ui/paper_doll.py`): six slots — weapon (`Wielding`),
+  torso (`Wearing`), head/amulet/feet (`WornExtras`, fed by
+  `ItemDef.slot`), offhand (the lit gromnica with burn turns from
+  `LightSource`). Heirlooms wear the ⟲ rune; named weapons show their
+  epithet. `e` opens `EquipScreen`; `UnequipSlot` frees a slot and
+  publishes `ItemUnequipped`. `protection_of` sums all worn armor.
+- **Quickslots** (`core/systems/quickslots.py`): the `Quickslots`
+  component binds *item keys*, not entities — stack counts are derived,
+  auto-refill is inherent, and the `quickslots.auto_refill: false`
+  config knob makes an emptied slot unbind instead. Bind in the pack
+  (`1-4` then a letter), use on `1-4` (an empty press costs no turn),
+  `Shift+1-4` clears. Events: `QuickslotBound/Cleared/Used/Refilled`.
+- **Fabular state on `Game`**: `blizny` (a dip under 10% HP survived →
+  scar + `BliznaEarned`, narrated once), `weapon_kills` tallies per
+  (weapon, species) — seven kills earn an `Epithet` component and
+  `WeaponNamed`; the dziad greets a named weapon once per run
+  (`WeaponRecognized`); epithets survive the skrzynia via the stash
+  instance dict. All of it rides the run save.
+- **Morgue capture**: `write_morgue` embeds the final composited
+  portrait — the file shows who you were at the end.
+
 ## Meta-progression ("Powroty")
 
 `meta.yml` survives death and mutates only through defined transactions
@@ -110,8 +147,11 @@ die with you unless banked or carried home by crane.
 ## Persistence
 
 - Run save: single gzip-JSON slot, RNG streams restored bit-exactly,
-  consumed on load, deleted on death (permadeath honored).
-- Morgue: text file per death; history: SQLite (`wyraj --history`).
+  consumed on load, deleted on death (permadeath honored). Components
+  serialize by reflection — new flat dataclasses ride along for free;
+  M7 run state (blizny, weapon kill tallies, quickslot bindings) is in.
+- Morgue: text file per death, now carrying the death portrait;
+  history: SQLite (`wyraj --history`).
 - Config: `~/.wyraj/config.yml`, written by the title-screen Options.
 - All under `~/.wyraj/` (`WYRAJ_HOME` overrides everything).
 
@@ -127,4 +167,8 @@ die with you unless banked or carried home by crane.
   cover every EN rule; locale catalogs must not drift.
 - FOV symmetry is property-tested; content YAML is schema-validated in
   CI; Textual `Pilot` smoke tests cover the UI including title, prologue,
-  and help.
+  help, the equip flow, and the quickslot bind → use → clear cycle.
+- Color-blind safety: the portrait/status/paper-doll matrix asserts that
+  every band, status, scar, and equipment state stays pairwise
+  distinguishable with styles stripped (plain text), in all three art
+  styles including `--ascii`.

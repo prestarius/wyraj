@@ -9,9 +9,10 @@ leszy, strzyga, utopiec, bies, licho.
 
 ![Wyraj screenshot](docs/screenshot.svg)
 
-**Status:** pre-alpha. Milestones M0–M6 plus the intro ("Próg") are
+**Status:** pre-alpha. Milestones M0–M7 plus the intro ("Próg") are
 complete: the full loop — village, forest, marsh, three crypt levels,
-death, and what survives it — is playable in English and Polish.
+death, and what survives it — is playable in English and Polish, with
+the M7 "Sylwetka" character pane and quickslots on top.
 
 ## What makes it different
 
@@ -36,6 +37,15 @@ death, and what survives it — is playable in English and Polish.
 - **Crane flight.** No teleports: hold a crane feather under open sky,
   stand still for six turns while nothing watches, and a wedge of birds
   carries you home. In the crypts, only where the ceiling has collapsed.
+- **A pane that is a portrait, not a stat block.** The character panel
+  composites a layered figure from YAML art: posture hunches as wounds
+  deepen, armor changes the outline, a lit gromnica warms the frame, and
+  surviving a near-death leaves a permanent blizna scar. Below it: a
+  six-slot paper-doll (`e` to manage), a status row, and quickslots
+  `1-4` — bind an odwar in the pack and drink it mid-fight without
+  opening a menu. A weapon that kills seven of one species *earns a
+  name* ("Wilcza Zguba"), and the dziad greets it. Every death captures
+  the final portrait — scars, gear, and all — into the morgue file.
 - **An intro worth reading.** Title screen under drifting cranes, a paged
   typewriter prologue that differs by origin, and a whisper system that
   teaches the game diegetically — one dim aside per first encounter,
@@ -68,9 +78,12 @@ uv run wyraj --narrator llm  # optional local-LLM narration (Ollama)
 
 **Keys:** `hjkl`/`yubn`/arrows move (bump a creature to strike it — or a
 villager, to talk), `.` wait, `g` gather, `i` pack, `x` examine,
-`c` codex, `>`/`<` stairs, `r` rest (village), `?` help, `s` save+quit,
-`q` quit (it asks first — an abandoned run is not saved). Death offers
-`n` set out again, `m` back to the title screen, `q` leave.
+`e` worn & wielded, `c` codex, `L` legend of the map's signs, `1-4`
+use an at-hand item (`Shift+1-4` clears; bind in the pack with `1-4`
+then a letter), `>`/`<` stairs, `r` rest (village), `?` help,
+`s` save+quit, `q` quit (it asks first — an abandoned run is not
+saved). Death offers `n` set out again, `m` back to the title screen,
+`q` leave.
 
 **Your files** (all under `~/.wyraj/`, override with `WYRAJ_HOME`):
 
@@ -78,13 +91,13 @@ villager, to talk), `.` wait, `g` gather, `i` pack, `x` examine,
 |---|---|
 | `save.json.gz` | the single run save — consumed on load, deleted on death |
 | `meta.yml` | what survives death: stash, silver, codex, dziad memory, unlocks. Human-editable by design; edits are flagged, never punished |
-| `history.db`, `morgue/` | every run, remembered |
-| `config.yml` | `ascii`, `portrait`, `origin`, `lang`, `narrator`, `llm`, `hints`, `text_speed` |
+| `history.db`, `morgue/` | every run, remembered — each morgue file carries the final portrait |
+| `config.yml` | `ascii`, `portrait`, `origin`, `lang`, `narrator`, `llm`, `hints`, `text_speed`, `quickslots` (`auto_refill: false` for hardcore slots) |
 
 ## Develop
 
 ```sh
-uv run pytest              # 200+ tests incl. golden transcript & 50-run meta sim
+uv run pytest              # 240+ tests incl. golden transcript & 50-run meta sim
 uv run ruff check .        # lint
 uv run mypy                # strict on core/ and narration/
 ```
@@ -96,7 +109,8 @@ Docs: [architecture](docs/ARCHITECTURE.md) ·
 
 Design specs: `docs/WYRAJ_PROJECT.md` (core game),
 `docs/WYRAJ_M6_POWROTY.md` (meta-progression),
-`docs/WYRAJ_PROG_SPEC.md` (intro & onboarding);
+`docs/WYRAJ_PROG_SPEC.md` (intro & onboarding),
+`docs/WYRAJ_M7_SYLWETKA.md` (character pane & quickslots);
 roadmap and status: `docs/IMPLEMENTATION_PLAN.md`.
 
 ## License
