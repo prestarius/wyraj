@@ -110,7 +110,9 @@ Docs: [architecture](docs/ARCHITECTURE.md) ·
 Design specs: `docs/WYRAJ_PROJECT.md` (core game),
 `docs/WYRAJ_M6_POWROTY.md` (meta-progression),
 `docs/WYRAJ_PROG_SPEC.md` (intro & onboarding),
-`docs/WYRAJ_M7_SYLWETKA.md` (character pane & quickslots);
+`docs/WYRAJ_M7_SYLWETKA.md` (character pane & quickslots),
+`docs/WYRAJ_ROADMAP_M8PLUS.md` (what comes next: an ending, the wheel
+of the year, errands, voices, modding);
 roadmap and status: `docs/IMPLEMENTATION_PLAN.md`.
 
 ## License

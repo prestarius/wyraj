@@ -190,6 +190,33 @@ each story keeps `main` playable. Everything the pane shows is a projection of E
 
 ---
 
+## Planned epics — roadmap `WYRAJ_ROADMAP_M8PLUS.md` (Proposal v0.1)
+
+Outline-level on purpose (spec §12: no early scaffolding) — each gets a full
+CC spec and story breakdown when its milestone starts. Recommended order
+M8 → M9 → M10 → M11 → M12; M11 may slide earlier (no prerequisites past M0).
+
+- **Epic 11 — M8 "Dno"** (the Bottom): crypt levels 4–6 with escalating
+  darkness, the Wij as a narrated multi-phase encounter, 2–3 run-state
+  epilogues, victory in `meta.yml` + "Głębiej" NG+ modifiers. Large — the
+  game gains a win condition. **First on approval.**
+- **Epic 12 — M9 "Koło Roku"** (Wheel of the Year): day/night, weather,
+  festival days (Noc Kupały, Dziady, Gromnica) on a seeded per-run calendar.
+- **Epic 13 — M10 "Zlecenia"** (Errands): rumor-driven procedural errands,
+  named-villager reputation, off-screen failure states that change the
+  village across deaths.
+- **Epic 14 — M11 "Głosy"** (Voices): optional-dependency AudioSystem on the
+  event bus — ambient beds, sparse SFX, creature voicing at a distance;
+  backend choice (pygame.mixer vs miniaudio) to be re-verified at spec time.
+- **Epic 15 — M12 "Gusła"** (Folk Magic): data-pack modding — pack manifest,
+  merge semantics, `--validate-pack`, example pack; data only, no scripting.
+
+Parked (not epics): release engineering & public reach, screen-reader deep
+pass, actual music, Steam, overworld travel (open decision #3 — revisit
+after M10).
+
+---
+
 ## Open decisions blocking future work (spec §13)
 
 | # | Decision | Needed by | Spec recommendation |
