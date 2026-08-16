@@ -2,7 +2,34 @@
 
 All notable changes to Wyraj. Format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
-## [Unreleased] — M7 "Sylwetka" (character pane & quickslots)
+## [Unreleased] — M8 "Dno" (ending, antagonist, victory)
+
+### Added
+- The world now bottoms out: crypts 4–6 (depths 6–8), unlit sight
+  shrinking to 3/2/1 tiles, no collapsed-ceiling shafts below depth 6 —
+  past the last open sky there is no crane home, and the narration marks
+  the step once.
+- **The Wij.** An authored vault at depth 8: the buried one in his stone
+  cradle, sługa pallbearers walking out of wall niches to lift his lids
+  against a meter you can only delay. He has no HP and cannot be
+  attacked. When the gaze opens, the light economy inverts — a lit
+  gromnica in his line of sight is death (6 true damage a turn),
+  darkness hides you, and using a light while burning now douses it.
+- **Winning.** Bump the cradle holding sól święcona to begin the
+  zamknięcie-powiek rite: six turns of pressing, interrupted by moving
+  or damage, the salt spent either way. Completion seals the lids —
+  the run is won.
+- Three epilogues (EN and PL, prologue-format): the long climb out, the
+  dziad's impossible cart, the cranes coming down through the barrow —
+  chosen by how the run was lived. Victory writes `meta.victories`, a
+  morgue file reading "Fate: the lids stayed shut", the permanent title
+  line "The birds returned, once.", and a ⁂ next to winning origins.
+- **Głębiej** — post-victory modifier runs: sight −1, +2 spawns per
+  level, +1 loot roll, +25% prices; flagged in the save and the record.
+- A provisioned competent-bot descent sim (`WYRAJ_SIM=1`) measuring the
+  win rate (1/30 at cut) with a CI smoke floor.
+
+## M7 "Sylwetka" (character pane & quickslots) — merged 2026-08-16
 
 ### Added
 - Layered, state-reactive portrait driven by YAML art under

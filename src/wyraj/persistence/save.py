@@ -107,6 +107,10 @@ def save_game(game: Game, path: Path | None = None) -> Path:
         "was_dying": getattr(game, "_was_dying", False),
         "weapon_kills": getattr(game, "weapon_kills", {}),
         "dziad_greeted_weapon": getattr(game, "_dziad_greeted_weapon", False),
+        "glebiej": getattr(game, "glebiej", False),
+        "wij_phase": getattr(game, "wij_phase", "buried"),
+        "wij_lift": getattr(game, "wij_lift", 0),
+        "wij_respawn": getattr(game, "_wij_respawn", 12),
         "player": game.player,
         "rng": game.rng.get_states(),
         "levels": {str(depth): _encode_map(m) for depth, m in game.levels.items()},
@@ -181,6 +185,21 @@ def load_game(path: Path | None = None) -> Game | None:
     game.last_foe = None
     game.quickslot_auto_refill = True  # the config knob is re-applied by the app
     game.epithets_catalog = load_epithets()
+    # M8 "Dno" run state
+    from wyraj.core.game import MAX_DEPTH, WIJ_RESPAWN_TURNS, _level_seed
+    from wyraj.procgen.vault import generate_vault
+
+    game.glebiej = payload.get("glebiej", False)
+    game.victory = False
+    game.victory_epilogue = ""
+    game.wij_phase = payload.get("wij_phase", "buried")
+    game.wij_lift = payload.get("wij_lift", 0)
+    game._wij_respawn = payload.get("wij_respawn", WIJ_RESPAWN_TURNS)
+    game.vault = (
+        generate_vault(_level_seed(game.seed, MAX_DEPTH))
+        if str(MAX_DEPTH) in payload["levels"]
+        else None
+    )
 
     game.levels = {int(d): _decode_map(m) for d, m in payload["levels"].items()}
 

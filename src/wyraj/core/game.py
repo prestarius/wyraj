@@ -7,6 +7,7 @@ other actor that is due.
 
 import hashlib
 import random
+from dataclasses import replace
 from typing import ClassVar
 
 from wyraj.content.bestiary import MonsterDef, load_bestiary
@@ -58,6 +59,7 @@ from wyraj.core.components import (
     Inventory,
     Item,
     ItemMemory,
+    Lifting,
     LightSource,
     Lore,
     Melee,
@@ -67,6 +69,7 @@ from wyraj.core.components import (
     Position,
     Purse,
     Renderable,
+    Rite,
     Shrine,
     StashChest,
     StatusEffect,
@@ -90,6 +93,7 @@ from wyraj.core.events import (
     CraneSummonCompleted,
     CraneSummonInterrupted,
     CraneSummonStarted,
+    DeepDescended,
     DziadRecognized,
     EntityDied,
     EntityRef,
@@ -104,6 +108,10 @@ from wyraj.core.events import (
     Outcome,
     QuickslotUsed,
     Rested,
+    RiteCompleted,
+    RiteInterrupted,
+    RiteStarted,
+    SeenByWij,
     ShrineVisited,
     StarvationHit,
     StashDeposited,
@@ -115,8 +123,13 @@ from wyraj.core.events import (
     TurnEnded,
     WeaponNamed,
     WeaponRecognized,
+    WijAttackFutile,
+    WijGazeOpened,
+    WijLidLifted,
+    WijStirred,
     ZnamiePlaced,
 )
+from wyraj.core.fov import compute_fov
 from wyraj.core.map import GameMap, Tile
 from wyraj.core.refs import ref_for
 from wyraj.core.rng import RngStreams
@@ -126,21 +139,38 @@ from wyraj.persistence.meta import MetaState, StashedItem, save_meta
 from wyraj.procgen.bagna import generate_bagna
 from wyraj.procgen.forest import generate_forest
 from wyraj.procgen.kurhany import generate_kurhan
+from wyraj.procgen.vault import VaultLayout, generate_vault
 from wyraj.procgen.village import generate_village
 
 FOV_RADIUS = 8
 MONSTER_COUNT = 6
 ITEM_COUNT = 8
 MIN_SPAWN_DISTANCE = 8
-MAX_DEPTH = 5  # world chain: 0 wies, 1 puszcza, 2 bagna, 3-5 kurhany
+MAX_DEPTH = 8  # world chain: 0 wies, 1 puszcza, 2 bagna, 3-8 kurhany (M8 "Dno")
 CRYPT_FIRST_DEPTH = 3
-CRYPT_FOV_RADIUS = 4  # unlit barrow darkness
+CRYPT_FOV_RADIUS = 4  # unlit barrow darkness at crypts 1-3
+LAST_SKY_DEPTH = 6  # deepest crypt with collapsed-ceiling shafts (crane exit)
 REST_SATIATION_COST = 100
 
 PLAYER_HP = 20
 PLAYER_SPEED = 100
 DYING_BAND = 0.10  # M7 §2.3: below this, the run is one bad turn from over
 EPITHET_KILLS = 7  # M7 §6.2 tuning knob: kills of one species to earn a name
+
+# M8 "Dno" tuning table (spec §5)
+WIJ_LIFT_PER_SLUGA = 2  # lift gained per channeling servant per turn
+WIJ_KNOCKBACK = 10  # lift lost when a servant dies at the bottom
+WIJ_RESPAWN_TURNS = 12  # niche birthing cadence
+WIJ_MAX_SLUGI = 4  # concurrent servants
+WIJ_GAZE_DAMAGE = 6  # true damage per seen turn; armor means nothing to him
+WIJ_GAZE_RADIUS = 30  # the gaze reaches the whole hall
+WIJ_STIR_AT = 25
+WIJ_LID_AT = 60
+WIJ_GAZE_AT = 100
+RITE_TURNS = 6  # zamknięcie powiek: turns of pressing
+RITE_ITEM = "sol_swiecona"  # consumed the moment the rite begins
+GLEBIEJ_SPAWN_BONUS = 2
+GLEBIEJ_LOOT_BONUS = 1
 PLAYER_DAMAGE = 4
 PLAYER_TO_HIT = 75
 PLAYER_SATIATION = 600
@@ -160,6 +190,7 @@ class Game:
         items_catalog: dict[str, ItemDef] | None = None,
         meta: MetaState | None = None,
         meta_autosave: bool = True,
+        glebiej: bool = False,
     ) -> None:
         self.seed = seed
         self.rng = RngStreams(seed)
@@ -210,6 +241,14 @@ class Game:
         self.bus.subscribe(AttackResolved, self._on_attack_for_pane)
         self.bus.subscribe(ItemPickedUp, self._on_item_gained)
         self.bus.subscribe(ItemBought, self._on_item_gained)
+        # M8 "Dno" run state
+        self.glebiej = glebiej
+        self.victory = False
+        self.victory_epilogue = ""
+        self.wij_phase = "buried"  # buried | stirring | lid | gaze | sealed
+        self.wij_lift = 0
+        self._wij_respawn = WIJ_RESPAWN_TURNS
+        self.vault: VaultLayout | None = None
 
         layout = generate_village()
         self.levels[0] = layout.map
@@ -369,6 +408,8 @@ class Game:
         biome = game_map.biome
 
         monster_count = MONSTER_COUNT + (max(depth - 2, 0) * 2 if biome == "kurhany" else 0)
+        if self.glebiej:
+            monster_count += GLEBIEJ_SPAWN_BONUS
         candidates = floors
         if avoid is not None:
             ax, ay = avoid
@@ -394,11 +435,15 @@ class Game:
                 water_adjacent.remove((x, y))
             self.spawn_monster(chosen, x, y, depth)
 
-        table = self.loot_tables.get(biome)
+        table = None
+        if depth >= LAST_SKY_DEPTH:  # M8 §1: the deep table — candles, salt, road food
+            table = self.loot_tables.get(f"{biome}_deep")
+        if table is None:
+            table = self.loot_tables.get(biome)
         if table is not None:
             item_keys = sorted(table.weights)
             item_weights = [table.weights[k] for k in item_keys]
-            item_count = table.items_for_depth(depth)
+            item_count = table.items_for_depth(depth) + (GLEBIEJ_LOOT_BONUS if self.glebiej else 0)
         else:
             item_keys = sorted(self.items_catalog)
             item_weights = [self.items_catalog[k].spawn_weight for k in item_keys]
@@ -445,8 +490,19 @@ class Game:
             self.levels[depth] = generate_forest(level_seed)
         elif depth == 2:
             self.levels[depth] = generate_bagna(level_seed)
+        elif depth == MAX_DEPTH:
+            # The Dno (M8 §2.1): an authored hall, no random spawns, no dziad.
+            layout = generate_vault(level_seed)
+            self.levels[depth] = layout.map
+            self.vault = layout
+            self._populate_vault(depth)
+            return
         else:
-            self.levels[depth] = generate_kurhan(level_seed, with_down_stairs=depth < MAX_DEPTH)
+            self.levels[depth] = generate_kurhan(
+                level_seed,
+                with_down_stairs=depth < MAX_DEPTH,
+                with_shafts=depth <= LAST_SKY_DEPTH,
+            )
         self._populate_level(depth, random.Random(level_seed ^ 0xA5A5))
         self._maybe_spawn_dziad(depth)
 
@@ -512,6 +568,8 @@ class Game:
         )
         if arrival is None:  # defensive: generators always place stairs
             arrival = target_map.floor_tiles()[0]
+        if new_depth == LAST_SKY_DEPTH + 1 and self.max_depth_reached <= LAST_SKY_DEPTH:
+            self.bus.publish(DeepDescended(depth=new_depth))
         self.depth = new_depth
         self.max_depth_reached = max(self.max_depth_reached, new_depth)
         self.world.add(self.player, OnLevel(new_depth))
@@ -525,14 +583,18 @@ class Game:
         player's turn again (or the player is dead)."""
         if self.game_over:
             return
-        flight_completed = self._tick_channel(action)
-        if not flight_completed:
+        self._tick_rite(action)
+        flight_completed = False
+        if not self.game_over:  # a completed rite ends the run mid-step
+            flight_completed = self._tick_channel(action)
+        if not flight_completed and not self.game_over:
             self._apply_player_action(action)
             self._check_perch_return()
         hp_before_round = self.world.expect(self.player, Health).hp
         self._update_player_fov()
         self._tick_statuses()
         hunger.tick(self.world, self.bus, self.player, self.turn + 1)
+        self._tick_wij()
         if self.world.expect(self.player, Health).hp <= 0:
             self.game_over = True
         self._track_blizna()
@@ -544,6 +606,12 @@ class Game:
             self.bus.publish(
                 CraneSummonInterrupted(actor=ref_for(self.world, self.player), reason="damage")
             )
+        rite = self.world.get(self.player, Rite)
+        if rite is not None and self.world.expect(self.player, Health).hp < hp_before_round:
+            self.world.remove(self.player, Rite)
+            self.bus.publish(
+                RiteInterrupted(actor=ref_for(self.world, self.player), reason="damage")
+            )
         self.turn += 1
         # TurnEnded closes the whole round (player + monsters) so the
         # narration TurnComposer can flush a complete paragraph.
@@ -553,6 +621,13 @@ class Game:
         match action:
             case Move(dx=dx, dy=dy):
                 pos = self.world.expect(self.player, Position)
+                if (
+                    self.depth == MAX_DEPTH
+                    and self.vault is not None
+                    and (pos.x + dx, pos.y + dy) == self.vault.cradle
+                ):
+                    self._touch_cradle()
+                    return
                 target = movement.blocking_entity_at(self.world, pos.x + dx, pos.y + dy, self.depth)
                 interact = self._interactable_at(pos.x + dx, pos.y + dy)
                 if interact is not None:
@@ -702,6 +777,9 @@ class Game:
     def _on_monster_died(self, event: EntityDied) -> None:
         if event.entity.is_player:
             return
+        if event.entity.key == "sluga" and self.depth == MAX_DEPTH:
+            # Corpses make poor pallbearers (M8 §2.2).
+            self.wij_lift = max(0, self.wij_lift - WIJ_KNOCKBACK)
         if event.entity.key in self.bestiary:
             counter = f"kills_{event.entity.key}"
             kills = self.meta.achievements.get(counter, 0) + 1
@@ -755,6 +833,8 @@ class Game:
 
     def price_for(self, item_key: str, trader: Entity) -> int:
         base = self.prices.buy.get(item_key, 10)
+        if self.glebiej:
+            base = round(base * 1.25)  # M8 §4: a crueler market
         villager = self.world.get(trader, Villager)
         if villager is not None and villager.role == "dziad_wedrowny":
             markup = base * self.prices.dziad_multiplier
@@ -1115,6 +1195,182 @@ class Game:
             self.bus.publish(MetaTransaction(kind="dziad_rep", detail="+1"))
             self._save_meta()
 
+    # ---- M8 "Dno" ---------------------------------------------------------
+
+    def _populate_vault(self, depth: int) -> None:
+        assert self.vault is not None
+        cx, cy = self.vault.cradle
+        self.world.create(
+            Position(cx, cy),
+            OnLevel(depth),
+            Renderable(glyph="Ø", style="grey93", ascii_glyph="0"),
+            Lore(
+                key="wij",
+                name="the Wij",
+                epithets=("the buried one",),
+                description=(
+                    "He lies in the stone cradle the way a river lies in its bed. "
+                    "The lids over his eyes are older than the hill above you, and "
+                    "the things in grave-linen want them open. Whatever you do, do "
+                    "not be worth looking at when they are."
+                ),
+            ),
+        )
+        for x, y in self.vault.niches[:2]:
+            self._spawn_sluga(x, y, depth)
+
+    def _spawn_sluga(self, x: int, y: int, depth: int) -> Entity:
+        assert self.vault is not None
+        entity = self.spawn_monster(self.bestiary["sluga"], x, y, depth)
+        self.world.add(entity, Lifting(x=self.vault.cradle[0], y=self.vault.cradle[1]))
+        return entity
+
+    def _alive_slugi(self) -> list[Entity]:
+        return [
+            entity
+            for entity, (_lift, _pos) in self.world.query(Lifting, Position)
+            if self.world.is_alive(entity)
+        ]
+
+    def _touch_cradle(self) -> None:
+        """Bumping the cradle: with blessed salt it begins the rite; without,
+        it teaches you what edges are worth here (M8 §2.3-2.4)."""
+        player_ref = ref_for(self.world, self.player)
+        if self.world.get(self.player, Rite) is not None:
+            return
+        inventory = self.world.get(self.player, Inventory) or Inventory()
+        salt = next(
+            (
+                e
+                for e in inventory.items
+                if (item := self.world.get(e, Item)) is not None and item.key == RITE_ITEM
+            ),
+            None,
+        )
+        if salt is None:
+            self.bus.publish(WijAttackFutile(actor=player_ref))
+            return
+        # The salt is spent the moment the pressing begins (feather doctrine).
+        self.world.add(self.player, Inventory(items=tuple(i for i in inventory.items if i != salt)))
+        self.world.destroy(salt)
+        self.world.add(self.player, Rite(turns_left=RITE_TURNS))
+        self.bus.publish(RiteStarted(actor=player_ref, turns=RITE_TURNS))
+
+    def _tick_rite(self, action: Action) -> None:
+        rite = self.world.get(self.player, Rite)
+        if rite is None:
+            return
+        if not isinstance(action, Wait):
+            self.world.remove(self.player, Rite)
+            self.bus.publish(
+                RiteInterrupted(actor=ref_for(self.world, self.player), reason="moved")
+            )
+            return
+        if rite.turns_left > 1:
+            self.world.add(self.player, Rite(turns_left=rite.turns_left - 1))
+            return
+        self.world.remove(self.player, Rite)
+        self._seal_wij()
+
+    def _seal_wij(self) -> None:
+        self.wij_phase = "sealed"
+        self.wij_lift = 0
+        for sluga in self._alive_slugi():
+            self.world.destroy(sluga)  # they fold where they stand; no death cries
+        self.victory = True
+        self.victory_epilogue = self._epilogue_key()
+        self.game_over = True
+        self.bus.publish(RiteCompleted(actor=ref_for(self.world, self.player), turn=self.turn))
+
+    def _tick_wij(self) -> None:
+        if self.depth != MAX_DEPTH or self.vault is None or self.wij_phase == "sealed":
+            return
+        cx, cy = self.vault.cradle
+        slugi = self._alive_slugi()
+        # Servants adjacent to the cradle lift; corpses were handled on death.
+        channeling = 0
+        for sluga in slugi:
+            pos = self.world.expect(sluga, Position)
+            if max(abs(pos.x - cx), abs(pos.y - cy)) <= 1:
+                channeling += 1
+        if channeling and self.wij_phase != "gaze":
+            self.wij_lift = min(WIJ_GAZE_AT, self.wij_lift + channeling * WIJ_LIFT_PER_SLUGA)
+        self._advance_wij_phase()
+        # Niches keep birthing pallbearers; the room cannot be cleared.
+        self._wij_respawn -= 1
+        if self._wij_respawn <= 0:
+            self._wij_respawn = WIJ_RESPAWN_TURNS
+            if len(slugi) < WIJ_MAX_SLUGI:
+                occupied = {(p.x, p.y) for _e, (p,) in self.world.query(Position)}
+                for x, y in self.vault.niches:
+                    if (x, y) not in occupied:
+                        self._spawn_sluga(x, y, self.depth)
+                        break
+        if self.wij_phase == "gaze":
+            self._gaze_falls()
+
+    def _advance_wij_phase(self) -> None:
+        order = ("buried", "stirring", "lid", "gaze")
+        thresholds = {"stirring": WIJ_STIR_AT, "lid": WIJ_LID_AT, "gaze": WIJ_GAZE_AT}
+        events = {"stirring": WijStirred, "lid": WijLidLifted, "gaze": WijGazeOpened}
+        current = order.index(self.wij_phase) if self.wij_phase in order else 0
+        for phase in order[current + 1 :]:
+            if self.wij_lift >= thresholds[phase]:
+                self.wij_phase = phase
+                self.bus.publish(events[phase](lift=self.wij_lift))
+
+    def _gaze_falls(self) -> None:
+        """The open gaze (M8 §2.3): light inverts — flame marks you, dark hides you."""
+        assert self.vault is not None
+        if self.world.get(self.player, LightSource) is None:
+            return  # unlit: the hall is dark and you are part of it
+        pos = self.world.expect(self.player, Position)
+        game_map = self.map
+        seen = compute_fov(
+            self.vault.cradle,
+            WIJ_GAZE_RADIUS,
+            is_blocking=lambda x, y: not game_map.is_transparent(x, y),
+        )
+        if (pos.x, pos.y) not in seen:
+            return
+        health = self.world.expect(self.player, Health)
+        self.world.add(self.player, replace(health, hp=max(0, health.hp - WIJ_GAZE_DAMAGE)))
+        self.bus.publish(SeenByWij(actor=ref_for(self.world, self.player), damage=WIJ_GAZE_DAMAGE))
+        if self.world.expect(self.player, Health).hp <= 0:
+            self.death_cause = "seen by the Wij"
+            self.death_by_key = "wij"
+
+    def _epilogue_key(self) -> str:
+        """Which ending the run earned (M8 §3), first match wins."""
+        if self.dziad_met_this_run and self.meta.dziad.reputation >= 3:
+            return "gospodarz"
+        known = sum(1 for key in self.bestiary if key in self.meta.codex.known)
+        codex_full = self.bestiary and known / len(self.bestiary) >= 0.8
+        statuses = self.world.get(self.player, StatusEffects)
+        favored = statuses is not None and any(
+            effect.kind in ("perun_favor", "weles_favor") for effect in statuses.effects
+        )
+        if codex_full or favored:
+            return "ptaki"
+        return "swit"
+
+    def apply_victory_to_meta(self) -> None:
+        from wyraj.persistence.meta import VictoryRecord
+
+        self.meta.victories.append(
+            VictoryRecord(
+                origin=self.origin.key,
+                seed=self.seed,
+                turn=self.turn,
+                epilogue=self.victory_epilogue,
+                glebiej=self.glebiej,
+            )
+        )
+        counters = self.meta.achievements
+        counters["victories"] = counters.get("victories", 0) + 1
+        self.bus.publish(MetaTransaction(kind="victory", detail=self.victory_epilogue))
+        self._save_meta()
+
     # ---- M7 "Sylwetka" ----------------------------------------------------
 
     def _slot_for(self, item: Entity) -> str:
@@ -1222,8 +1478,22 @@ class Game:
 
     @property
     def fov_radius(self) -> int:
-        """Crypts are dark; a lit gromnica pushes the dark back."""
-        return CRYPT_FOV_RADIUS if self.in_darkness else FOV_RADIUS
+        """Crypts are dark; a lit gromnica pushes the dark back.
+
+        M8 §1: the dark deepens below the crypts' third level — unlit sight
+        shrinks to 3/2/1 tiles at depths 6/7/8. At the bottom, a burning
+        gromnica is the only way to see; the lid phase brightens the hall
+        with the Wij's own grey light (never a kindness).
+        """
+        if not self.in_darkness:
+            radius = FOV_RADIUS
+        else:
+            radius = max(1, CRYPT_FOV_RADIUS - max(0, self.depth - (CRYPT_FIRST_DEPTH + 2)))
+            if self.depth == MAX_DEPTH and self.wij_phase in ("lid", "gaze"):
+                radius = max(radius, 2)
+        if self.glebiej:
+            radius = max(1, radius - 1)
+        return radius
 
     def _tick_statuses(self) -> None:
         actors = [self.player] + [

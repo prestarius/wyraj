@@ -61,6 +61,9 @@ A fixed vertical chain, generated lazily but deterministically:
 | 1     | puszcza  | cellular automata    | forest, barrow entrance                |
 | 2     | bagna    | moisture random-walk | water pools; utopce swim               |
 | 3–5   | kurhany  | BSP rooms+corridors  | dark (FOV 4 unless lit); 1–2 sky shafts |
+| 6     | kurhany  | BSP rooms+corridors  | unlit FOV 3; the last sky shafts (last crane exit) |
+| 7     | kurhany  | BSP rooms+corridors  | unlit FOV 2; no open sky — no way home but through |
+| 8     | dno      | authored vault       | unlit FOV 1; the Wij's hall (M8) — cradle, niches, pillars |
 
 Entities carry `OnLevel(depth)`; systems filter by the current depth and
 off-level actors are frozen. The wandering dziad may spawn on crypt
@@ -132,6 +135,21 @@ a running Textual app:
   instance dict. All of it rides the run save.
 - **Morgue capture**: `write_morgue` embeds the final composited
   portrait — the file shows who you were at the end.
+
+## The ending (M8 "Dno")
+
+The Wij is engine-honest: a lifting meter on `Game`, sługa monsters with a
+`lift` behavior (they path to the cradle and channel; niches respawn them),
+threshold events, and a gaze tick that runs the game's own FOV *from the
+cradle* — a lit player in that line takes true damage, an unlit one is part
+of the dark. He has no `Health` component; the cradle bump either starts
+the salt-consuming rite channel (mirrors the crane channel: `Rite`
+component, interrupted by moving or damage) or narrates futility. Sealing
+publishes `RiteCompleted`, sets `game.victory`, and the app exits with a
+`"victory:<epilogue>"` outcome; the entrypoint plays the epilogue pages on
+the prologue renderer and returns to the title. Victory state lives in
+`meta.victories` (HMAC-covered like everything else). Głębiej is a
+constructor flag with four numeric consequences — no second rule system.
 
 ## Meta-progression ("Powroty")
 

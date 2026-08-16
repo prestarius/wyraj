@@ -32,6 +32,7 @@ from wyraj.core.events import (
     CraneSummonCompleted,
     CraneSummonInterrupted,
     CraneSummonStarted,
+    DeepDescended,
     DziadRecognized,
     EntityDied,
     EntityRef,
@@ -51,6 +52,10 @@ from wyraj.core.events import (
     MoveBlocked,
     OfferingMade,
     Rested,
+    RiteCompleted,
+    RiteInterrupted,
+    RiteStarted,
+    SeenByWij,
     ShrineVisited,
     StarvationHit,
     StashDeposited,
@@ -62,6 +67,10 @@ from wyraj.core.events import (
     TalkedTo,
     WeaponNamed,
     WeaponRecognized,
+    WijAttackFutile,
+    WijGazeOpened,
+    WijLidLifted,
+    WijStirred,
     ZnamiePlaced,
 )
 from wyraj.narration.engine import NarrationLine
@@ -92,6 +101,14 @@ _COMBAT_EVENTS: tuple[type[GameEvent], ...] = (
     StatusExpired,
     StarvationHit,
     BliznaEarned,
+    WijStirred,
+    WijLidLifted,
+    WijGazeOpened,
+    SeenByWij,
+    WijAttackFutile,
+    RiteStarted,
+    RiteInterrupted,
+    RiteCompleted,
 )
 _LOOT_EVENTS: tuple[type[GameEvent], ...] = (
     ItemPickedUp,
@@ -122,6 +139,7 @@ _LORE_EVENTS: tuple[type[GameEvent], ...] = (
     CraneReturn,
     WeaponNamed,
     WeaponRecognized,
+    DeepDescended,
 )
 
 
@@ -208,6 +226,8 @@ def rule_key(event: GameEvent) -> RuleKey:
             return "offering_made", event.god
         case WeaponNamed():
             return "weapon_named", event.species
+        case RiteInterrupted():
+            return "rite_interrupted", event.reason
         case _:
             name = type(event).__name__
             snake = re.sub(r"(?<!^)(?=[A-Z])", "_", name).lower()

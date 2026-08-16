@@ -192,6 +192,21 @@ class Epithet:
 
 
 @dataclass(frozen=True)
+class Lifting:
+    """A sługa's destination (M8 §2.2): the cradle whose lids it serves."""
+
+    x: int
+    y: int
+
+
+@dataclass(frozen=True)
+class Rite:
+    """Pressing the lids shut (M8 §2.4): interruptible, turn-counted."""
+
+    turns_left: int
+
+
+@dataclass(frozen=True)
 class StatusEffect:
     kind: str  # "bleeding" | "poison" | "fear" | "blessing"
     duration: int  # turns remaining

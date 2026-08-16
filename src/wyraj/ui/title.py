@@ -187,6 +187,8 @@ class TitleApp(App[str]):
 
     def _menu_entries(self) -> list[tuple[str, str]]:
         entries = [("new", t("title_new"))]
+        if self.meta.victories:  # M8 §4: earned by sealing the lids
+            entries.append(("glebiej", t("title_glebiej")))
         if self.has_save:
             entries.append(("continue", t("title_continue")))
         entries += [
@@ -222,6 +224,8 @@ class TitleApp(App[str]):
     def _render_body(self) -> Text:
         text = Text()
         text.append(BANNER + "\n", style="bold red3")
+        if self.meta.victories:  # permanent, independent of the rotating tagline
+            text.append(f"\n{t('title_victory_line')}", style="italic light_goldenrod2")
         if self.tagline:
             text.append(f"\n{self.tagline}\n\n", style="italic grey62")
         for i, (_key, label) in enumerate(self._menu_entries()):
@@ -248,7 +252,7 @@ class TitleApp(App[str]):
         self._refresh_body()
 
     def _choose(self, key: str) -> None:
-        if key in ("new", "continue"):
+        if key in ("new", "continue", "glebiej"):
             self.exit(key)
         elif key == "quit":
             self.exit(None)

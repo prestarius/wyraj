@@ -1,0 +1,11 @@
+# Depths past the last sky shaft (M8 §1): candles, salt, and road food —
+# little else of comfort. The gromnica economy is the run's spine here.
+count: 4
+count_per_depth: 1
+weights:
+  gromnica: 6
+  sol_swiecona: 3
+  chleb: 2
+  suszone_mieso: 2
+  odwar: 2
+  mocny_odwar: 1

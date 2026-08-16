@@ -8,7 +8,7 @@
 
 import random
 
-from wyraj.core.components import AI, Health, Lore, Player, Position, Swimmer
+from wyraj.core.components import AI, Health, Lifting, Lore, Player, Position, Swimmer
 from wyraj.core.ecs import Entity, World
 from wyraj.core.events import EventBus
 from wyraj.core.map import GameMap, Tile
@@ -104,6 +104,18 @@ def take_turn(
             return
         if distance <= 1:  # cornered — bite
             attack(world, bus, combat_rng, entity, player)
+        return
+
+    if behavior == "lift":  # M8 §2.2: the sługa serves the lids, not the fight
+        target = world.get(entity, Lifting)
+        if target is None:
+            return
+        if distance <= 1:  # a shove for whoever stands in the way
+            attack(world, bus, combat_rng, entity, player)
+            return
+        if max(abs(pos.x - target.x), abs(pos.y - target.y)) <= 1:
+            return  # adjacent to the cradle: it channels; the Wij tick counts it
+        _walk_toward(world, game_map, entity, target.x, target.y)
         return
 
     if behavior == "ambush" and distance > AMBUSH_RADIUS:

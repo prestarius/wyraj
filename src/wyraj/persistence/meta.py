@@ -60,6 +60,17 @@ class Unlocks(BaseModel):
     origins: list[str] = Field(default_factory=lambda: list(BASE_ORIGINS))
 
 
+class VictoryRecord(BaseModel):
+    """One sealed Wij (M8 §3). The title screen remembers forever."""
+
+    model_config = ConfigDict(extra="allow")
+    origin: str
+    seed: int
+    turn: int
+    epilogue: str  # "swit" | "gospodarz" | "ptaki"
+    glebiej: bool = False
+
+
 class MetaState(BaseModel):
     model_config = ConfigDict(extra="allow")
     schema_version: int = CURRENT_SCHEMA_VERSION
@@ -72,6 +83,7 @@ class MetaState(BaseModel):
     achievements: dict[str, int] = {}
     prologue_seen: bool = False
     szept_seen: list[str] = []
+    victories: list[VictoryRecord] = Field(default_factory=list)
 
 
 def meta_path() -> Path:

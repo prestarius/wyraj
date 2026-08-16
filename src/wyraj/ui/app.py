@@ -113,9 +113,10 @@ class WyrajApp(App[str]):
         llm_config: dict | None = None,
         hints: bool = True,
         quickslot_auto_refill: bool = True,
+        glebiej: bool = False,
     ) -> None:
         super().__init__()
-        self.game = game if game is not None else Game(seed, origin=origin)
+        self.game = game if game is not None else Game(seed, origin=origin, glebiej=glebiej)
         self.game.quickslot_auto_refill = quickslot_auto_refill
         self._quickslot_hinted = False
         self.use_ascii = use_ascii
@@ -300,11 +301,25 @@ class WyrajApp(App[str]):
         self.query_one(MapView).refresh()
         self.query_one(CharacterPanel).refresh()
         if self.game.game_over:
-            delete_save()  # permadeath: the run is over
+            delete_save()  # the run is over, won or lost
             if isinstance(self.narration.narrator, LLMNarrator):
                 self.query_one(RichLog).write(
                     Text(self.narration.narrator.stats.summary(), style="grey42")
                 )
+            if self.game.victory:
+                now = datetime.now()
+                self.game.apply_victory_to_meta()
+                write_morgue(self.game, when=now, victory=True)
+                record_run(
+                    seed=self.game.seed,
+                    origin=self.game.origin.key,
+                    turns=self.game.turn,
+                    max_depth=self.game.max_depth_reached,
+                    cause="the lids stayed shut",
+                    when=now,
+                )
+                self.exit(f"victory:{self.game.victory_epilogue}")
+                return
             new_origins = self.game.apply_death_to_meta()
             now = datetime.now()
             morgue_path = write_morgue(self.game, when=now)

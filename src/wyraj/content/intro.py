@@ -40,6 +40,17 @@ def load_prologue(lang: str = "en") -> Prologue:
     return Prologue(**raw)
 
 
+class Epilogues(BaseModel):
+    """M8 §3: ending key → prologue-format pages."""
+
+    endings: dict[str, list[str]]
+
+
+def load_epilogues(lang: str = "en") -> Epilogues:
+    raw = _load(lang, "epilogues.yml") or {"endings": {}}
+    return Epilogues(**raw)
+
+
 def load_szept(lang: str = "en") -> dict[str, str]:
     raw = _load(lang, "szept.yml") or {}
     return {str(k): str(v) for k, v in raw.items()}

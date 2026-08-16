@@ -12,7 +12,9 @@ def morgue_dir() -> Path:
     return wyraj_home() / "morgue"
 
 
-def write_morgue(game: Game, when: datetime, directory: Path | None = None) -> Path:
+def write_morgue(
+    game: Game, when: datetime, directory: Path | None = None, victory: bool = False
+) -> Path:
     target_dir = directory or morgue_dir()
     target_dir.mkdir(parents=True, exist_ok=True)
     stamp = when.strftime("%Y%m%d-%H%M%S")
@@ -50,7 +52,7 @@ def write_morgue(game: Game, when: datetime, directory: Path | None = None) -> P
         f"Seed: {game.seed}",
         f"Turns survived: {game.turn}",
         f"Deepest point: {deepest}",
-        f"Fate: {game.death_cause or 'lost to the forest'}",
+        f"Fate: {'the lids stayed shut' if victory else game.death_cause or 'lost to the forest'}",
         "",
         *portrait.splitlines(),
         "",
@@ -58,7 +60,11 @@ def write_morgue(game: Game, when: datetime, directory: Path | None = None) -> P
         "Carried at the end: " + (", ".join(carried) if carried else "nothing"),
         *meta_lines,
         "",
-        "Somewhere above the canopy, a bird takes wing toward Wyraj.",
+        (
+            "The birds returned. Once."
+            if victory
+            else "Somewhere above the canopy, a bird takes wing toward Wyraj."
+        ),
     ]
     target.write_text("\n".join(lines) + "\n", encoding="utf-8")
     return target

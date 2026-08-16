@@ -22,12 +22,18 @@ class OriginApp(App[str]):
     Screen { background: #0d0f0c; color: #b8b6a9; }
     """
 
-    def __init__(self, origins: dict[str, OriginDef], unlocked: list[str] | None = None) -> None:
+    def __init__(
+        self,
+        origins: dict[str, OriginDef],
+        unlocked: list[str] | None = None,
+        victorious: set[str] | None = None,
+    ) -> None:
         super().__init__()
         allowed = set(unlocked or [])
         self.origins = [
             origins[k] for k in sorted(origins) if origins[k].unlock is None or k in allowed
         ]
+        self.victorious = victorious or set()  # M8 §3: origins that sealed the lids
         self.index = 0
 
     def compose(self) -> ComposeResult:
@@ -42,7 +48,10 @@ class OriginApp(App[str]):
         for i, origin in enumerate(self.origins):
             marker = "▶ " if i == self.index else "  "
             style = "bold gold3" if i == self.index else "grey62"
-            text.append(f"{marker}{i + 1}. {origin.name}, {origin.title_for(lang)}\n", style=style)
+            text.append(f"{marker}{i + 1}. {origin.name}, {origin.title_for(lang)}", style=style)
+            if origin.key in self.victorious:
+                text.append(" ⁂", style="light_goldenrod2")  # the birds returned for this one
+            text.append("\n", style=style)
         chosen = self.origins[self.index]
         text.append(f"\n{chosen.description_for(lang).strip()}\n", style="grey66")
         text.append("\n" + t("origin_hint"), style="grey42")

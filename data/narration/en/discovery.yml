@@ -23,3 +23,7 @@ lore_discovered:
     - weight: 1
       importance: high
       en: "Cold clay that walks: a martwiak, buried without rites, comes on with the patience of the grave."
+  sluga:
+    - weight: 1
+      importance: high
+      en: "Grave-linen, hands worn flat, a walk with exactly one purpose in it. It does not look at you. You are not the stone it serves."

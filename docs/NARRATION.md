@@ -65,6 +65,12 @@ packs never author it, and it never changes the prose.
 | `blizna_earned`  | — (a near-death survived; the scar line)           |
 | `weapon_named`   | the species key (`wilk`, `bies`, …) — the prose carries the epithet |
 | `weapon_recognized` | — (the dziad greets a named weapon)             |
+| `deep_descended` | — (first step past the last sky shaft)             |
+| `wij_stirred` / `wij_lid_lifted` / `wij_gaze_opened` | — (M8 phases)   |
+| `seen_by_wij`    | — (a lit turn under the open gaze)                 |
+| `wij_attack_futile` | — (bumping the cradle without salt)             |
+| `rite_started` / `rite_completed` | —                                 |
+| `rite_interrupted` | `moved`, `damage`                                |
 
 ## Context tags
 

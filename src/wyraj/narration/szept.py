@@ -10,12 +10,14 @@ from collections.abc import Callable
 
 from wyraj.core.events import (
     AttackResolved,
+    DeepDescended,
     EntityDied,
     EntityMoved,
     HungerChanged,
     LoreDiscovered,
     StatusApplied,
     TurnEnded,
+    WijStirred,
 )
 from wyraj.core.game import Game
 from wyraj.core.map import Tile
@@ -53,6 +55,11 @@ class SzeptSystem:
         bus.subscribe(StatusApplied, self._on_status)
         bus.subscribe(EntityDied, self._on_died)
         bus.subscribe(TurnEnded, self._on_turn_end)
+        # M8 §1: past the last sky shaft the szept changes sides — it stops
+        # helping and starts noticing. Not in CORE_TRIGGERS: the farewell
+        # must not wait on whispers most souls will never live to hear.
+        bus.subscribe(DeepDescended, self._on_deep_descended)
+        bus.subscribe(WijStirred, self._on_wij_stirred)
 
     # -- firing ----------------------------------------------------------
 
@@ -97,6 +104,12 @@ class SzeptSystem:
     def _on_died(self, event: EntityDied) -> None:
         if not event.entity.is_player and event.entity.key in self.game.bestiary:
             self._fire("first_kill")
+
+    def _on_deep_descended(self, event: DeepDescended) -> None:
+        self._fire("deep_descended")
+
+    def _on_wij_stirred(self, event: WijStirred) -> None:
+        self._fire("wij_watching")
 
     def _on_turn_end(self, event: TurnEnded) -> None:
         game = self.game

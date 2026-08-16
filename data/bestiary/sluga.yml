@@ -1,0 +1,21 @@
+sluga:
+  name: "sługa"
+  forms:
+    en: { plural: "sługi", pronoun_subj: "it", pronoun_obj: "it", pronoun_poss: "its" }
+    pl: { mian: "sługa", dop: "sługi", cel: "słudze", bier: "sługę", narz: "sługą", miej: "słudze" }
+  glyph: "u"
+  ascii_glyph: "u"
+  style: "grey54"
+  hp: 6
+  speed: 80
+  damage: 2
+  to_hit: 55
+  behavior: lift
+  spawn_weight: 0
+  biomes: []          # never in random spawns: the vault breeds its own
+  epithets: ["the pallbearer"]
+  weakness: "It does not want you. It wants the lids. Kill it at the cradle and the lifting falters."
+  description: >
+    A shape in grave-linen with hands worn flat from pushing stone. It does
+    not hunt, does not flee, barely notices the living — it walks to the
+    cradle and it lifts, because that is what it was buried to do.
