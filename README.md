@@ -59,6 +59,9 @@ English and Polish.
   distance — you hear the pack before you see it. Sound is a bus listener
   like the narrator: without the extra the game is byte-identically
   silent, and it never carries information the narration doesn't.
+  Hearing nothing? `uv run wyraj --sound-check` reports the whole chain
+  and plays a test sound. Mind that a later plain `uv sync` removes the
+  extra again — rerun it with `--extra sound`.
 - **Folk magic for modders — "Gusła".** A pack is a folder shaped like
   `data/` plus a manifest: new monsters, items, errands, narration —
   even a whole new language — merged in with one rule (override by key,

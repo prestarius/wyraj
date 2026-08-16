@@ -45,6 +45,11 @@ def main() -> None:
     )
     parser.add_argument("--history", action="store_true", help="show recent runs and exit")
     parser.add_argument(
+        "--sound-check",
+        action="store_true",
+        help="report the audio chain, play a test sound, and exit",
+    )
+    parser.add_argument(
         "--validate-pack",
         metavar="PATH",
         default=None,
@@ -56,6 +61,14 @@ def main() -> None:
         help="forget the prologue and the szept whispers, then exit (progress is kept)",
     )
     args = parser.parse_args()
+
+    if args.sound_check:
+        from wyraj.ui.audio import run_sound_check
+
+        config = _load_config_safely()
+        raw_audio = config.get("audio")
+        ok = run_sound_check(raw_audio if isinstance(raw_audio, dict) else {})
+        raise SystemExit(0 if ok else 1)
 
     if args.validate_pack:
         from pathlib import Path

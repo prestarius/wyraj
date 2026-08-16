@@ -124,6 +124,19 @@ def test_missing_sounds_yml_loads_empty_catalog(tmp_path) -> None:
     assert load_audio_catalog(tmp_path) == AudioCatalog()
 
 
+def test_sound_check_reports_missing_backend(monkeypatch, capsys) -> None:
+    import wyraj.ui.audio as audio_module
+    from wyraj.ui.audio import AudioUnavailable, run_sound_check
+
+    def refuse() -> None:
+        raise AudioUnavailable("no extra here")
+
+    monkeypatch.setattr(audio_module, "PygameBackend", refuse)
+    assert run_sound_check({}) is False
+    out = capsys.readouterr().out
+    assert "UNAVAILABLE" in out and "uv sync --extra sound" in out
+
+
 # ---- US 14.2: catalog & starter assets ------------------------------------
 
 

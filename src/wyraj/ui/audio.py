@@ -233,3 +233,50 @@ class AudioSystem:
 
     def shutdown(self) -> None:
         self.backend.shutdown()
+
+
+def run_sound_check(audio_config: dict | None = None) -> bool:
+    """`wyraj --sound-check`: report the whole audio chain, play one test
+    sound, and say what silence would mean. Returns True when the chain is
+    healthy (the human ear is the last judge)."""
+    import time
+
+    cfg = audio_config or {}
+    print("Wyraj sound check")
+    print(
+        f"  config: enabled={cfg.get('enabled', True)}  master={cfg.get('master', 0.8)}"
+        f"  ambient={cfg.get('ambient', 0.7)}  sfx={cfg.get('sfx', 0.8)}"
+    )
+    if not cfg.get("enabled", True):
+        print("  note: audio is DISABLED in config.yml — toggle it in Options ('a') or set")
+        print("        audio: {enabled: true}. The test sound below plays anyway.")
+    try:
+        backend = PygameBackend()
+    except AudioUnavailable as exc:
+        print(f"  backend: UNAVAILABLE — {exc}")
+        print("  fix: uv sync --extra sound   (a later plain 'uv sync' removes it again)")
+        return False
+    import pygame
+
+    print(f"  backend: pygame-ce {pygame.version.ver}, mixer {pygame.mixer.get_init()}")
+    try:
+        import pygame._sdl2.audio as sdl2_audio
+
+        print(f"  output devices: {sdl2_audio.get_audio_device_names(False)}")
+    except Exception:
+        pass
+    from wyraj.content.audio import load_audio_catalog
+
+    spec = load_audio_catalog().events.get("crane_summon_completed")
+    if spec is None:
+        print("  catalog: no crane sound found — data/audio/sounds.yml missing or empty")
+        backend.shutdown()
+        return False
+    print("  playing the crane (the game's one big sound) at full volume…")
+    backend.play(Path(spec.file), 1.0)
+    time.sleep(2.4)
+    backend.shutdown()
+    print("  If you heard wingbeats: sound works — in-game it is quieter (mixed volumes).")
+    print("  If you heard nothing: check the output device above, system volume, and")
+    print("  that you didn't launch with --mute.")
+    return True
