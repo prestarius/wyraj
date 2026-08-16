@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project
 
-**Wyraj** — a narrated roguelike in Slavic dark fantasy: ADOM-class systemic depth fused with rich adventure prose. Specs: `docs/WYRAJ_PROJECT.md` (core, M0–M5), `docs/WYRAJ_M6_POWROTY.md` (meta-progression), `docs/WYRAJ_PROG_SPEC.md` (intro/onboarding) — read the relevant one before non-trivial work. `docs/IMPLEMENTATION_PLAN.md` is the backlog and status board (Epics 1–8 are DONE through v0.7).
+**Wyraj** — a narrated roguelike in Slavic dark fantasy: ADOM-class systemic depth fused with rich adventure prose. Specs: `docs/WYRAJ_PROJECT.md` (core, M0–M5), `docs/WYRAJ_M6_POWROTY.md` (meta-progression), `docs/WYRAJ_PROG_SPEC.md` (intro/onboarding) — read the relevant one before non-trivial work. `docs/IMPLEMENTATION_PLAN.md` is the backlog and status board (Epics 1–9 are DONE through v0.7 + polish).
 
 Licensing (decided 2026-08-14): AGPL-3.0 for code, CC-BY-SA 4.0 for `data/` content, CLA for contributors. Maintainer is pseudonymous — **"Prestarius" everywhere**; never introduce a real name into the repo.
 
@@ -26,7 +26,7 @@ Python 3.12+, `uv`-managed, Textual TUI. Fully bilingual EN/PL: narration packs 
 - **World chain:** wieś(0) → puszcza(1) → bagna(2) → kurhany(3–5); entities carry `OnLevel`, off-level actors are frozen.
 - **Meta-progression:** `~/.wyraj/meta.yml` survives death and mutates only at defined transaction points (bank/stash/purchase/offering/codex/death), each publishing `MetaTransaction`; HMAC flags hand-edits without punishing. On-body purse and items are always lost on death.
 - **Data-driven content.** Monsters, items, hooks, loot, economy, origins, narration packs → YAML under `data/`, pydantic-validated in `content/`. Intro/onboarding content is `data/intro/` (NOT `data/narration/` — the pack loader eats every YAML there). Adding content must not require engine changes.
-- **Narration pipeline:** `GameEvent → ContextEnricher(tags) → buffer → TurnEnded → TurnComposer paragraph`. New event type ⇒ add a `rule_key` mapping, EN + PL pack rules, and a fixture in `tests/test_narration_templates.py` (the PL-parity and render tests enforce all of it).
+- **Narration pipeline:** `GameEvent → ContextEnricher(tags) → buffer → TurnEnded → TurnComposer paragraph`. New event type ⇒ add a `rule_key` mapping, EN + PL pack rules, and a fixture in `tests/test_narration_templates.py` (the PL-parity and render tests enforce all of it). Paragraphs carry a cosmetic `category` (combat/lore/loot/ambient, mapped in `category_of` in `templates.py`) used only for log tinting — unmapped events default to ambient.
 
 ## Working rules (from spec §12)
 

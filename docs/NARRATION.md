@@ -27,6 +27,12 @@ among them via the seeded `narration` RNG stream; the same template is
 never picked twice in a row for one rule. Rules with per-key subkeys fall
 back to a `default` subkey, then to a bare rule.
 
+Presentation: `importance: high` renders emphasized (bold red). Each
+turn's paragraph is also tinted by its dominant event family — combat
+ember, loot gold, lore purple, ambient grey. That category is derived in
+code from the event type (`category_of` in `narration/templates.py`);
+packs never author it, and it never changes the prose.
+
 ## Rule keys
 
 | event            | subkeys                                            |

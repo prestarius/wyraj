@@ -2,6 +2,34 @@
 
 All notable changes to Wyraj. Format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [Unreleased] — Szlif (UI polish & death flow)
+
+### Added
+- Death screen choices: `n` sets out again (fresh run, same origin; a
+  pinned `--seed` stays pinned), `m` returns to the title screen, `q`
+  leaves. `WyrajApp` now exits a typed outcome and the entrypoint loops.
+- `q` mid-run asks before abandoning (an abandoned run is not saved);
+  `s` remains the silent save+quit.
+- Visual pass "czarnoles+": panel border titles (live place name, origin,
+  "The Tale"), modals as lit bordered panels floating over the dimmed
+  game, biome-tinted floors (wieś/puszcza/bagna/kurhany), a brief red
+  flash on the player glyph when hit, themed footer and scrollbar.
+- Narration presentation: each turn's paragraph is tinted by its dominant
+  event family (combat ember, loot gold, lore purple, ambient grey) via a
+  cosmetic `NarrationLine.category`; paragraphs are separated by blank
+  lines. Narration *text* is byte-identical — the golden transcript is
+  unchanged.
+- Narration pane grew to 40% of the screen (min 12 rows).
+
+### Fixed
+- Escape actually closes the interactive modals (skrzynia, inventory,
+  trade, shrine): their `on_key` stopped every key before the screen's
+  Escape binding could run.
+- Opening the inventory while carrying a trophy no longer crashes.
+- Inventory letters on trinkets/trophies keep the dialog open instead of
+  silently closing it.
+- The death screen is modal: app keybindings no longer leak through it.
+
 ## [0.7-prog] — 2026-08-15 — Próg (intro & onboarding)
 
 ### Added

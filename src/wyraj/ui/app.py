@@ -12,6 +12,7 @@ from textual.widgets import Footer, RichLog
 
 from wyraj.content.intro import load_szept
 from wyraj.core.actions import Action, Ascend, Descend, Get, Move, Rest, Wait
+from wyraj.core.components import Health
 from wyraj.core.events import ShrineVisited, StashOpened, TalkedTo
 from wyraj.core.game import Game
 from wyraj.narration.context import ContextEnricher
@@ -26,6 +27,7 @@ from wyraj.persistence.save import delete_save, save_game
 from wyraj.ui.i18n import t
 from wyraj.ui.screens import (
     CodexScreen,
+    ConfirmQuitScreen,
     DeathScreen,
     ExamineScreen,
     HelpScreen,
@@ -51,14 +53,22 @@ MOVE_KEYS: dict[str, tuple[int, int]] = {
     "right": (1, 0),
 }
 
-IMPORTANCE_STYLES = {"normal": "grey74", "high": "bold red3"}
+# Paragraph tint per narration family; high importance overrides them all.
+CATEGORY_STYLES = {
+    "combat": "indian_red",
+    "loot": "gold3",
+    "lore": "medium_purple3",
+    "ambient": "grey74",
+}
 
 
-class WyrajApp(App[None]):
+class WyrajApp(App[str]):
+    """Exits with an outcome: "quit" | "restart" (new run) | "title" (main screen)."""
+
     CSS_PATH = "wyraj.tcss"
     TITLE = "WYRAJ"
     BINDINGS: ClassVar = [
-        Binding("q", "quit", "Quit"),
+        Binding("q", "confirm_quit", "Quit"),
         Binding("full_stop", "wait", "Wait", key_display="."),
         Binding("g", "get", "Get"),
         Binding("i", "inventory", "Inventory"),
@@ -123,18 +133,26 @@ class WyrajApp(App[None]):
 
     def on_mount(self) -> None:
         log = self.query_one(RichLog)
+        log.border_title = t("panel_tale")
         intro = self.game.origin.intro_for(self.lang).strip().replace("\n", " ")
         log.write(Text(intro, style="italic grey74"))
         log.write(Text(t("intro_second"), style="italic grey58"))
 
     def _on_szept(self, text: str) -> None:
         if self.is_running:
-            self.query_one(RichLog).write(Text(text, style="italic grey42"))
+            log = self.query_one(RichLog)
+            log.write(Text(""))
+            log.write(Text(text, style="italic grey42"))
 
     def _on_narration(self, line: NarrationLine) -> None:
         if self.is_running:
-            style = IMPORTANCE_STYLES.get(line.importance, "grey74")
-            self.query_one(RichLog).write(Text(line.text, style=style))
+            if line.importance == "high":
+                style = "bold red3"
+            else:
+                style = CATEGORY_STYLES.get(line.category, "grey74")
+            log = self.query_one(RichLog)
+            log.write(Text(""))
+            log.write(Text(line.text, style=style))
 
     def on_key(self, event: events.Key) -> None:
         if len(self.screen_stack) > 1:
@@ -192,10 +210,21 @@ class WyrajApp(App[None]):
                 self.push_screen, TradeScreen(self.game, event.villager.entity), on_result
             )
 
+    def action_confirm_quit(self) -> None:
+        if self.game.game_over:
+            self.exit("quit")
+            return
+
+        def on_result(confirmed: bool | None) -> None:
+            if confirmed:
+                self.exit("quit")
+
+        self.push_screen(ConfirmQuitScreen(), on_result)
+
     def action_save_quit(self) -> None:
         if not self.game.game_over:
             save_game(self.game)
-        self.exit()
+        self.exit("quit")
 
     def action_examine(self) -> None:
         self.push_screen(ExamineScreen(self.game))
@@ -213,7 +242,11 @@ class WyrajApp(App[None]):
     def _play(self, action: Action) -> None:
         if self.game.game_over:
             return
+        hp_before = self.game.world.expect(self.game.player, Health).hp
         self.game.step(action)
+        health = self.game.world.get(self.game.player, Health)
+        if health is not None and health.hp < hp_before and not self.game.game_over:
+            self.query_one(MapView).flash_damage()
         self.query_one(MapView).refresh()
         self.query_one(CharacterPanel).refresh()
         if self.game.game_over:

@@ -6,7 +6,16 @@ from textual.widgets import RichLog
 
 from wyraj.core.components import AI, Health, OnLevel, Position
 from wyraj.ui.app import WyrajApp
-from wyraj.ui.screens import CodexScreen, DeathScreen, ExamineScreen, InventoryScreen
+from wyraj.ui.screens import (
+    CodexScreen,
+    ConfirmQuitScreen,
+    DeathScreen,
+    ExamineScreen,
+    InventoryScreen,
+    ShrineScreen,
+    StashScreen,
+    TradeScreen,
+)
 from wyraj.ui.widgets import CharacterPanel, MapView
 
 
@@ -32,7 +41,53 @@ def test_app_boots_and_waits_advance_turns() -> None:
             await pilot.press("i")
             assert isinstance(app.screen, InventoryScreen)
             await pilot.press("escape")
+            assert len(app.screen_stack) == 1  # escape must actually close the modal
             assert app.game.turn == start_turn + 3  # modals cost no turns
+
+    asyncio.run(run())
+
+
+def test_escape_closes_every_modal() -> None:
+    """Regression: modals with on_key used to swallow escape via event.stop()."""
+
+    async def run() -> None:
+        app = WyrajApp(seed=42)
+        async with app.run_test(size=(100, 40)) as pilot:
+            modals = [
+                InventoryScreen(app.game),
+                StashScreen(app.game),
+                ShrineScreen(app.game, "weles"),
+                TradeScreen(app.game, app.game.player),
+            ]
+            for modal in modals:
+                app.push_screen(modal)
+                await pilot.pause()
+                assert len(app.screen_stack) == 2
+                await pilot.press("escape")
+                await pilot.pause()
+                assert len(app.screen_stack) == 1, f"{type(modal).__name__} did not close"
+
+    asyncio.run(run())
+
+
+def test_quit_asks_for_confirmation() -> None:
+    async def run() -> None:
+        app = WyrajApp(seed=42)
+        async with app.run_test(size=(100, 40)) as pilot:
+            await pilot.press("q")
+            assert isinstance(app.screen, ConfirmQuitScreen)
+            await pilot.press("n")
+            await pilot.pause()
+            assert len(app.screen_stack) == 1  # declined: back in the game
+            await pilot.press("q")
+            assert isinstance(app.screen, ConfirmQuitScreen)
+            await pilot.press("escape")
+            await pilot.pause()
+            assert len(app.screen_stack) == 1
+            await pilot.press("q")
+            await pilot.press("y")
+            await pilot.pause()
+            assert not app.is_running  # confirmed: the app exited
 
     asyncio.run(run())
 
@@ -55,5 +110,22 @@ def test_death_screen_appears_on_game_over() -> None:
             assert app.game.game_over
             assert app.game.world.expect(app.game.player, Health).hp == 0
             assert isinstance(app.screen, DeathScreen)
+            await pilot.press("n")
+            await pilot.pause()
+            assert app.return_value == "restart"  # "set out again"
+
+    asyncio.run(run())
+
+
+def test_death_screen_main_screen_and_quit_outcomes() -> None:
+    async def run() -> None:
+        for key, expected in (("m", "title"), ("q", "quit")):
+            app = WyrajApp(seed=42)
+            async with app.run_test(size=(100, 40)) as pilot:
+                app.push_screen(DeathScreen(seed=42, turn=1))
+                await pilot.pause()
+                await pilot.press(key)
+                await pilot.pause()
+                assert app.return_value == expected
 
     asyncio.run(run())

@@ -142,6 +142,13 @@ All nine stories landed on `feat/m6-powroty`. Meta path is `~/.wyraj/meta.yml` (
 
 Deviation note: intro content lives under `data/intro/{en,pl}/` rather than `data/narration/` — the narration dir is reserved for grammar packs, whose loader globs every `*.yml` there.
 
+## Epic 9 — Szlif: UI polish & death flow — **DONE 2026-08-15**
+
+- US 9.1 — Modal input fixes: Esc actually closes skrzynia/inventory/trade/shrine (their `on_key` called `event.stop()` before the Escape binding could fire); inventory no longer crashes on carried trophies; trinket/trophy letters keep the dialog open; DeathScreen made modal so app keys stop leaking through it
+- US 9.2 — Visual pass: panel border titles (live place / origin / "The Tale"), modals as lit panels over the dimmed game (the `Middle`/`Center` wrappers had to go — full-screen containers block Textual's screen-through compositing), biome-tinted floors, damage flash on `@`, themed footer + scrollbar, narration pane at 40% height (min 12)
+- US 9.3 — Narration presentation: cosmetic `NarrationLine.category` (combat/lore/loot/ambient, dominant family tints the paragraph), blank line between turn paragraphs; golden transcript byte-identical
+- US 9.4 — Death & quit flow: death screen offers `n` new run / `m` main screen / `q` quit; `WyrajApp` exits a typed outcome and the entrypoint loops (a pinned `--seed` stays pinned on restart); mid-run `q` asks before abandoning
+
 ---
 
 ## Open decisions blocking future work (spec §13)

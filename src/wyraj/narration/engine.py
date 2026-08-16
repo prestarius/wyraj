@@ -21,6 +21,7 @@ NO_TAGS: frozenset[str] = frozenset()
 class NarrationLine:
     text: str
     importance: str = "normal"  # "normal" | "high"
+    category: str = "ambient"  # "combat" | "lore" | "loot" | "ambient" — UI tint only
 
 
 class Narrator(Protocol):

@@ -6,8 +6,7 @@ from typing import ClassVar
 from rich.text import Text
 from textual import events
 from textual.app import ComposeResult
-from textual.containers import Center, Middle
-from textual.screen import ModalScreen, Screen
+from textual.screen import ModalScreen
 from textual.widgets import Static
 
 from wyraj.core.actions import (
@@ -39,8 +38,38 @@ from wyraj.ui.codex_view import build_codex_text
 from wyraj.ui.i18n import t
 
 
-class DeathScreen(Screen[None]):
-    BINDINGS: ClassVar = [("q", "quit_app", "Quit")]
+class ConfirmQuitScreen(ModalScreen[bool]):
+    """`q` mid-run: abandoning without saving deserves a second thought."""
+
+    BINDINGS: ClassVar = [("escape", "stay", "Stay")]
+
+    def compose(self) -> ComposeResult:
+        text = Text()
+        text.append(t("quit_confirm") + "\n\n", style="bold")
+        text.append(t("quit_confirm_hint"), style="grey58")
+        yield Static(text, classes="dialog")
+
+    def on_key(self, event: events.Key) -> None:
+        if event.key == "escape":
+            return  # let it bubble so the Escape binding closes the modal
+        event.stop()
+        if event.key in ("y", "t"):  # EN yes / PL tak
+            self.dismiss(True)
+        elif event.key == "n":
+            self.dismiss(False)
+
+    def action_stay(self) -> None:
+        self.dismiss(False)
+
+
+class DeathScreen(ModalScreen[None]):
+    """Permadeath epilogue: set out again, return to the title, or leave."""
+
+    BINDINGS: ClassVar = [
+        ("n", "new_run", "New run"),
+        ("m", "main_screen", "Main screen"),
+        ("q", "quit_app", "Quit"),
+    ]
 
     def __init__(
         self,
@@ -68,12 +97,17 @@ class DeathScreen(Screen[None]):
             text.append(t("death_morgue", path=self.morgue_path) + "\n", style="grey42")
         for name in self.unlocked:
             text.append("\n" + t("death_unlock", name=name) + "\n", style="bold gold3")
-        text.append("\n" + t("death_quit"), style="grey42")
-        with Middle(), Center():
-            yield Static(text)
+        text.append("\n" + t("death_options"), style="grey42")
+        yield Static(text, classes="dialog")
+
+    def action_new_run(self) -> None:
+        self.app.exit("restart")
+
+    def action_main_screen(self) -> None:
+        self.app.exit("title")
 
     def action_quit_app(self) -> None:
-        self.app.exit()
+        self.app.exit("quit")
 
 
 class InventoryScreen(ModalScreen[Action | None]):
@@ -115,17 +149,16 @@ class InventoryScreen(ModalScreen[Action | None]):
                 text.append(" " + t("mark_wielded"), style="grey58")
             elif entity == worn:
                 text.append(" " + t("mark_worn"), style="grey58")
-            elif verbs[kind]:
+            elif verbs.get(kind, ""):
                 text.append(f"  [{verbs[kind]}]", style="grey42")
             text.append("\n")
         text.append("\n" + t("esc_close"), style="grey42")
-        with Middle(), Center():
-            yield Static(text)
+        yield Static(text, classes="dialog")
 
     def on_key(self, event: events.Key) -> None:
-        event.stop()
         if event.key == "escape":
-            return
+            return  # let it bubble so the Escape binding closes the modal
+        event.stop()
         for letter, entity, _name, kind in self.entries:
             if event.key == letter:
                 if kind == "consumable":
@@ -134,8 +167,7 @@ class InventoryScreen(ModalScreen[Action | None]):
                     self.dismiss(WieldItem(entity))
                 elif kind == "armor":
                     self.dismiss(WearItem(entity))
-                else:
-                    self.dismiss(None)
+                # trinkets/trophies have no verb — stay open instead of closing
                 return
 
     def action_close(self) -> None:
@@ -197,13 +229,12 @@ class TradeScreen(ModalScreen[Action | None]):
             text.append(f" — {name} ")
             text.append(f"(+{game.sell_price_for(key)})\n", style="gold3")
         text.append("\n" + t("trade_esc"), style="grey42")
-        with Middle(), Center():
-            yield Static(text)
+        yield Static(text, classes="dialog")
 
     def on_key(self, event: events.Key) -> None:
-        event.stop()
         if event.key == "escape":
-            return
+            return  # let it bubble so the Escape binding closes the modal
+        event.stop()
         for letter, entity, _name, _key in self.theirs:
             if event.key == letter:
                 self.dismiss(BuyItem(trader=self.trader, item=entity))
@@ -235,8 +266,7 @@ class HelpScreen(ModalScreen[None]):
         for paragraph in help_text.world:
             text.append(paragraph.strip().replace("\n", " ") + "\n\n", style="italic grey62")
         text.append(t("esc_close"), style="grey42")
-        with Middle(), Center():
-            yield Static(text)
+        yield Static(text, classes="dialog")
 
     def action_close(self) -> None:
         self.dismiss(None)
@@ -263,10 +293,11 @@ class ShrineScreen(ModalScreen[Action | None]):
             else:
                 text.append(t("shrine_broke") + "\n", style="grey42")
         text.append("\n" + t("esc_close"), style="grey42")
-        with Middle(), Center():
-            yield Static(text)
+        yield Static(text, classes="dialog")
 
     def on_key(self, event: events.Key) -> None:
+        if event.key == "escape":
+            return  # let it bubble so the Escape binding closes the modal
         event.stop()
         if event.key == "o":
             self.dismiss(MakeOffering(god=self.god))
@@ -323,13 +354,12 @@ class StashScreen(ModalScreen[Action | None]):
         if step < len(upgrades) and meta.stash.slots_total < 10:
             text.append("\n" + t("stash_upgrade_offer", price=upgrades[step]) + "\n", style="gold3")
         text.append("\n" + t("esc_close"), style="grey42")
-        with Middle(), Center():
-            yield Static(text)
+        yield Static(text, classes="dialog")
 
     def on_key(self, event: events.Key) -> None:
-        event.stop()
         if event.key == "escape":
-            return
+            return  # let it bubble so the Escape binding closes the modal
+        event.stop()
         if event.key == "u":
             self.dismiss(UpgradeStash())
             return
@@ -392,8 +422,7 @@ class ExamineScreen(ModalScreen[None]):
         if not seen_something:
             text.append(t("examine_nothing") + "\n", style="grey58")
         text.append("\n" + t("esc_close"), style="grey42")
-        with Middle(), Center():
-            yield Static(text)
+        yield Static(text, classes="dialog")
 
     def action_close(self) -> None:
         self.dismiss(None)
@@ -417,8 +446,7 @@ class CodexScreen(ModalScreen[None]):
             sell_price_for=game.sell_price_for,
             tier_of=game.codex_tier,
         )
-        with Middle(), Center():
-            yield Static(text)
+        yield Static(text, classes="dialog")
 
     def action_close(self) -> None:
         self.dismiss(None)

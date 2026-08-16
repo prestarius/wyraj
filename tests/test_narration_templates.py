@@ -198,3 +198,4 @@ def test_engine_flushes_paragraph_on_turn_end() -> None:
     assert len(engine.lines) == 1
     assert received == engine.lines
     assert "you" in received[0].text.lower() or "bies" in received[0].text.lower()
+    assert received[0].category == "combat"  # attack events tint the paragraph
