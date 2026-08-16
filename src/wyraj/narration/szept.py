@@ -15,6 +15,7 @@ from wyraj.core.events import (
     EntityMoved,
     HungerChanged,
     LoreDiscovered,
+    PhaseChanged,
     StatusApplied,
     TurnEnded,
     WijStirred,
@@ -59,6 +60,7 @@ class SzeptSystem:
         # helping and starts noticing. Not in CORE_TRIGGERS: the farewell
         # must not wait on whispers most souls will never live to hear.
         bus.subscribe(DeepDescended, self._on_deep_descended)
+        bus.subscribe(PhaseChanged, self._on_phase)
         bus.subscribe(WijStirred, self._on_wij_stirred)
 
     # -- firing ----------------------------------------------------------
@@ -104,6 +106,10 @@ class SzeptSystem:
     def _on_died(self, event: EntityDied) -> None:
         if not event.entity.is_player and event.entity.key in self.game.bestiary:
             self._fire("first_kill")
+
+    def _on_phase(self, event: PhaseChanged) -> None:
+        if event.phase == "noc" and 1 <= self.game.depth <= 2:
+            self._fire("first_night")
 
     def _on_deep_descended(self, event: DeepDescended) -> None:
         self._fire("deep_descended")

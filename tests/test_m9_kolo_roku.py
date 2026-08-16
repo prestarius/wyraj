@@ -140,7 +140,7 @@ def test_population_depends_deterministically_on_visit_time() -> None:
         return sorted(lore.key for _e, (_ai, lore) in game.world.query(AI, Lore))
 
     assert keys_at(60) == keys_at(60)  # same visit time = same forest
-    day, night = keys_at(60), keys_at(200)
+    night = keys_at(200)
     assert "poludnica" not in night
 
 
