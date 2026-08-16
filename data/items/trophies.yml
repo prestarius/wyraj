@@ -62,3 +62,30 @@ futro_kuny:
   description: >
     Soft, dark, and better than coin in half the villages along the
     puszcza — kuny were money before money remembered to arrive.
+
+utopcowa_luska:
+  name: "utopiec scale"
+  glyph: "'"
+  ascii_glyph: "'"
+  style: "sea_green3"
+  kind: trophy
+  spawn_weight: 0
+  forms:
+    pl: { mian: "utopcowa łuska", dop: "utopcowej łuski", bier: "utopcową łuskę", narz: "utopcową łuską", miej: "utopcowej łusce" }
+  description: >
+    A palm-broad scale, green as pond ice and always wet. Proof that a
+    drowned thing can die twice — and that somebody made it.
+
+kadzielnica:
+  name: "shrine-keeper's kadzielnica"
+  glyph: "&"
+  ascii_glyph: "&"
+  style: "gold3"
+  kind: trophy
+  spawn_weight: 0
+  forms:
+    pl: { mian: "kadzielnica kaplicznika", dop: "kadzielnicy kaplicznika", bier: "kadzielnicę kaplicznika", narz: "kadzielnicą kaplicznika", miej: "kadzielnicy kaplicznika" }
+  description: >
+    A dented brass censer on a chain, cold since the old shrine-keeper
+    carried it down under the mounds and did not carry it back. The chain
+    still smells of juniper smoke, if you believe your nose down here.

@@ -379,6 +379,30 @@ class TalkedTo(GameEvent):
 
 
 @dataclass(frozen=True)
+class ErrandHeard(GameEvent):
+    """A villager's ask, spoken once. Heard = taken (M10 §2)."""
+
+    errand: str  # template key
+    giver: EntityRef
+
+
+@dataclass(frozen=True)
+class ErrandCompleted(GameEvent):
+    """Proof handed over; the reward lands in the banked wallet (M10 §2)."""
+
+    errand: str
+    giver: EntityRef
+    reward: int
+
+
+@dataclass(frozen=True)
+class VillageFateResolved(GameEvent):
+    """An ignored chain came to pass off-screen between runs (M10 §4)."""
+
+    fate: str  # "mlyn_pusty" | "ciemna_kapliczka" | "zimna_kuznia"
+
+
+@dataclass(frozen=True)
 class Rested(GameEvent):
     actor: EntityRef
 

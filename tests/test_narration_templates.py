@@ -18,6 +18,8 @@ from wyraj.core.events import (
     DziadRecognized,
     EntityDied,
     EntityRef,
+    ErrandCompleted,
+    ErrandHeard,
     EventBus,
     FestivalDawned,
     GameEvent,
@@ -55,6 +57,7 @@ from wyraj.core.events import (
     StatusTick,
     TalkedTo,
     TalkedToDead,
+    VillageFateResolved,
     WeaponNamed,
     WeaponRecognized,
     WeatherChanged,
@@ -168,6 +171,17 @@ def fixture_event(event_key: str, subkey: str | None) -> GameEvent:
         return StatusExpired(actor=PLAYER, kind=subkey)
     if event_key == "light_extinguished":
         return LightExtinguished(actor=PLAYER)
+    if event_key == "errand_heard":
+        assert subkey is not None
+        giver = EntityRef(entity=10, key="mlynarz", name="Bogusz the młynarz")
+        return ErrandHeard(errand=subkey, giver=giver)
+    if event_key == "errand_completed":
+        assert subkey is not None
+        giver = EntityRef(entity=10, key="mlynarz", name="Bogusz the młynarz")
+        return ErrandCompleted(errand=subkey, giver=giver, reward=70)
+    if event_key == "village_fate":
+        assert subkey is not None
+        return VillageFateResolved(fate=subkey)
     if event_key == "talked_to":
         assert subkey is not None
         villager = EntityRef(entity=7, key="dziad", name="old Świętosław")

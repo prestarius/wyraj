@@ -19,6 +19,7 @@ from wyraj.content.economy import (
     load_village_shop,
 )
 from wyraj.content.epithets import load_epithets
+from wyraj.content.errands import ErrandDef, load_errands
 from wyraj.content.hooks import HookDef, load_hooks
 from wyraj.content.items import ItemDef, load_items
 from wyraj.content.loot import load_loot_tables
@@ -181,6 +182,12 @@ RITE_ITEM = "sol_swiecona"  # consumed the moment the rite begins
 GLEBIEJ_SPAWN_BONUS = 2
 GLEBIEJ_LOOT_BONUS = 1
 
+# M10 "Zlecenia" tuning (spec §1, §4)
+ERRANDS_MIN = 1
+ERRANDS_MAX = 3
+# A giver leaves the wieś when their chain's fate resolves (M10 §4).
+ROLE_FATES = {"mlynarz": "mlyn_pusty", "kowal": "zimna_kuznia"}
+
 # M9 "Koło Roku" tuning (spec §2)
 SURFACE_PHASE_FOV = {"swit": 6, "dzien": 8, "zmierzch": 6, "noc": 5}
 MIST_FOV_PENALTY = 2
@@ -237,6 +244,11 @@ class Game:
         self.meta_autosave = meta_autosave
         self.dziad_shop = load_dziad_shop()
         self.offerings = load_offerings()
+        # M10 "Zlecenia": what the wieś asks of this run. Assembly is silent —
+        # an errand exists in the world before it exists in the log (spec §1).
+        self.errands_catalog = load_errands()
+        self.errands: dict[str, str] = self._assemble_errands()  # key → offered|heard|proof|done
+        self._fates_announced = False
         # Knowledge survives death (M6 §8.1): pre-known kinds are not
         # re-discovered, and their entries open at their earned tier.
         self.codex_seen |= set(self.meta.codex.known)
@@ -1219,6 +1231,28 @@ class Game:
         self.bus.publish(MetaTransaction(kind="death", detail=self.death_cause or ""))
         self._save_meta()
         return newly_unlocked
+
+    # ---- M10 "Zlecenia" ---------------------------------------------------
+
+    def _assemble_errands(self) -> dict[str, str]:
+        """Pure weighted draw of 1-3 errands from (seed, meta) — no shared RNG
+        streams, at most one ask per giver (M10 §1)."""
+        resolved = set(self.meta.village.resolved)
+        eligible = [
+            d
+            for d in sorted(self.errands_catalog.values(), key=lambda d: d.key)
+            if (not d.fate or d.fate not in resolved)
+            and ROLE_FATES.get(d.giver, "") not in resolved
+        ]
+        digest = hashlib.sha256(f"{self.seed}:errands".encode()).digest()
+        rng = random.Random(int.from_bytes(digest[:8], "big"))
+        count = rng.randint(ERRANDS_MIN, ERRANDS_MAX)
+        chosen: list[ErrandDef] = []
+        while eligible and len(chosen) < count:
+            pick = rng.choices(eligible, weights=[d.weight for d in eligible])[0]
+            chosen.append(pick)
+            eligible = [d for d in eligible if d.giver != pick.giver]
+        return {d.key: "offered" for d in sorted(chosen, key=lambda d: d.key)}
 
     def _mark_dziad_trade(self, trader: Entity) -> None:
         villager = self.world.get(trader, Villager)
