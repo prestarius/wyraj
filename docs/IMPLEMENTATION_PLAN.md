@@ -252,8 +252,16 @@ M8 → M9 → M10 → M11 → M12; M11 may slide earlier (no prerequisites past 
   provably zero game-RNG draws); US 14.6 docs, real-backend smoke on
   macOS (bed + SFX through CoreAudio). Golden byte-identical throughout;
   suites pass with and without the extra installed.
-- **Epic 15 — M12 "Gusła"** (Folk Magic): data-pack modding — pack manifest,
-  merge semantics, `--validate-pack`, example pack; data only, no scripting.
+- **Epic 15 — M12 "Gusła"** (Folk Magic) — **spec drafted 2026-08-16,
+  awaiting go/no-go** — spec `WYRAJ_M12_GUSLA.md` (open decisions 41–45).
+  Data only, forever: packs are YAML + assets, never code. US 15.1 pack
+  core (manifest, `data_roots()` chain, skip-with-note, pack-aware saves);
+  US 15.2 keyed-catalog merging (override whole entry / extend new key);
+  US 15.3 narration/locale/audio merging + dynamic languages (a DE pack
+  becomes possible); US 15.4 `--validate-pack` with friendly errors and
+  an adds/overrides summary; US 15.5 `examples/pack-pomorski/` (topielica,
+  stolem, klabaternik) + `docs/MODDING.md`. Golden/sims pack-free and
+  byte-identical throughout.
 
 Parked (not epics): release engineering & public reach, screen-reader deep
 pass, actual music, Steam, overworld travel (open decision #3 — revisit
@@ -304,3 +312,8 @@ after M10).
 | 38 | M11: v1 assets — synthesized starter set + generator script | US 14.2 | spec default: synthesized, curate later |
 | 39 | M11: audio on by default when extra installed | US 14.1 | spec default: on (installing is consent) |
 | 40 | M11: voicing knobs — modulus 17, radius 12 | US 14.5 | spec default: accept as starting points |
+| 41 | M12: v1 surface — keyed catalogs + narration + locale + audio only | US 15.2-15.3 | spec default: yes (economy/origins/intro/portrait deferred) |
+| 42 | M12: narration merge — whole-rule override | US 15.3 | spec default: override (predictable ownership) |
+| 43 | M12: saves refuse to load under a changed pack set | US 15.1 | spec default: refuse (permadeath-honest) |
+| 44 | M12: example pack at `examples/pack-pomorski/` (new top-level dir) | US 15.5 | spec default: yes, sanctioned layout change |
+| 45 | M12: packs may add new languages (dynamic --lang, EN fallback) | US 15.3 | spec default: yes |
