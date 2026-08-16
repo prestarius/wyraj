@@ -24,6 +24,16 @@ talked_to:
       en: "\"Under the mounds the dark is older than fire,\" the old man whispers. \"Take the thunder-candle. Take two.\""
     - weight: 1
       en: "\"The lights over the bagna are souls,\" he says. \"Whose souls? Follow them and find out. No? Wise.\""
+  kowal:
+    - weight: 2
+      en: "Radzim the kowal looks up from the anvil, decides you are neither work nor weather, and nods once. It is more than most get."
+    - weight: 1
+      en: "The kowal turns a horseshoe in the coals. \"If it's edges you need, I sell them. If it's advice — the edge is cheaper and worth more.\""
+  mlynarz:
+    - weight: 2
+      en: "Bogusz the młynarz stands with flour on his sleeves and his eyes on the gate. Millers used to be counted rich here. He is not counting anything now."
+    - weight: 1
+      en: "\"The stream still turns the wheel,\" the młynarz says, to you or to himself. \"A wheel doesn't ask what happened. That's the good in a wheel.\""
 
 rested:
   - weight: 2

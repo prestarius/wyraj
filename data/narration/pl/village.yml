@@ -24,6 +24,16 @@ talked_to:
       pl: "„Pod kurhanami ciemność jest starsza od ognia” — szepcze stary. „Weź gromnicę. Weź dwie.”"
     - weight: 1
       pl: "„Światełka nad bagnami to dusze” — powiada. „Czyje? Idź za nimi, to się dowiesz. Nie? Mądrze.”"
+  kowal:
+    - weight: 2
+      pl: "Radzim, kowal, podnosi wzrok znad kowadła, uznaje, że nie jesteś ani robotą, ani pogodą, i kiwa głową. Raz. Więcej mało kto dostaje."
+    - weight: 1
+      pl: "Kowal obraca podkowę w węglach. „Jak ci trzeba ostrza, to sprzedam. Jak rady — ostrze tańsze, a warte więcej.”"
+  mlynarz:
+    - weight: 2
+      pl: "Bogusz, młynarz, stoi z mąką na rękawach i oczami przy bramie. Młynarzy liczono tu kiedyś do bogatych. On już niczego nie liczy."
+    - weight: 1
+      pl: "„Strumień dalej obraca koło” — mówi młynarz, do ciebie albo do siebie. „Koło nie pyta, co się stało. To w kole najlepsze.”"
 
 rested:
   - weight: 2

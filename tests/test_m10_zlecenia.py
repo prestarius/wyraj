@@ -53,6 +53,46 @@ def test_resolved_fate_excludes_its_chain() -> None:
             assert all(catalog[k].giver != fated.giver for k in game.errands)
 
 
+# ---- US 13.2: the village grows two souls --------------------------------
+
+
+def test_new_villagers_stand_in_the_wies() -> None:
+    from wyraj.core.components import Lore, Villager
+
+    game = Game(seed=SEED, meta_autosave=False)
+    roles = {
+        villager.role: game.world.expect(entity, Lore).name
+        for entity, (villager,) in game.world.query(Villager)
+    }
+    assert roles["kowal"] == "Radzim the kowal"
+    assert roles["mlynarz"] == "Bogusz the młynarz"
+
+
+def test_bump_new_villagers_talks() -> None:
+    from wyraj.core.actions import Move
+    from wyraj.core.components import Position
+    from wyraj.core.events import TalkedTo
+
+    for role in ("kowal", "mlynarz"):
+        game = Game(seed=SEED, meta_autosave=False)
+        villager = _find_villager(game, role)
+        ppos = game.world.expect(game.player, Position)
+        game.world.add(villager, Position(ppos.x + 1, ppos.y))
+        talks: list[TalkedTo] = []
+        game.bus.subscribe(TalkedTo, talks.append)
+        game.step(Move(1, 0))
+        assert talks and talks[0].role == role
+
+
+def _find_villager(game: Game, role: str) -> int:
+    from wyraj.core.components import Villager
+
+    for entity, (villager,) in game.world.query(Villager):
+        if villager.role == role:
+            return entity
+    raise AssertionError(f"no {role} in the village")
+
+
 def test_errand_state_survives_save(tmp_path) -> None:
     from wyraj.persistence.save import load_game, save_game
 

@@ -298,6 +298,8 @@ class Game:
         )
 
         for role, vx, vy in layout.npc_posts:
+            if ROLE_FATES.get(role, "") in self.meta.village.resolved:
+                continue  # they left with their fate (M10 §4)
             self.spawn_villager(role, vx, vy)
         for kind, sx, sy in layout.special_posts:
             self._spawn_special(kind, sx, sy)
@@ -321,6 +323,17 @@ class Game:
             "dziad",
             "old Świętosław",
             "The village dziad. He remembers the woods from before the woods went wrong.",
+        ),
+        "kowal": (
+            "kowal",
+            "Radzim the kowal",
+            "The smith. He talks the way he hammers — seldom, and only where it bends.",
+        ),
+        "mlynarz": (
+            "mlynarz",
+            "Bogusz the młynarz",
+            "The miller, in from his mill on the stream outside the palisade. "
+            "Flour on his sleeves, and lately something heavier on the rest of him.",
         ),
     }
 
