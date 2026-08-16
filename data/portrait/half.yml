@@ -1,0 +1,27 @@
+# Halfblock "pixel" portrait (kept as an option: --portrait half).
+# Same layer contract as box.yml; no hunched variant yet — falls back to default.
+style: half
+base:
+  default:
+    - "   ▄▄▄▄▄   "
+    - "  ▟█████▙  "
+    - "  █▓▒░▒▓█  "
+    - "  ▀▜███▛▀  "
+    - " ▄███████▄ "
+    - " █ ▒███▒ █ "
+    - " ▛ ▒███▒ ▜ "
+    - "   ▐█▌▐█▌  "
+weapons:
+  noz: [[5, 10, "╱"]]
+  toporek: [[4, 10, "▛"], [5, 10, "┃"], [6, 10, "┃"]]
+  ciupaga: [[3, 10, "†"], [4, 10, "┃"], [5, 10, "┃"], [6, 10, "┃"]]
+armor: [[5, 1, "▓"], [5, 9, "▓"], [6, 1, "▓"], [6, 9, "▓"]]
+wounds:
+  bloodied: [[5, 3, "╳"]]
+  wounded: [[5, 3, "╳"], [6, 7, "╳"]]
+  dying: [[5, 3, "╳"], [6, 7, "╳"], [2, 4, "░"], [2, 6, "░"]]
+status_marks:
+  poison: [[2, 1, "~"]]
+  blessing: [[0, 9, "+"]]
+  wet: [[7, 1, "░"], [7, 9, "░"]]
+scars: [[2, 5, "╱"], [3, 4, "╲"], [5, 5, "╳"]]

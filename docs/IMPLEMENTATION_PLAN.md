@@ -157,7 +157,7 @@ Goal: the right-hand pane becomes the portrait of a soul in trouble — layered 
 portrait, equipment paper-doll, status row, quickslots `1–4`. Feature branch `feat/m7-sylwetka`;
 each story keeps `main` playable. Everything the pane shows is a projection of ECS state.
 
-### US 10.1 — Portrait compositor (spec §2, §7.1)
+### US 10.1 — Portrait compositor (spec §2, §7.1) — **DONE 2026-08-16**
 - 10.1.1 — Art moves to `data/portrait/{box,half,ascii}.yml`, pydantic-validated in `content/portrait.py`; all styles implement the same layer contract
 - 10.1.2 — Pure compositor `(PortraitState, art) → Text`: base figure (per-origin + hunched posture variant) → equipment overlays (weapon marks, armor outline, gromnica halo wash) → wound decals (4 bands: healthy / bloodied <2/3 / wounded <1/3 / dying <10%) → status decals (each with a non-color mark, spec §6.1) → blizna scar marks
 - 10.1.3 — `CharacterPanel` renders via the compositor from ECS (`Wielding`/`Wearing`/`LightSource`/`StatusEffects`); `--ascii` selects the ascii art

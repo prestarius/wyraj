@@ -129,7 +129,9 @@ class WyrajApp(App[str]):
     def compose(self) -> ComposeResult:
         with Horizontal(id="top"):
             yield MapView(self.game, use_ascii=self.use_ascii)
-            yield CharacterPanel(self.game, portrait_style=self.portrait_style)
+            yield CharacterPanel(
+                self.game, portrait_style=self.portrait_style, use_ascii=self.use_ascii
+            )
         yield RichLog(id="narrative", wrap=True)
         yield Footer()
 

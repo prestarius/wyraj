@@ -1,33 +1,70 @@
-import itertools
+"""US 10.1 — portrait compositor: layer matrix, monochrome safety, ascii purity."""
 
-from wyraj.ui.portrait import STYLES, hp_band, render_portrait
+from wyraj.content.portrait import BANDS, load_portraits
+from wyraj.ui.portrait import PortraitState, compose_portrait, get_art, hp_band
+
+STATUSES = ("poison", "fear", "blessing", "wet")
 
 
 def test_hp_bands() -> None:
     assert hp_band(1.0) == "healthy"
+    assert hp_band(0.67) == "healthy"
     assert hp_band(0.5) == "bloodied"
-    assert hp_band(0.25) == "dying"
+    assert hp_band(0.3) == "wounded"
+    assert hp_band(0.09) == "dying"
     assert hp_band(0.0) == "dying"
 
 
-def test_all_combinations_render() -> None:
-    weapons = [None, "noz", "toporek", "ciupaga"]
-    for style, band, weapon in itertools.product(STYLES, ("healthy", "bloodied", "dying"), weapons):
-        text = render_portrait(style, band, weapon)
-        assert text.plain.strip()
+def test_all_styles_load_with_full_layer_contract() -> None:
+    arts = load_portraits()
+    assert {"box", "half", "ascii"} <= set(arts)
+    for art in arts.values():
+        assert "default" in art.base
+        assert set(art.wounds) == {"bloodied", "wounded", "dying"}
+        assert set(art.status_marks) >= {"poison", "blessing", "wet"}
+        assert len(art.scars) >= 2  # spec DoD: two blizny must be visible
 
 
-def test_portrait_reacts_to_band_and_weapon() -> None:
-    for style in STYLES:
-        healthy = render_portrait(style, "healthy", None)
-        dying = render_portrait(style, "dying", None)
-        armed = render_portrait(style, "healthy", "ciupaga")
-        # Wound decals change the glyphs; the weapon overlay adds new ones.
-        assert healthy.plain != dying.plain
-        assert healthy.plain != armed.plain
-        # Color wash differs between bands.
-        assert str(healthy.style or "") != str(dying.style or "") or healthy.spans != dying.spans
+def test_matrix_renders_and_monochrome_stays_distinguishable() -> None:
+    for art in load_portraits().values():
+        plains = {band: compose_portrait(PortraitState(band=band), art).plain for band in BANDS}
+        assert len(set(plains.values())) == len(BANDS), f"{art.style}: bands collide in mono"
+        base = plains["healthy"]
+        for status in STATUSES:
+            rendered = compose_portrait(PortraitState(statuses=(status,)), art).plain
+            assert rendered != base, f"{art.style}: status '{status}' invisible in mono"
+        one = compose_portrait(PortraitState(scars=1), art).plain
+        two = compose_portrait(PortraitState(scars=2), art).plain
+        assert base != one != two, f"{art.style}: blizny do not accumulate in mono"
+        assert compose_portrait(PortraitState(armored=True), art).plain != base
+        assert compose_portrait(PortraitState(weapon_key="toporek"), art).plain != base
 
 
-def test_unknown_style_falls_back() -> None:
-    assert render_portrait("nope", "healthy", None).plain.strip()
+def test_everything_at_once_renders_every_style() -> None:
+    state = PortraitState(
+        band="dying",
+        weapon_key="ciupaga",
+        armored=True,
+        halo=True,
+        statuses=STATUSES,
+        scars=3,
+    )
+    for art in load_portraits().values():
+        assert compose_portrait(state, art).plain.strip()
+
+
+def test_ascii_art_is_pure_ascii() -> None:
+    art = get_art("box", use_ascii=True)
+    assert art.style == "ascii"
+    state = PortraitState(
+        band="dying", weapon_key="toporek", armored=True, statuses=STATUSES, scars=2
+    )
+    plain = compose_portrait(state, art).plain
+    assert all(ord(char) < 128 for char in plain if char != "\n")
+
+
+def test_unknown_style_and_origin_fall_back() -> None:
+    art = get_art("nope")
+    assert art.style == "box"
+    rendered = compose_portrait(PortraitState(origin="unheard_of"), art)
+    assert rendered.plain.strip()

@@ -1,105 +1,115 @@
-# ruff: noqa: RUF001 — decorative glyphs are the point of this file
-"""Layered, state-reactive character portrait.
+"""Layered, state-reactive character portrait (M7 US 10.1, spec §2).
 
-Two prototype art directions for open decision #5 (spec §13):
-- "box"  — box-drawing line art (default; won decision #5)
-- "half" — halfblock "pixel" art (kept as an option)
-
-Both react to the same layers: base figure → weapon overlay → wound decals
-and an HP-band color wash. Box-drawing won decision #5 and is the default;
-the halfblock prototype stays available. YAML layer files are a later cleanup.
-Switch at runtime with `wyraj --portrait box|half`.
+Pure compositor: `PortraitState` (a projection of ECS components — never widget
+state) + a `PortraitArtDef` (YAML art under `data/portrait/`) → rich `Text`.
+Layer order: base figure → equipment overlays → wound decals → status decals →
+blizna scars. Status tints are style washes here in code; every status also
+carries a non-color mark from the art file (color-blind rule, spec §6.1), and
+fear shifts the whole figure a column aside — a recoil readable without color.
 """
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
+from functools import lru_cache
 
 from rich.text import Text
 
-# (row, column, replacement char)
-Patch = tuple[int, int, str]
+from wyraj.content.portrait import Patch, PortraitArtDef, load_portraits
 
-BAND_STYLES = {"healthy": "grey74", "bloodied": "orange3", "dying": "red3"}
+BAND_STYLES = {
+    "healthy": "grey74",
+    "bloodied": "orange3",
+    "wounded": "dark_orange3",
+    "dying": "red3",
+}
+POISON_EDGE_STYLE = "chartreuse4"
+WET_STYLE = "deep_sky_blue4"
+HALO_BACKGROUND = " on #1d1f12"  # lit gromnica warms the portrait's dark
 
 
 def hp_band(fraction: float) -> str:
-    if fraction <= 0.25:
+    """Four bands per spec §2.3: healthy / bloodied <2/3 / wounded <1/3 / dying <10%."""
+    if fraction < 0.10:
         return "dying"
-    if fraction <= 0.5:
+    if fraction < 1 / 3:
+        return "wounded"
+    if fraction < 2 / 3:
         return "bloodied"
     return "healthy"
 
 
 @dataclass(frozen=True)
-class PortraitArt:
-    name: str
-    lines: tuple[str, ...]
-    weapon_marks: dict[str, tuple[Patch, ...]] = field(default_factory=dict)
-    wound_marks: dict[str, tuple[Patch, ...]] = field(default_factory=dict)
+class PortraitState:
+    band: str = "healthy"
+    origin: str = "default"
+    weapon_key: str | None = None
+    armored: bool = False
+    halo: bool = False  # lit gromnica
+    statuses: tuple[str, ...] = ()
+    scars: int = 0  # blizny — near-deaths survived this run
 
 
-HALFBLOCK = PortraitArt(
-    name="half",
-    lines=(
-        "   ▄▄▄▄▄   ",
-        "  ▟█████▙  ",
-        "  █▓▒░▒▓█  ",
-        "  ▀▜███▛▀  ",
-        " ▄███████▄ ",
-        " █ ▒███▒ █ ",
-        " ▛ ▒███▒ ▜ ",
-        "   ▐█▌▐█▌  ",
-    ),
-    weapon_marks={
-        "noz": ((5, 10, "╱"),),
-        "toporek": ((4, 10, "▛"), (5, 10, "┃"), (6, 10, "┃")),
-        "ciupaga": ((3, 10, "†"), (4, 10, "┃"), (5, 10, "┃"), (6, 10, "┃")),
-    },
-    wound_marks={
-        "bloodied": ((5, 3, "╳"),),
-        "dying": ((5, 3, "╳"), (6, 7, "╳"), (2, 4, "░")),
-    },
-)
-
-BOXDRAW = PortraitArt(
-    name="box",
-    lines=(
-        "   ╭───╮   ",
-        "   │· ·│   ",
-        "   ╰─┬─╯   ",
-        "  ╭──┴──╮  ",
-        "  │  ¦  │  ",
-        "  │  ¦  │  ",
-        "  ╰─┬─┬─╯  ",
-        "    │ │    ",
-        "    ╨ ╨    ",
-    ),
-    weapon_marks={
-        "noz": ((5, 9, "╱"),),
-        "toporek": ((3, 9, "⊦"), (4, 9, "│"), (5, 9, "│")),
-        "ciupaga": ((2, 9, "†"), (3, 9, "│"), (4, 9, "│"), (5, 9, "│")),
-    },
-    wound_marks={
-        "bloodied": ((4, 3, "×"),),
-        "dying": ((4, 3, "×"), (5, 7, "×"), (1, 5, "─")),
-    },
-)
-
-STYLES = {"half": HALFBLOCK, "box": BOXDRAW}
+@lru_cache(maxsize=1)
+def _arts() -> dict[str, PortraitArtDef]:
+    return load_portraits()
 
 
-def _apply(lines: list[list[str]], patches: tuple[Patch, ...]) -> None:
+def get_art(style: str, use_ascii: bool = False) -> PortraitArtDef:
+    arts = _arts()
+    if use_ascii and "ascii" in arts:
+        return arts["ascii"]
+    return arts.get(style) or arts["box"]
+
+
+def _base_lines(state: PortraitState, art: PortraitArtDef) -> list[str]:
+    candidates = []
+    if state.band in ("wounded", "dying"):
+        candidates += [f"{state.origin}_hunched", "hunched"]
+    candidates += [state.origin, "default"]
+    for name in candidates:
+        if name in art.base:
+            return art.base[name]
+    return art.base["default"]
+
+
+def _apply(grid: list[list[str]], patches: list[Patch] | tuple[Patch, ...]) -> None:
     for row, col, char in patches:
-        if 0 <= row < len(lines) and 0 <= col < len(lines[row]):
-            lines[row][col] = char
+        if 0 <= row < len(grid) and 0 <= col < len(grid[row]):
+            grid[row][col] = char
 
 
-def render_portrait(style: str, band: str, weapon_key: str | None) -> Text:
-    art = STYLES.get(style, BOXDRAW)
-    width = max(len(line) for line in art.lines)
-    grid = [list(line.ljust(width)) for line in art.lines]
-    if weapon_key is not None:
-        _apply(grid, art.weapon_marks.get(weapon_key, ()))
-    _apply(grid, art.wound_marks.get(band, ()))
+def compose_portrait(state: PortraitState, art: PortraitArtDef) -> Text:
+    lines = _base_lines(state, art)
+    width = max(len(line) for line in lines)
+    grid = [list(line.ljust(width)) for line in lines]
+    if state.armored:
+        _apply(grid, art.armor)
+    if state.weapon_key is not None:
+        _apply(grid, art.weapons.get(state.weapon_key, ()))
+    _apply(grid, art.wounds.get(state.band, ()))
+    for status in state.statuses:
+        _apply(grid, art.status_marks.get(status, ()))
+    _apply(grid, art.scars[: state.scars])
+
+    rows = ["".join(row) for row in grid]
+    if "fear" in state.statuses and width > 1:  # recoil: the figure flinches aside
+        rows = [" " + row[:-1] for row in rows]
+
+    wash = BAND_STYLES.get(state.band, "grey74")
+    if "blessing" in state.statuses:  # faint bright outline
+        wash = f"bold {wash}"
+    suffix = HALO_BACKGROUND if state.halo else ""
     text = Text()
-    text.append("\n".join("".join(row) for row in grid), style=BAND_STYLES.get(band, "grey74"))
+    total = len(rows)
+    for index, row in enumerate(rows):
+        row_style = wash
+        if "wet" in state.statuses and index >= total - total // 3:  # dark lower third
+            row_style = WET_STYLE
+        if "poison" in state.statuses and len(row) > 4:  # green-tinted edges
+            text.append(row[:2], style=POISON_EDGE_STYLE + suffix)
+            text.append(row[2:-2], style=row_style + suffix)
+            text.append(row[-2:], style=POISON_EDGE_STYLE + suffix)
+        else:
+            text.append(row, style=row_style + suffix)
+        if index < total - 1:
+            text.append("\n")
     return text

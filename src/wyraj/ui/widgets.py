@@ -21,7 +21,7 @@ from wyraj.core.map import Tile
 from wyraj.core.systems.movement import level_of
 from wyraj.ui.i18n import current_language, t
 from wyraj.ui.item_info import display_name, stat_suffix
-from wyraj.ui.portrait import hp_band, render_portrait
+from wyraj.ui.portrait import PortraitState, compose_portrait, get_art, hp_band
 
 # (unicode, ascii) glyphs per terrain, keyed by biome
 WALL_GLYPHS = {
@@ -138,10 +138,11 @@ class MapView(Static):
 
 
 class CharacterPanel(Static):
-    def __init__(self, game: Game, portrait_style: str = "box") -> None:
+    def __init__(self, game: Game, portrait_style: str = "box", use_ascii: bool = False) -> None:
         super().__init__()
         self.game = game
         self.portrait_style = portrait_style
+        self.use_ascii = use_ascii
         self.border_title = game.origin.name
 
     def _weapon_key(self) -> str | None:
@@ -151,12 +152,28 @@ class CharacterPanel(Static):
         item = self.game.world.get(wielding.item, Item)
         return item.key if item else None
 
+    def _portrait_state(self) -> PortraitState:
+        game = self.game
+        health = game.world.expect(game.player, Health)
+        wearing = game.world.get(game.player, Wearing)
+        statuses = game.world.get(game.player, StatusEffects)
+        light = game.world.get(game.player, LightSource)
+        return PortraitState(
+            band=hp_band(health.fraction),
+            origin=game.origin.key,
+            weapon_key=self._weapon_key(),
+            armored=wearing is not None and wearing.item is not None,
+            halo=light is not None and light.turns > 0,
+            statuses=tuple(e.kind for e in statuses.effects) if statuses else (),
+            scars=0,  # blizna tracking lands in US 10.5
+        )
+
     def render(self) -> Text:
         game = self.game
         health = game.world.expect(game.player, Health)
         text = Text()
         text.append(
-            render_portrait(self.portrait_style, hp_band(health.fraction), self._weapon_key())
+            compose_portrait(self._portrait_state(), get_art(self.portrait_style, self.use_ascii))
         )
         text.append("\n\n")
         text.append(
