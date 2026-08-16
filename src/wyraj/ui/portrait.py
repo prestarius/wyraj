@@ -10,10 +10,14 @@ fear shifts the whole figure a column aside — a recoil readable without color.
 
 from dataclasses import dataclass
 from functools import lru_cache
+from typing import TYPE_CHECKING
 
 from rich.text import Text
 
 from wyraj.content.portrait import Patch, PortraitArtDef, load_portraits
+
+if TYPE_CHECKING:
+    from wyraj.core.game import Game
 
 BAND_STYLES = {
     "healthy": "grey74",
@@ -46,6 +50,8 @@ class PortraitState:
     halo: bool = False  # lit gromnica
     statuses: tuple[str, ...] = ()
     scars: int = 0  # blizny — near-deaths survived this run
+    trophies: int = 0  # trophy-belt marks (most recent 1-2, spec §6.2)
+    mini: bool = False  # short-terminal 4-row variant (spec §1)
 
 
 @lru_cache(maxsize=1)
@@ -62,6 +68,8 @@ def get_art(style: str, use_ascii: bool = False) -> PortraitArtDef:
 
 def _base_lines(state: PortraitState, art: PortraitArtDef) -> list[str]:
     candidates = []
+    if state.mini:
+        candidates.append("mini")
     if state.band in ("wounded", "dying"):
         candidates += [f"{state.origin}_hunched", "hunched"]
     candidates += [state.origin, "default"]
@@ -89,6 +97,7 @@ def compose_portrait(state: PortraitState, art: PortraitArtDef) -> Text:
     for status in state.statuses:
         _apply(grid, art.status_marks.get(status, ()))
     _apply(grid, art.scars[: state.scars])
+    _apply(grid, art.belt[: state.trophies])
 
     rows = ["".join(row) for row in grid]
     if "fear" in state.statuses and width > 1:  # recoil: the figure flinches aside
@@ -113,3 +122,44 @@ def compose_portrait(state: PortraitState, art: PortraitArtDef) -> Text:
         if index < total - 1:
             text.append("\n")
     return text
+
+
+def portrait_state_for(game: "Game", mini: bool = False) -> PortraitState:
+    """Project ECS state into a PortraitState — shared by the pane and the morgue."""
+    from wyraj.core.components import (
+        Health,
+        Inventory,
+        Item,
+        LightSource,
+        StatusEffects,
+        Wearing,
+        Wielding,
+    )
+
+    world, player = game.world, game.player
+    health = world.expect(player, Health)
+    wielding = world.get(player, Wielding)
+    weapon_key = None
+    if wielding is not None and wielding.item is not None:
+        weapon = world.get(wielding.item, Item)
+        weapon_key = weapon.key if weapon is not None else None
+    wearing = world.get(player, Wearing)
+    statuses = world.get(player, StatusEffects)
+    light = world.get(player, LightSource)
+    inventory = world.get(player, Inventory) or Inventory()
+    trophies = sum(
+        1
+        for entity in inventory.items
+        if (item := world.get(entity, Item)) is not None and item.kind == "trophy"
+    )
+    return PortraitState(
+        band=hp_band(health.fraction),
+        origin=game.origin.key,
+        weapon_key=weapon_key,
+        armored=wearing is not None and wearing.item is not None,
+        halo=light is not None and light.turns > 0,
+        statuses=tuple(e.kind for e in statuses.effects) if statuses is not None else (),
+        scars=game.blizny,
+        trophies=min(trophies, 2),
+        mini=mini,
+    )

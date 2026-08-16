@@ -2,7 +2,45 @@
 
 All notable changes to Wyraj. Format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
-## [Unreleased] — Szlif (UI polish & death flow)
+## [Unreleased] — M7 "Sylwetka" (character pane & quickslots)
+
+### Added
+- Layered, state-reactive portrait driven by YAML art under
+  `data/portrait/{box,half,ascii}.yml`: base figure (hunched at low HP),
+  weapon/armor overlays, a warm halo while the gromnica burns, wound
+  decals over four HP bands (dying is now <10%), status decals with
+  non-color redundancy (poison edges, blessing outline, wet lower third,
+  fear recoil), blizna scar marks, and a tiny trophy belt. Monochrome
+  distinguishability is enforced by tests.
+- Equipment paper-doll in the pane (head/torso/weapon/offhand/amulet/
+  feet) with stat suffixes, heirloom ⟲ rune, and the lit gromnica's
+  remaining burn shown in the offhand. `e` opens a modal to free a slot.
+  New slot-ready content: sheepskin baranica, bast łapcie, szkaplerz of
+  Weles.
+- Quickslots "Podręczne": bind in the pack (`1-4`, then a letter), use
+  in-game on `1-4` (an empty press costs no turn), `Shift+1-4` clears.
+  Bindings are by item key — stack counts show as `×N`, and a refilled
+  stack revives the key; `quickslots.auto_refill: false` in config.yml
+  unbinds an emptied slot instead. Bindings ride the in-run save.
+- Status row: one family-colored line (glyph + name + turns), overflow
+  as `+N more`.
+- Blizny: surviving a dying dip leaves a permanent-for-the-run scar on
+  the portrait, narrated once ("The scar has stopped weeping…").
+- Named weapons: seven kills of one species name the weapon (Wilcza
+  Zguba / Wolves' Bane…); announced in prose, shown in the paper-doll,
+  greeted once by the dziad, and preserved through the skrzynia.
+- Death portrait: the final composited portrait is captured into the
+  morgue file — every death leaves a picture of who you were at the end.
+- Pane extras: last-foe mini-line (name, in-fiction HP word, codex-tier
+  mark) and a short-terminal fallback (4-row mini portrait, filled slots
+  only, quickslots always visible).
+
+### Deferred (recorded in the plan)
+- Tab focus-cycling of pane regions, enchant/curse color coding (no
+  identification system yet), burden indicator (no stamina system yet),
+  quickslot-use flash animation.
+
+## Szlif (UI polish & death flow) — merged 2026-08-15
 
 ### Added
 - Death screen choices: `n` sets out again (fresh run, same origin; a

@@ -26,6 +26,7 @@ class PortraitArtDef(BaseModel):
     wounds: dict[str, list[Patch]] = {}
     status_marks: dict[str, list[Patch]] = {}
     scars: list[Patch] = Field(default_factory=list)
+    belt: list[Patch] = Field(default_factory=list)  # trophy-belt marks (spec §6.2)
 
     @model_validator(mode="after")
     def check(self) -> "PortraitArtDef":

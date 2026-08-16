@@ -38,6 +38,12 @@ def write_morgue(game: Game, when: datetime, directory: Path | None = None) -> P
     if game.meta.edited:
         meta_lines.append("(profile hand-edited — no judgment, just honesty)")
 
+    # M7 §6.2: every death leaves a picture of who you were at the end.
+    # compose_portrait is a pure text builder — no Textual app involved.
+    from wyraj.ui.portrait import compose_portrait, get_art, portrait_state_for
+
+    portrait = compose_portrait(portrait_state_for(game), get_art("box")).plain
+
     lines = [
         "════════ WYRAJ — morgue ════════",
         f"{game.origin.name}, {game.origin.title}",
@@ -45,6 +51,8 @@ def write_morgue(game: Game, when: datetime, directory: Path | None = None) -> P
         f"Turns survived: {game.turn}",
         f"Deepest point: {deepest}",
         f"Fate: {game.death_cause or 'lost to the forest'}",
+        "",
+        *portrait.splitlines(),
         "",
         "Creatures witnessed: " + (", ".join(known) if known else "none"),
         "Carried at the end: " + (", ".join(carried) if carried else "nothing"),

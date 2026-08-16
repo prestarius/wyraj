@@ -1,26 +1,24 @@
 """Map and character-panel widgets. Read game state; never mutate it."""
 
+from dataclasses import replace
+
 from rich.text import Text
 from textual.widgets import Static
 
 from wyraj.core.components import (
     Health,
     Hunger,
-    Item,
-    LightSource,
     Position,
     Purse,
     Renderable,
     StatusEffects,
-    Wearing,
-    Wielding,
 )
 from wyraj.core.game import Game
 from wyraj.core.map import Tile
 from wyraj.core.systems.movement import level_of
 from wyraj.ui.i18n import current_language, t
 from wyraj.ui.paper_doll import build_paper_doll, build_quickslot_bar, doll_slots_for
-from wyraj.ui.portrait import PortraitState, compose_portrait, get_art, hp_band
+from wyraj.ui.portrait import compose_portrait, get_art, portrait_state_for
 from wyraj.ui.status_row import build_status_row
 
 # (unicode, ascii) glyphs per terrain, keyed by biome
@@ -145,35 +143,18 @@ class CharacterPanel(Static):
         self.use_ascii = use_ascii
         self.border_title = game.origin.name
 
-    def _weapon_key(self) -> str | None:
-        wielding = self.game.world.get(self.game.player, Wielding)
-        if wielding is None or wielding.item is None:
-            return None
-        item = self.game.world.get(wielding.item, Item)
-        return item.key if item else None
-
-    def _portrait_state(self) -> PortraitState:
-        game = self.game
-        health = game.world.expect(game.player, Health)
-        wearing = game.world.get(game.player, Wearing)
-        statuses = game.world.get(game.player, StatusEffects)
-        light = game.world.get(game.player, LightSource)
-        return PortraitState(
-            band=hp_band(health.fraction),
-            origin=game.origin.key,
-            weapon_key=self._weapon_key(),
-            armored=wearing is not None and wearing.item is not None,
-            halo=light is not None and light.turns > 0,
-            statuses=tuple(e.kind for e in statuses.effects) if statuses else (),
-            scars=game.blizny,
-        )
-
     def render(self) -> Text:
         game = self.game
         health = game.world.expect(game.player, Health)
+        # Short-terminal fallback (spec §1): 4-row portrait, tighter layout,
+        # quickslots kept visible at the expense of decoration.
+        mini = 0 < self.size.height < 36
         text = Text()
         text.append(
-            compose_portrait(self._portrait_state(), get_art(self.portrait_style, self.use_ascii))
+            compose_portrait(
+                portrait_state_for(game, mini=mini),
+                get_art(self.portrait_style, self.use_ascii),
+            )
         )
         text.append("\n\n")
         text.append(
@@ -208,12 +189,18 @@ class CharacterPanel(Static):
                 text.append(row)
                 text.append("\n")
 
-        text.append("\n")
-        text.append(build_paper_doll(doll_slots_for(game), use_ascii=self.use_ascii))
+        width = self.size.width or 40
+        slots = doll_slots_for(game)
+        if mini:  # only filled slots, no stat suffixes
+            slots = tuple(replace(s, detail="") for s in slots if s.name is not None)
+        if slots:
+            text.append("\n")
+            max_name = max(8, width - (16 if mini else 24))
+            text.append(build_paper_doll(slots, use_ascii=self.use_ascii, max_name=max_name))
         text.append("\n")
         text.append(build_quickslot_bar(game, use_ascii=self.use_ascii))
 
-        if game.last_foe is not None:
+        if game.last_foe is not None and not mini:
             foe, fraction = game.last_foe
             marks = {
                 "unknown": ("?", "?"),

@@ -224,3 +224,34 @@ def test_save_roundtrip_keeps_sylwetka_state(tmp_path) -> None:
     assert loaded.blizny == 2
     assert loaded.weapon_kills == {"9:wilk": 3}
     assert loaded.world.expect(loaded.player, Quickslots).slot3 == "odwar"
+
+
+# ---- US 10.6: death portrait in the morgue --------------------------------
+
+
+def test_death_portrait_in_morgue_carries_two_blizny(tmp_path) -> None:
+    """Spec DoD (c): dying twice and surviving leaves two blizny on the capture."""
+    from datetime import datetime
+
+    from wyraj.persistence.morgue import write_morgue
+    from wyraj.ui.portrait import PortraitState, compose_portrait, get_art
+
+    game = make_game()
+    health = game.world.expect(game.player, Health)
+    for _ in range(2):  # dip under 10% and climb back out, twice
+        game.world.add(game.player, replace(health, hp=1))
+        game.step(Wait())
+        game.world.add(game.player, replace(health, hp=health.max_hp))
+        game.step(Wait())
+    assert game.blizny == 2
+    game.world.add(game.player, replace(health, hp=0))
+    game.step(Wait())
+    assert game.game_over
+
+    path = write_morgue(game, datetime(2026, 8, 16, 12, 0, 0), tmp_path)
+    content = path.read_text(encoding="utf-8")
+    scarred = compose_portrait(PortraitState(band="dying", scars=2), get_art("box")).plain
+    for row in scarred.splitlines():
+        assert row in content, f"morgue portrait missing row {row!r}"
+    unscarred = compose_portrait(PortraitState(band="dying"), get_art("box")).plain
+    assert unscarred not in content

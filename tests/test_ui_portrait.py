@@ -23,6 +23,8 @@ def test_all_styles_load_with_full_layer_contract() -> None:
         assert set(art.wounds) == {"bloodied", "wounded", "dying"}
         assert set(art.status_marks) >= {"poison", "blessing", "wet"}
         assert len(art.scars) >= 2  # spec DoD: two blizny must be visible
+        assert len(art.belt) >= 2  # trophy belt (spec §6.2)
+        assert "mini" in art.base and len(art.base["mini"]) == 4  # short terminals
 
 
 def test_matrix_renders_and_monochrome_stays_distinguishable() -> None:
@@ -38,6 +40,11 @@ def test_matrix_renders_and_monochrome_stays_distinguishable() -> None:
         assert base != one != two, f"{art.style}: blizny do not accumulate in mono"
         assert compose_portrait(PortraitState(armored=True), art).plain != base
         assert compose_portrait(PortraitState(weapon_key="toporek"), art).plain != base
+        belt_one = compose_portrait(PortraitState(trophies=1), art).plain
+        belt_two = compose_portrait(PortraitState(trophies=2), art).plain
+        assert base != belt_one != belt_two, f"{art.style}: trophy belt invisible in mono"
+        mini = compose_portrait(PortraitState(mini=True), art).plain
+        assert len(mini.splitlines()) == 4, f"{art.style}: mini variant is not 4 rows"
 
 
 def test_everything_at_once_renders_every_style() -> None:

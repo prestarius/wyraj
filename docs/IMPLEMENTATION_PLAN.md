@@ -151,7 +151,7 @@ Deviation note: intro content lives under `data/intro/{en,pl}/` rather than `dat
 
 ---
 
-## Epic 10 — M7 "Sylwetka": character pane & quickslots — **IN PROGRESS** — spec `WYRAJ_M7_SYLWETKA.md`
+## Epic 10 — M7 "Sylwetka": character pane & quickslots — **DONE 2026-08-16** — spec `WYRAJ_M7_SYLWETKA.md`
 
 Goal: the right-hand pane becomes the portrait of a soul in trouble — layered state-reactive
 portrait, equipment paper-doll, status row, quickslots `1–4`. Feature branch `feat/m7-sylwetka`;
@@ -163,7 +163,7 @@ each story keeps `main` playable. Everything the pane shows is a projection of E
 - 10.1.3 — `CharacterPanel` renders via the compositor from ECS (`Wielding`/`Wearing`/`LightSource`/`StatusEffects`); `--ascii` selects the ascii art
 - **Verify:** matrix test (styles × bands × statuses × scars) renders; monochrome (plain-text) outputs stay pairwise distinguishable; ascii output is pure ASCII.
 
-### US 10.2 — Equipment paper-doll (spec §3)
+### US 10.2 — Equipment paper-doll (spec §3) — **DONE 2026-08-16**
 - Six slots (head/torso/weapon/offhand/amulet/feet): core components + equip rules (offhand = shield xor light source), pane rows with enchant/curse coding (+ redundant glyph), gromnica burn turns, `e`/Tab unequip-swap flow
 - **Verify:** pilot equips/swaps keyboard-only; core tests for slot rules.
 
@@ -171,21 +171,22 @@ each story keeps `main` playable. Everything the pane shows is a projection of E
 - Pure projection of `StatusEffects` with turn counters, color families + glyphs; overflow → 3 + `+N more`
 - **Verify:** fixture renders incl. >4 statuses.
 
-### US 10.4 — Quickslots (spec §5)
+### US 10.4 — Quickslots (spec §5) — **DONE 2026-08-16** (golden transcript unchanged — the scripted walk never binds)
 - `core/systems/quickslots.py` bind/use/clear/auto-refill (`quickslots.auto_refill` knob), inventory `1–4` binds, in-game `1–4` uses / `Shift+1–4` clears; `QuickslotBound/Cleared/Used/AutoRefilled` events + EN/PL narration rules + fixtures; `QuickslotBar` widget with use-flash; in-run save integration
 - **Verify:** pilot bind → use → auto-refill → clear cycle; golden transcript regenerated intentionally.
 
-### US 10.5 — Fabular layer (spec §2.5–6, §6.2; M6 integration)
+### US 10.5 — Fabular layer (spec §2.5–6, §6.2; M6 integration) — **DONE 2026-08-16**
 - Blizna tracking (survive dying → permanent-for-run scar, narrator notes it once), trophy-belt glyphs, named-weapon epithets (kill-count threshold knob, `data/narration/*/epithets.yml`), heirloom ⟲ markers + dziad recognition
 - **Verify:** scripted run reaching dying twice → two blizny on the portrait; epithet earned at threshold shows in pane and log.
 
-### US 10.6 — Morgue death-portrait capture (spec §6.2)
+### US 10.6 — Morgue death-portrait capture (spec §6.2) — **DONE 2026-08-16**
 - Final composited portrait (scars, wounds, gear) written into the morgue file
 - **Verify:** scripted death leaves the portrait block in the morgue entry (two-blizna case per spec DoD).
 
-### US 10.7 — Polish pass (spec §7.7, §6.1)
-- Pane focus cycling (Tab), short-terminal fallback (4-row mini portrait, truncated names, quickslots always visible), examine mini-line, burden indicator (3 states), color-blind monochrome CI snapshot check
-- **Verify:** pilot at short terminal size; monochrome CI check green.
+### US 10.7 — Polish pass (spec §7.7, §6.1) — **DONE 2026-08-16 (with recorded cuts)**
+- Shipped: short-terminal fallback (4-row mini portrait, filled slots only, no suffixes, quickslots always visible), last-foe mini-line with codex-tier mark, color-blind monochrome checks in the portrait/status/doll test matrix, `--ascii` degradation everywhere
+- **Cut, recorded:** Tab focus-cycling (the pane is a single projection widget — `e` + in-pack `1-4` binding already cover keyboard-only flows); enchant/curse color coding (no identification/curse system exists yet); burden indicator (no stamina system exists — the spec's Sta bar is aspirational); quickslot use-flash animation
+- **Verify:** pilot suite green; monochrome matrix green.
 
 ---
 
