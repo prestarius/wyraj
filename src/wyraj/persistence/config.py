@@ -23,6 +23,7 @@ VALID_KEYS = {
     "text_speed",
     "quickslots",  # M7: {auto_refill: bool}
     "audio",  # M11: {enabled: bool, master: float, ambient: float, sfx: float}
+    "packs",  # M12: ordered list of pack directory paths (later wins)
 }
 
 

@@ -76,6 +76,16 @@ def main() -> None:
         return
 
     config = _load_config_safely()
+
+    # M12 "Gusła": activate data packs before any content loads. A broken
+    # pack is skipped with a note, never a crash.
+    from wyraj.content.packs import activate_packs, discover_packs
+
+    raw_packs = config.get("packs")
+    pack_paths: list[str] = [str(p) for p in raw_packs] if isinstance(raw_packs, list) else []
+    packs, pack_notes = discover_packs(pack_paths)
+    activate_packs(packs)
+
     if config.get("ascii") and not args.ascii:
         args.ascii = True
     if args.portrait is None:
@@ -124,6 +134,7 @@ def main() -> None:
             glebiej=glebiej,
             audio_config=audio_config,
             mute=args.mute,
+            pack_notes=pack_notes,
         ).run()
 
     def show_epilogue(key: str) -> None:
