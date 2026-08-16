@@ -13,6 +13,16 @@ def _sandbox_wyraj_home(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None
     monkeypatch.setenv("WYRAJ_HOME", str(tmp_path / "wyraj-home"))
 
 
+@pytest.fixture(autouse=True)
+def _no_packs():
+    """Every test starts and ends pack-free (M12): the chain is process state."""
+    from wyraj.content.packs import activate_packs
+
+    activate_packs([])
+    yield
+    activate_packs([])
+
+
 def goto_depth(game: Game, depth: int) -> None:
     """Jump the player straight to a level (tests only)."""
     for d in range(1, depth + 1):

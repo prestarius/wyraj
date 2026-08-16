@@ -1,0 +1,16 @@
+lore_discovered:
+  topielica:
+    - weight: 2
+      pl: "Blada postać stoi po pas w trzcinach, w czymś, co było kiedyś suknią. Topielica — a woda wokół niej jest cichsza, niż woda potrafi."
+    - weight: 1
+      pl: "Odwraca się, zanim zdążysz wydać dźwięk — topielcy zawsze wiedzą. Welon topielicy porusza się pod prąd. Prądu nie ma."
+  stolem:
+    - weight: 2
+      pl: "Ciemność między drzewami ma ramię. Potem głowę. Stolem — nie wszystkie pomorskie olbrzymy przegrały z kościelnymi dzwonami, a ten idzie w twoją stronę w tempie złej pory roku."
+    - weight: 1
+      pl: "Bierzesz ślad stopy za stawek, póki nie znajdujesz drugiego. Stolem chodzi po puszczy, a ptaki przestały się o to kłócić."
+  klabaternik:
+    - weight: 2
+      pl: "Coś małego w żółtym kubraku siedzi na pniaku i łata deskę, której żaden statek nie odbierze, stukając młoteczkiem. Klabaternik — daleko od morza, wciąż wierny umowie."
+    - weight: 1
+      pl: "Stuk. Stuk. Stuk. Klabaternik podnosi wzrok znad roboty i uśmiecha się jak dobry interes. Jego statek to muł. Jego młotek nie."

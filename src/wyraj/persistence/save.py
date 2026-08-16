@@ -12,6 +12,7 @@ from dataclasses import asdict, fields
 from pathlib import Path
 from typing import Any
 
+from wyraj.content.packs import active_fingerprint
 from wyraj.core import components as components_module
 from wyraj.core.components import StatusEffect, StatusEffects
 from wyraj.core.ecs import Entity
@@ -114,6 +115,7 @@ def save_game(game: Game, path: Path | None = None) -> Path:
         "wij_respawn": getattr(game, "_wij_respawn", 12),
         "errands": getattr(game, "errands", {}),
         "fates_announced": getattr(game, "_fates_announced", False),
+        "packs": active_fingerprint(),
         "player": game.player,
         "rng": game.rng.get_states(),
         "levels": {str(depth): _encode_map(m) for depth, m in game.levels.items()},
@@ -135,6 +137,10 @@ def load_game(path: Path | None = None) -> Game | None:
     payload = json.loads(gzip.decompress(target.read_bytes()).decode("utf-8"))
     delete_save(target)
     if payload.get("version") != SAVE_VERSION:
+        return None
+    if payload.get("packs", []) != active_fingerprint():
+        # M12 §2: a run cannot continue in a world with different monsters
+        # in it — a changed pack set refuses like a version mismatch.
         return None
 
     game = Game.__new__(Game)

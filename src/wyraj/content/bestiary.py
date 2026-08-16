@@ -5,7 +5,7 @@ from pathlib import Path
 import yaml
 from pydantic import BaseModel, Field
 
-from wyraj.content.paths import data_dir
+from wyraj.content.paths import data_roots
 
 
 class StatusSpec(BaseModel):
@@ -39,10 +39,13 @@ class MonsterDef(BaseModel):
 
 
 def load_bestiary(root: Path | None = None) -> dict[str, MonsterDef]:
-    bestiary_dir = (root or data_dir()) / "bestiary"
     monsters: dict[str, MonsterDef] = {}
-    for path in sorted(bestiary_dir.glob("*.yml")):
-        raw = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
-        for key, fields in raw.items():
-            monsters[key] = MonsterDef(key=key, **fields)
+    for base in [root] if root is not None else data_roots():
+        bestiary_dir = base / "bestiary"
+        if not bestiary_dir.is_dir():
+            continue
+        for path in sorted(bestiary_dir.glob("*.yml")):
+            raw = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+            for key, fields in raw.items():
+                monsters[key] = MonsterDef(key=key, **fields)
     return monsters

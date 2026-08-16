@@ -1,0 +1,16 @@
+lore_discovered:
+  topielica:
+    - weight: 2
+      en: "A pale shape stands hip-deep in the reeds, in what was a dress once. A topielica — and the water around her is stiller than water gets."
+    - weight: 1
+      en: "She turns before you make a sound, the way the drowned always know. The topielica's veil moves against the current. There is no current."
+  stolem:
+    - weight: 2
+      en: "The dark between the trees has a shoulder. Then a head. A stolem — the old Pomeranian giants did not all lose to the church bells, and this one is walking your way at the speed of a bad season."
+    - weight: 1
+      en: "You take the footprint for a pond until you find its twin. A stolem is abroad in the puszcza, and the birds have stopped arguing about it."
+  klabaternik:
+    - weight: 2
+      en: "Something small and yellow-coated sits on a stump, mending a plank no ship will miss, tapping with a little hammer. A klabaternik — far from any sea, still keeping the contract."
+    - weight: 1
+      en: "Tap. Tap. Tap. The klabaternik looks up from his work and smiles like a good deal. His ship is mud. His hammer is not."

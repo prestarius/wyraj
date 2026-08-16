@@ -146,6 +146,10 @@ class AudioSystem:
 
     # ---- dispatch ----------------------------------------------------------
 
+    def _path(self, file: str) -> Path:
+        path = Path(file)
+        return path if path.is_absolute() else self._dir / path
+
     def _on_event(self, event: GameEvent) -> None:
         if isinstance(event, TurnEnded):
             self._voice_distance(event.turn)
@@ -155,7 +159,7 @@ class AudioSystem:
         key, subkey = rule_key(event)
         spec = self.catalog.event_sound(key, subkey)
         if spec is not None:
-            self.backend.play(self._dir / spec.file, self._level(spec.volume, self.sfx))
+            self.backend.play(self._path(spec.file), self._level(spec.volume, self.sfx))
 
     def _level(self, base: float, category: float) -> float:
         return max(0.0, min(1.0, base * category * self.master))
@@ -192,7 +196,7 @@ class AudioSystem:
             return
         spec = self.catalog.beds[key]
         self.backend.loop_bed(
-            self._dir / spec.file, self._level(spec.volume, self.ambient), BED_FADE_MS
+            self._path(spec.file), self._level(spec.volume, self.ambient), BED_FADE_MS
         )
 
     # ---- creature voicing at a distance (spec §5) -------------------------
@@ -224,7 +228,7 @@ class AudioSystem:
         _entity, key = candidates[_audio_hash(game.seed, "pick", turn) % len(candidates)]
         spec = self.catalog.voices[key]
         self.backend.play(
-            self._dir / spec.file, self._level(spec.volume * VOICE_VOLUME_SCALE, self.sfx)
+            self._path(spec.file), self._level(spec.volume * VOICE_VOLUME_SCALE, self.sfx)
         )
 
     def shutdown(self) -> None:

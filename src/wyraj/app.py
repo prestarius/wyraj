@@ -30,7 +30,9 @@ def main() -> None:
         help="skip character creation and start as this origin (must be unlocked)",
     )
     parser.add_argument(
-        "--lang", choices=["en", "pl"], default=None, help="game language (default: en)"
+        "--lang",
+        default=None,
+        help="game language (en/pl shipped; packs may add more — M12)",
     )
     parser.add_argument(
         "--narrator",
@@ -43,11 +45,26 @@ def main() -> None:
     )
     parser.add_argument("--history", action="store_true", help="show recent runs and exit")
     parser.add_argument(
+        "--validate-pack",
+        metavar="PATH",
+        default=None,
+        help="validate a data pack (M12) and exit: friendly errors + adds/overrides summary",
+    )
+    parser.add_argument(
         "--reset-intro",
         action="store_true",
         help="forget the prologue and the szept whispers, then exit (progress is kept)",
     )
     args = parser.parse_args()
+
+    if args.validate_pack:
+        from pathlib import Path
+
+        from wyraj.content.packs import validate_pack
+
+        report = validate_pack(Path(args.validate_pack))
+        print("\n".join(report.lines()))
+        raise SystemExit(0 if report.ok else 1)
 
     if args.reset_intro:
         from wyraj.persistence.meta import load_meta as _load_meta
@@ -76,6 +93,16 @@ def main() -> None:
         return
 
     config = _load_config_safely()
+
+    # M12 "Gusła": activate data packs before any content loads. A broken
+    # pack is skipped with a note, never a crash.
+    from wyraj.content.packs import activate_packs, discover_packs
+
+    raw_packs = config.get("packs")
+    pack_paths: list[str] = [str(p) for p in raw_packs] if isinstance(raw_packs, list) else []
+    packs, pack_notes = discover_packs(pack_paths)
+    activate_packs(packs)
+
     if config.get("ascii") and not args.ascii:
         args.ascii = True
     if args.portrait is None:
@@ -84,8 +111,14 @@ def main() -> None:
         )
     if args.origin is None and config.get("origin"):
         args.origin = config["origin"]
+    from wyraj.content.locale import available_languages
+
+    languages = available_languages()
     if args.lang is None:
-        args.lang = config.get("lang") if config.get("lang") in ("en", "pl") else "en"
+        args.lang = config.get("lang") if config.get("lang") in languages else "en"
+    elif args.lang not in languages:
+        print(f"No pack or base content ships '{args.lang}' — the tale stays in English.")
+        args.lang = "en"
     if args.narrator is None:
         args.narrator = (
             config.get("narrator") if config.get("narrator") in ("template", "llm") else "template"
@@ -124,6 +157,7 @@ def main() -> None:
             glebiej=glebiej,
             audio_config=audio_config,
             mute=args.mute,
+            pack_notes=pack_notes,
         ).run()
 
     def show_epilogue(key: str) -> None:

@@ -147,6 +147,18 @@ one new save field is `kupala_bloomed`. This is also why the golden
 transcript was regenerated exactly once at M9: a breathing calendar
 necessarily enters the event log.
 
+## The open door (M12 "Gusła")
+
+Content loading walks a chain of roots — base `data/` first, then each
+enabled pack in config order — with one merge rule everywhere: an entry
+whose key exists replaces the base entry whole, a new key extends the
+catalog. `content/packs.py` owns the manifest, discovery (broken packs
+skip with a note, never crash), and the active fingerprint that saves
+record and refuse to load without. Packs are data only, forever: no code
+path imports, execs, or evals anything from a pack directory. Determinism
+gains one clause — same seed + same meta + **same pack set** = same run —
+and the pack-free case is byte-identical to a world without the feature.
+
 ## The voice (M11 "Głosy")
 
 Sound is one more listener on the bus and nothing else. `ui/audio.py`'s

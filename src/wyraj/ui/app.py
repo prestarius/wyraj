@@ -118,6 +118,7 @@ class WyrajApp(App[str]):
         glebiej: bool = False,
         audio_config: dict | None = None,
         mute: bool = False,
+        pack_notes: list[str] | None = None,
     ) -> None:
         super().__init__()
         self.game = game if game is not None else Game(seed, origin=origin, glebiej=glebiej)
@@ -157,6 +158,7 @@ class WyrajApp(App[str]):
         # identically silent, one dim note aside.
         self.audio: AudioSystem | None = None
         self._audio_note = False
+        self._pack_notes = list(pack_notes or [])
         cfg = audio_config or {}
         if bool(cfg.get("enabled", True)) and not mute:
             try:
@@ -190,6 +192,8 @@ class WyrajApp(App[str]):
         log.write(Text(t("intro_second"), style="italic grey58"))
         if self._audio_note:
             log.write(Text(t("audio_missing"), style="italic grey42"))
+        for note in self._pack_notes:
+            log.write(Text(t("pack_skipped", note=note), style="italic grey42"))
 
     def on_unmount(self) -> None:
         if self.audio is not None:
