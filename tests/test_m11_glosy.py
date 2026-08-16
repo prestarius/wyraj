@@ -167,6 +167,143 @@ def test_every_bed_key_is_resolvable() -> None:
         assert bed in catalog.beds, bed
 
 
+# ---- US 14.3: ambient beds -------------------------------------------------
+
+
+def test_beds_follow_the_descent() -> None:
+    from tests.conftest import goto_depth
+
+    game = Game(seed=SEED, meta_autosave=False)
+    backend = FakeBackend()
+    AudioSystem(game, load_audio_catalog(), backend)
+    assert [name for name, _v in backend.beds] == ["wies.wav"]
+    for depth in (1, 2, 3, 4, 6, 8):
+        goto_depth(game, depth)
+    names = [name for name, _v in backend.beds]
+    # 3→4 stays kurhany: one bed at a time, never re-triggered.
+    assert names == [
+        "wies.wav",
+        "puszcza.wav",
+        "bagna.wav",
+        "kurhany.wav",
+        "kurhany_deep.wav",
+        "dno.wav",
+    ]
+
+
+def test_night_and_kupala_bed_variants() -> None:
+    from wyraj.core import calendar
+
+    game = Game(seed=SEED, meta_autosave=False)
+    system = AudioSystem(game, load_audio_catalog(), FakeBackend())
+    game.depth = 1
+    game.turn = 170  # noc (phase window 160-239)
+    assert system._bed_key() in ("puszcza_noc", "kupala")
+
+    kupala_turn = next(
+        t
+        for t in range(0, calendar.DAY_TURNS * 12, 10)
+        if calendar.festival_of(SEED, t) == "kupala" and calendar.phase_of(t) == "noc"
+    )
+    game.turn = kupala_turn
+    assert system._bed_key() == "kupala"
+    game.depth = 3
+    assert system._bed_key() == "kurhany"  # the flower does not bloom underground
+
+
+# ---- US 14.4: event SFX ----------------------------------------------------
+
+
+def test_sfx_follow_rule_keys() -> None:
+    from wyraj.core.events import AttackResolved, EntityDied, EntityRef, Outcome, Waited
+
+    game = Game(seed=SEED, meta_autosave=False)
+    backend = FakeBackend()
+    AudioSystem(game, load_audio_catalog(), backend)
+    player = EntityRef(entity=game.player, key="player", name="you", is_player=True)
+    bies = EntityRef(entity=999, key="bies", name="bies")
+    game.bus.publish(
+        AttackResolved(
+            attacker=player,
+            defender=bies,
+            weapon=None,
+            damage=5,
+            outcome=Outcome.KILL,
+            defender_hp_frac=0.0,
+        )
+    )
+    game.bus.publish(Waited(actor=player))  # unmapped: silent by design
+    game.bus.publish(EntityDied(entity=player))
+    assert [name for name, _v in backend.played] == ["kill.wav", "death.wav"]
+
+
+def test_stairs_sound_and_bed_change_together() -> None:
+    from tests.conftest import goto_depth
+
+    game = Game(seed=SEED, meta_autosave=False)
+    backend = FakeBackend()
+    AudioSystem(game, load_audio_catalog(), backend)
+    goto_depth(game, 1)
+    assert ("stairs_down.wav", backend.played[0][1]) in backend.played
+    assert backend.beds[-1][0] == "puszcza.wav"
+
+
+# ---- US 14.5: creature voicing at a distance -------------------------------
+
+
+def _voicing_setup() -> tuple[Game, FakeBackend, int]:
+    from wyraj.core.events import TurnEnded
+    from wyraj.ui.audio import VOICE_MODULUS, _audio_hash
+
+    game = Game(seed=SEED, meta_autosave=False)
+    backend = FakeBackend()
+    AudioSystem(game, load_audio_catalog(), backend)
+    game.spawn_monster(game.bestiary["wilk"], 2, 15, depth=0)
+    turn = next(t for t in range(1, 1000) if _audio_hash(SEED, t) % VOICE_MODULUS == 0)
+    game.bus.publish(TurnEnded(turn))
+    return game, backend, turn
+
+
+def test_distant_unseen_monster_voices_deterministically() -> None:
+    _game, first, _turn = _voicing_setup()
+    _game2, second, _turn2 = _voicing_setup()
+    assert first.played == second.played
+    assert first.played and first.played[-1][0] == "wilk.wav"
+
+
+def test_wrong_turn_or_visible_monster_stays_quiet() -> None:
+    from wyraj.core.components import Position
+    from wyraj.core.events import TurnEnded
+    from wyraj.ui.audio import VOICE_MODULUS, _audio_hash
+
+    game = Game(seed=SEED, meta_autosave=False)
+    backend = FakeBackend()
+    AudioSystem(game, load_audio_catalog(), backend)
+    wilk = game.spawn_monster(game.bestiary["wilk"], 2, 15, depth=0)
+    off_turn = next(t for t in range(1, 1000) if _audio_hash(SEED, t) % VOICE_MODULUS != 0)
+    game.bus.publish(TurnEnded(off_turn))
+    assert backend.played == []
+
+    # Step into view: a seen wolf is the map's business, not the ear's.
+    ppos = game.world.expect(game.player, Position)
+    game.world.add(wilk, Position(ppos.x + 2, ppos.y))
+    game._update_player_fov()
+    on_turn = next(t for t in range(1, 1000) if _audio_hash(SEED, t) % VOICE_MODULUS == 0)
+    game.bus.publish(TurnEnded(on_turn))
+    assert backend.played == []
+
+
+def test_voicing_draws_nothing_from_game_rng() -> None:
+    game, _backend, _turn = _voicing_setup()
+    before = game.rng.get_states()
+    from wyraj.core.events import TurnEnded
+    from wyraj.ui.audio import VOICE_MODULUS, _audio_hash
+
+    turn = next(t for t in range(1, 2000) if _audio_hash(SEED, t) % VOICE_MODULUS == 0)
+    game.bus.publish(TurnEnded(turn))
+    assert game.rng.get_states() == before
+
+
 def test_event_sound_fallback_chain() -> None:
     catalog = AudioCatalog(
         events={
