@@ -283,17 +283,41 @@ class Game:
                 *base,
                 Renderable(glyph="▣", style="gold3", ascii_glyph="8"),
                 StashChest(),
-                Lore(key="skrzynia", name="the skrzynia"),
+                Lore(
+                    key="skrzynia",
+                    name="the skrzynia",
+                    description=(
+                        "An iron-banded chest, older than anyone who claims to own it. "
+                        "What you lock inside will outlive you — that is the point."
+                    ),
+                ),
             )
         if kind == "perch":
             return self.world.create(
                 *base,
                 Renderable(glyph="⊥", style="grey66", ascii_glyph="T"),
                 Perch(),
-                Lore(key="zerdz", name="the żerdź"),
+                Lore(
+                    key="zerdz",
+                    name="the żerdź",
+                    description=(
+                        "A tall crane-roost of weathered pine. The birds set travelers "
+                        "down here; stand close and they will remember you."
+                    ),
+                ),
             )
         god = kind.removeprefix("shrine_")
         glyph = "Λ" if god == "perun" else "Ω"
+        descriptions = {
+            "perun": (
+                "A weather-split oak post cut with the thunder-sign. Perun answers "
+                "in favors, and he counts what you bring."
+            ),
+            "weles": (
+                "A low stone slick with old milk and older promises. Weles keeps "
+                "the low places, and he keeps accounts."
+            ),
+        }
         return self.world.create(
             *base,
             Renderable(
@@ -302,7 +326,11 @@ class Game:
                 ascii_glyph="^" if god == "perun" else "O",
             ),
             Shrine(god=god),
-            Lore(key=f"shrine_{god}", name=f"shrine of {god.capitalize()}"),
+            Lore(
+                key=f"shrine_{god}",
+                name=f"shrine of {god.capitalize()}",
+                description=descriptions.get(god, ""),
+            ),
         )
 
     @property
@@ -867,7 +895,14 @@ class Game:
             OnLevel(from_depth),
             Renderable(glyph="⌖", style="grey93", ascii_glyph="+"),
             Znamie(),
-            Lore(key="znamie", name="the znamię"),
+            Lore(
+                key="znamie",
+                name="the znamię",
+                description=(
+                    "The cranes' mark, pressed into the ground where they lifted "
+                    "you. It holds your place on the way back down."
+                ),
+            ),
         )
         self.bus.publish(ZnamiePlaced(depth=from_depth, position=(pos.x, pos.y)))
         perch = self.world.entities_with(Perch)

@@ -35,6 +35,7 @@ from wyraj.core.components import (
     Wielding,
 )
 from wyraj.core.game import Game
+from wyraj.core.map import Tile
 from wyraj.core.systems.movement import level_of
 from wyraj.ui.codex_view import build_codex_text
 from wyraj.ui.i18n import t
@@ -466,6 +467,75 @@ class StashScreen(ModalScreen[Action | None]):
         self.dismiss(None)
 
 
+_EXAMINE_TILES = (
+    (Tile.STAIRS_DOWN, "examine_stairs_down"),
+    (Tile.STAIRS_UP, "examine_stairs_up"),
+    (Tile.SHAFT, "examine_shaft"),
+    (Tile.WATER, "examine_water"),
+)
+
+
+def build_examine_text(game: Game) -> Text:
+    """Everything in sight, with lore: creatures, items, hooks, features, terrain."""
+    text = Text()
+    text.append(t("examine_title") + "\n\n", style="bold")
+    seen_something = False
+    shown: set[int] = set()
+
+    def visible(entity: int, pos: Position) -> bool:
+        return level_of(game.world, entity) == game.depth and (pos.x, pos.y) in game.map.visible
+
+    for entity, (_ai, lore, pos, health) in game.world.query(AI, Lore, Position, Health):
+        if not visible(entity, pos):
+            continue
+        seen_something = True
+        shown.add(entity)
+        text.append(f" {lore.name}", style="bold red3")
+        if lore.epithets:
+            text.append(f" — {lore.epithets[0]}", style="italic grey58")
+        text.append(f" ({_hp_word(health)})\n", style="grey58")
+        if lore.description:
+            text.append(f"   {lore.description.strip()}\n\n", style="grey66")
+    for entity, (item, lore, pos) in game.world.query(Item, Lore, Position):
+        if not visible(entity, pos):
+            continue
+        seen_something = True
+        shown.add(entity)
+        definition = game.items_catalog.get(item.key)
+        text.append(f" {display_name(definition, fallback=lore.name)}", style="gold3")
+        suffix = stat_suffix(definition)
+        if suffix:
+            text.append(f" {suffix}", style="grey58")
+        text.append(" " + t("lies_here") + "\n", style="grey58")
+    for entity, (_hook, lore, pos) in game.world.query(StoryHook, Lore, Position):
+        if not visible(entity, pos):
+            continue
+        seen_something = True
+        shown.add(entity)
+        text.append(f" {lore.name}\n", style="bold medium_purple3")
+        if lore.description:
+            text.append(f"   {lore.description.strip()}\n\n", style="grey66")
+    # Features and folk: anything else that carries lore — shrines, the
+    # skrzynia, the żerdź, the znamię, villagers, the dziad's cart.
+    for entity, (lore, pos) in game.world.query(Lore, Position):
+        if entity in shown or entity == game.player or not visible(entity, pos):
+            continue
+        seen_something = True
+        text.append(f" {lore.name}\n", style="bold light_goldenrod2")
+        if lore.description:
+            text.append(f"   {lore.description.strip()}\n\n", style="grey66")
+    # Notable terrain in sight: ways down and up, sky shafts, water.
+    in_sight = {game.map.tiles[y][x] for x, y in game.map.visible}
+    for tile, key in _EXAMINE_TILES:
+        if tile in in_sight:
+            seen_something = True
+            text.append(" " + t(key) + "\n", style="grey66")
+    if not seen_something:
+        text.append(t("examine_nothing") + "\n", style="grey58")
+    text.append("\n" + t("esc_close"), style="grey42")
+    return text
+
+
 class ExamineScreen(ModalScreen[None]):
     """What the player currently sees, with lore."""
 
@@ -476,47 +546,7 @@ class ExamineScreen(ModalScreen[None]):
         self.game = game
 
     def compose(self) -> ComposeResult:
-        game = self.game
-        text = Text()
-        text.append(t("examine_title") + "\n\n", style="bold")
-        seen_something = False
-        for entity, (_ai, lore, pos, health) in game.world.query(AI, Lore, Position, Health):
-            if level_of(game.world, entity) != game.depth:
-                continue
-            if (pos.x, pos.y) not in game.map.visible:
-                continue
-            seen_something = True
-            text.append(f" {lore.name}", style="bold red3")
-            if lore.epithets:
-                text.append(f" — {lore.epithets[0]}", style="italic grey58")
-            text.append(f" ({_hp_word(health)})\n", style="grey58")
-            if lore.description:
-                text.append(f"   {lore.description.strip()}\n\n", style="grey66")
-        for entity, (item, lore, pos) in game.world.query(Item, Lore, Position):
-            if level_of(game.world, entity) != game.depth:
-                continue
-            if (pos.x, pos.y) not in game.map.visible:
-                continue
-            seen_something = True
-            definition = game.items_catalog.get(item.key)
-            text.append(f" {display_name(definition, fallback=lore.name)}", style="gold3")
-            suffix = stat_suffix(definition)
-            if suffix:
-                text.append(f" {suffix}", style="grey58")
-            text.append(" " + t("lies_here") + "\n", style="grey58")
-        for entity, (_hook, lore, pos) in game.world.query(StoryHook, Lore, Position):
-            if level_of(game.world, entity) != game.depth:
-                continue
-            if (pos.x, pos.y) not in game.map.visible:
-                continue
-            seen_something = True
-            text.append(f" {lore.name}\n", style="bold medium_purple3")
-            if lore.description:
-                text.append(f"   {lore.description.strip()}\n\n", style="grey66")
-        if not seen_something:
-            text.append(t("examine_nothing") + "\n", style="grey58")
-        text.append("\n" + t("esc_close"), style="grey42")
-        yield Static(text, classes="dialog")
+        yield Static(build_examine_text(self.game), classes="dialog")
 
     def action_close(self) -> None:
         self.dismiss(None)
