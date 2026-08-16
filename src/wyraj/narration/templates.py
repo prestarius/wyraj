@@ -36,6 +36,7 @@ from wyraj.core.events import (
     DziadRecognized,
     EntityDied,
     EntityRef,
+    FestivalDawned,
     GameEvent,
     HeirloomWielded,
     HungerChanged,
@@ -46,11 +47,13 @@ from wyraj.core.events import (
     ItemUsed,
     ItemWielded,
     ItemWorn,
+    KupalaBloom,
     LevelChanged,
     LightExtinguished,
     LoreDiscovered,
     MoveBlocked,
     OfferingMade,
+    PhaseChanged,
     Rested,
     RiteCompleted,
     RiteInterrupted,
@@ -65,8 +68,10 @@ from wyraj.core.events import (
     StatusExpired,
     StatusTick,
     TalkedTo,
+    TalkedToDead,
     WeaponNamed,
     WeaponRecognized,
+    WeatherChanged,
     WijAttackFutile,
     WijGazeOpened,
     WijLidLifted,
@@ -140,6 +145,9 @@ _LORE_EVENTS: tuple[type[GameEvent], ...] = (
     WeaponNamed,
     WeaponRecognized,
     DeepDescended,
+    FestivalDawned,
+    KupalaBloom,
+    TalkedToDead,
 )
 
 
@@ -228,6 +236,12 @@ def rule_key(event: GameEvent) -> RuleKey:
             return "weapon_named", event.species
         case RiteInterrupted():
             return "rite_interrupted", event.reason
+        case PhaseChanged():
+            return "phase_changed", event.phase
+        case WeatherChanged():
+            return "weather_changed", event.kind
+        case FestivalDawned():
+            return "festival_dawned", event.festival
         case _:
             name = type(event).__name__
             snake = re.sub(r"(?<!^)(?=[A-Z])", "_", name).lower()

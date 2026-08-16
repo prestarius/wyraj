@@ -27,3 +27,7 @@ lore_discovered:
     - weight: 1
       importance: high
       en: "Grave-linen, hands worn flat, a walk with exactly one purpose in it. It does not look at you. You are not the stone it serves."
+  poludnica:
+    - weight: 1
+      importance: high
+      en: "The air over the clearing stands up and becomes a woman in white linen. Noon looks at you through her, and noon has a question."

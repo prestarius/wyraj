@@ -1,0 +1,23 @@
+poludnica:
+  name: "południca"
+  forms:
+    en: { plural: "południce", pronoun_subj: "she", pronoun_obj: "her", pronoun_poss: "her" }
+    pl: { mian: "południca", dop: "południcy", cel: "południcy", bier: "południcę", narz: "południcą", miej: "południcy" }
+  glyph: "p"
+  ascii_glyph: "p"
+  style: "light_goldenrod2"
+  hp: 12
+  speed: 120
+  damage: 4
+  to_hit: 70
+  behavior: ambush
+  spawn_weight: 0        # she keeps her own hours: midday only (M9 §2)
+  biomes: [puszcza]
+  attack_status: { kind: fear, chance: 35, duration: 5, power: 10 }
+  epithets: ["the noon-bright"]
+  weakness: "She is the glare off the wheat at highsun. Wait her hour out in the shade — or answer her riddle badly and bleed in the open."
+  description: >
+    A tall woman of heat-shimmer and white linen, met between the rows at
+    the worst of the day. She asks riddles, the old people say, and the
+    reapers who answered badly were found with their faces turned up to
+    the sun.

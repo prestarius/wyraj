@@ -9,10 +9,10 @@ leszy, strzyga, utopiec, bies, licho.
 
 ![Wyraj screenshot](docs/screenshot.svg)
 
-**Status:** pre-alpha, and **winnable**. Milestones M0–M8 plus the intro
+**Status:** pre-alpha, and **winnable**. Milestones M0–M9 plus the intro
 ("Próg") are complete: village, forest, marsh, six crypt levels, the Wij
-waiting at the bottom, death, victory, and what survives either — fully
-playable in English and Polish.
+waiting at the bottom, death, victory, what survives either — and now a
+turning year above it all — fully playable in English and Polish.
 
 ## What makes it different
 
@@ -34,6 +34,13 @@ playable in English and Polish.
   village, the codex keeps what your deaths taught you, and some deaths
   unlock new origins ("die to the strzyga three times…"). Carry-over is
   heirlooms, not a savings account — a 50-run simulation enforces it.
+- **The wheel of the year — "Koło Roku".** A pure-function calendar:
+  dawn, noon, dusk, and a night when strzygi hunt; rain that eats
+  unsheltered candle-flame; storms where Perun is close enough to
+  bargain with; and festival days — Gromniczna blesses your candles,
+  the fern flowers once on Noc Kupały, Dożynki feeds you free, and on
+  Dziady the dead walk under truce and will *talk*. Your seed decides
+  which day the story starts on. The południca only exists at midday.
 - **An ending in the dark — "Dno".** Below the last collapsed ceiling
   there is no crane home, sight shrinks to a single tile, and the Wij
   lies in his stone cradle while grave-servants labor to lift his lids.

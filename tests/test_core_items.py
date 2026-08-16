@@ -83,7 +83,8 @@ def test_wield_changes_attack_damage_and_event_weapon() -> None:
 
 def test_item_catalog_loads() -> None:
     game = make_game()
-    assert len(game.items_catalog) == 21  # 12 + crane feather + 5 trophies + 3 M7 slot pieces
+    # 12 + feather + 5 trophies + 3 M7 slot pieces + kwiat paproci
+    assert len(game.items_catalog) == 22
     kinds = {d.kind for d in game.items_catalog.values()}
     assert kinds == {"weapon", "armor", "consumable", "trinket", "trophy"}
 
@@ -98,4 +99,5 @@ def test_bestiary_roster() -> None:
         "martwiak",
         "licho",
         "sluga",
+        "poludnica",
     }

@@ -8,7 +8,7 @@
 
 import random
 
-from wyraj.core.components import AI, Health, Lifting, Lore, Player, Position, Swimmer
+from wyraj.core.components import AI, Health, Lifting, Lore, Peaceful, Player, Position, Swimmer
 from wyraj.core.ecs import Entity, World
 from wyraj.core.events import EventBus
 from wyraj.core.map import GameMap, Tile
@@ -97,6 +97,8 @@ def take_turn(
     ppos = world.expect(player, Position)
     pos = world.expect(entity, Position)
     distance = max(abs(ppos.x - pos.x), abs(ppos.y - pos.y))
+    if world.get(entity, Peaceful) is not None:
+        return  # Dziady (M9 §3): the dead walk, they do not begin
     behavior = world.expect(entity, AI).behavior
 
     if behavior == "flee":

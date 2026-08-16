@@ -5,6 +5,7 @@ from dataclasses import replace
 from rich.text import Text
 from textual.widgets import Static
 
+from wyraj.core import calendar
 from wyraj.core.components import (
     Health,
     Hunger,
@@ -39,6 +40,12 @@ FLOOR_STYLES = {
     "puszcza": "#7d8a6e",
     "bagna": "#7e8154",
     "kurhany": "#6f7a85",
+}
+# M9 §4: the surface floor takes the sky's color (dzien = the base styles)
+PHASE_FLOOR_STYLES = {
+    "swit": {"wies": "#9d8a68", "puszcza": "#83906c", "bagna": "#83854f"},
+    "zmierzch": {"wies": "#8f7a5c", "puszcza": "#75775a", "bagna": "#726a45"},
+    "noc": {"wies": "#5d6470", "puszcza": "#525f6b", "bagna": "#535a60"},
 }
 FLOOR_GLYPHS = ("·", ".")
 WATER_GLYPHS = ("≈", "~")
@@ -89,6 +96,8 @@ class MapView(Static):
         self.border_title = place_label(game)
         wall_style = WALL_STYLES.get(game.map.biome, "dark_green")
         floor_style = FLOOR_STYLES.get(game.map.biome, "grey58")
+        if game.depth <= 2:
+            floor_style = PHASE_FLOOR_STYLES.get(game.phase, {}).get(game.map.biome, floor_style)
         player_pos = game.world.expect(game.player, Position)
         flash_cell = (player_pos.x, player_pos.y) if self._damage_flash else None
 
@@ -143,6 +152,32 @@ class CharacterPanel(Static):
         self.use_ascii = use_ascii
         self.border_title = game.origin.name
 
+    def _calendar_line(self) -> Text:
+        """M9 §4: phase, moon, weather, festival — the wheel at a glance."""
+        game = self.game
+        gi = 1 if self.use_ascii else 0
+        phase_glyphs = {
+            "swit": ("☼", "^"),
+            "dzien": ("☀", "o"),
+            "zmierzch": ("☽", "v"),
+            "noc": ("☾", "*"),
+        }
+        weather_glyphs = {"deszcz": ("☂", "/"), "mgla": ("≋", "~"), "burza": ("⚡", "!")}
+        line = Text()
+        phase = game.phase
+        line.append(f" {phase_glyphs[phase][gi]} {t('phase_' + phase)}", style="grey66")
+        moon = calendar.moon_glyph(game.seed, game.turn, self.use_ascii)
+        line.append(f"  {moon}", style="grey58")
+        weather = game.weather
+        if weather in weather_glyphs and game.depth <= 2:
+            mark = weather_glyphs[weather][gi]
+            line.append(f"  {mark} {t('weather_' + weather)}", style="steel_blue")
+        festival = game.festival
+        if festival:
+            line.append(f"  {t('festival_' + festival)}", style="bold gold3")
+        line.append("\n")
+        return line
+
     def render(self) -> Text:
         game = self.game
         health = game.world.expect(game.player, Health)
@@ -161,7 +196,9 @@ class CharacterPanel(Static):
             f" {game.origin.name}, {game.origin.title_for(current_language())}\n", style="bold"
         )
         text.append(f" {place_label(game)}\n", style="grey58")
-        text.append(f" {t('turn', n=game.turn)}\n\n", style="grey58")
+        text.append(f" {t('turn', n=game.turn)}\n", style="grey58")
+        text.append(self._calendar_line())
+        text.append("\n")
         text.append(" HP ")
         bar_width = 14
         filled = round(health.fraction * bar_width)

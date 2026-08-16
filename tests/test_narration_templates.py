@@ -19,6 +19,7 @@ from wyraj.core.events import (
     EntityDied,
     EntityRef,
     EventBus,
+    FestivalDawned,
     GameEvent,
     HeirloomWielded,
     HungerChanged,
@@ -29,12 +30,15 @@ from wyraj.core.events import (
     ItemUsed,
     ItemWielded,
     ItemWorn,
+    KupalaBloom,
     LevelChanged,
     LightExtinguished,
+    LightningStruck,
     LoreDiscovered,
     MoveBlocked,
     OfferingMade,
     Outcome,
+    PhaseChanged,
     QuickslotBound,
     Rested,
     RiteCompleted,
@@ -50,8 +54,10 @@ from wyraj.core.events import (
     StatusExpired,
     StatusTick,
     TalkedTo,
+    TalkedToDead,
     WeaponNamed,
     WeaponRecognized,
+    WeatherChanged,
     WijAttackFutile,
     WijGazeOpened,
     WijLidLifted,
@@ -81,6 +87,21 @@ def fixture_event(event_key: str, subkey: str | None) -> GameEvent:
         return WeaponNamed(actor=PLAYER, weapon=CIUPAGA, species=subkey)
     if event_key == "weapon_recognized":
         return WeaponRecognized(weapon=CIUPAGA, species="wilk")
+    if event_key == "phase_changed":
+        assert subkey is not None
+        return PhaseChanged(phase=subkey, day=5, festival="")
+    if event_key == "weather_changed":
+        assert subkey is not None
+        return WeatherChanged(kind=subkey)
+    if event_key == "festival_dawned":
+        assert subkey is not None
+        return FestivalDawned(festival=subkey)
+    if event_key == "kupala_bloom":
+        return KupalaBloom()
+    if event_key == "talked_to_dead":
+        return TalkedToDead(entity=EntityRef(entity=8, key="martwiak", name="martwiak"))
+    if event_key == "lightning_struck":
+        return LightningStruck()
     if event_key == "deep_descended":
         return DeepDescended(depth=7)
     if event_key == "wij_stirred":

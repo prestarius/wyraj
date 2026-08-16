@@ -1,0 +1,73 @@
+phase_changed:
+  swit:
+    - weight: 2
+      pl: "Szare światło najpierw znajduje wierzchołki drzew — jak zawsze."
+    - weight: 1
+      pl: "Świt. Noc ustępuje niechętnie i zatrzymuje sobie rowy."
+  dzien:
+    - weight: 2
+      pl: "Słońce staje nad puszczą i cienie wracają do swoich pni."
+    - weight: 1
+      pl: "Pełny dzień. Nawet stary mrok pod jodłami rzednie do czegoś, z czym dałoby się spierać."
+  zmierzch:
+    - weight: 2
+      pl: "Światło robi się długie i miedziane, a za każdym drzewem wyrasta drugie, ciemniejsze."
+    - weight: 1
+      pl: "Zmierzch opada jak wieko przymykane ostrożnie. To, co poluje nocą, właśnie się przeciąga."
+  noc:
+    - weight: 2
+      importance: high
+      pl: "Noc. Las nie cichnie — las robi się szczery."
+    - weight: 1
+      importance: high
+      pl: "Ciemność przychodzi cała naraz, jak to daleko od lamp."
+
+weather_changed:
+  jasno:
+    - weight: 1
+      pl: "Niebo szoruje się do czysta. Dzień, w którym nie ma czego winić nad głową."
+  deszcz:
+    - weight: 1
+      pl: "Zaczyna padać — drobno, cierpliwie; taki deszcz wchodzi i w knoty, i w postanowienia."
+  mgla:
+    - weight: 1
+      pl: "Mgła znad niskich łąk, po pas i wyżej. Świat robi się krótszy."
+  burza:
+    - weight: 1
+      importance: high
+      pl: "Chmury gradowe pchają się nad linię lasu. Perun jest w okolicy — i okolica o tym wie."
+
+festival_dawned:
+  gromniczna:
+    - weight: 1
+      importance: high
+      pl: "Gromniczna. Każda świeca zapalona dziś niesie błogosławieństwo — płomień trzyma wilczy mrok na dłuższą odległość ramienia."
+  kupala:
+    - weight: 1
+      importance: high
+      pl: "Dziś w nocy — Noc Kupały. Gdzieś paproć postanawia, raz na cały obrót roku, zakwitnąć."
+  dozynki:
+    - weight: 1
+      importance: high
+      pl: "Dożynki. Wieś pachnie słomą i pieczywem; dziś żniwo nie upomina się o nic od odpoczywających."
+  dziady:
+    - weight: 1
+      importance: high
+      pl: "Dziady. Nakryj miejsce, mów ściszonym głosem. Umarli dziś chodzą — i dziś, tylko dziś, będą mówić."
+
+kupala_bloom:
+  - weight: 1
+    importance: high
+    pl: "Gdzieś blisko ciemność robi się o stopień cieplejsza. Paproć zakwitła — jeden kwiat, jedna noc, i każda zła rzecz w lesie też o tym wie."
+
+talked_to_dead:
+  - weight: 2
+    pl: "{entity.name.Mian} przystaje, a obwisła, grobowa twarz układa się wokół przypominania. Mówi. Słuchasz tak, jak słucha się przy stole starszych."
+  - weight: 1
+    pl: "Każdego innego dnia byłyby to zęby. Dziś {entity.name.mian} opowiada ci, czego nauczyła go ziemia — cierpliwie, jak się należy gościom."
+
+lightning_struck:
+  - weight: 2
+    pl: "Błyskawica wybiela świat na jedno uderzenie serca; grzmot wchodzi za nią jak gospodarz."
+  - weight: 1
+    pl: "Trzask nad głową — blisko. Stary bóg coś rozłupuje i tym razem nie jesteś to ty."
