@@ -19,7 +19,8 @@ MapView {
 }
 
 CharacterPanel {
-    width: 26;
+    width: 27%;
+    min-width: 26;
     height: 100%;
     border: round #2e3d2a;
     border-title-color: #7a8f6e;
