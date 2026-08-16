@@ -299,3 +299,53 @@ def test_dying_hp_band_still_earns_blizna_at_depth() -> None:
     game.world.add(game.player, replace(health, hp=health.max_hp))
     game.step(Wait())
     assert game.blizny == 1
+
+
+# ---- US 11.5-11.6: epilogues, title, victory outcome ------------------------
+
+
+def test_epilogues_exist_in_both_languages_with_parity() -> None:
+    from wyraj.content.intro import load_epilogues
+
+    en = load_epilogues("en").endings
+    pl = load_epilogues("pl").endings
+    assert set(en) == set(pl) == {"swit", "gospodarz", "ptaki"}
+    for lang in (en, pl):
+        for key, pages in lang.items():
+            assert len(pages) >= 3, f"{key} needs at least three pages"
+            assert all(page.strip() for page in pages)
+
+
+def test_victory_outcome_reaches_the_app_boundary() -> None:
+    import asyncio
+
+    from wyraj.ui.app import WyrajApp
+
+    async def run() -> None:
+        app = WyrajApp(seed=42)
+        async with app.run_test(size=(120, 40)) as pilot:
+            game = app.game
+            prepare_rite(game)
+            await pilot.press("l")  # step east onto the cradle: hands on the lids
+            for _ in range(RITE_TURNS):
+                await pilot.press("full_stop")
+            await pilot.pause()
+        assert app.return_value is not None
+        assert app.return_value.startswith("victory:")
+        assert app.game.victory
+        assert len(app.game.meta.victories) == 1
+
+    asyncio.run(run())
+
+
+def test_title_remembers_a_victory() -> None:
+    from wyraj.persistence.meta import MetaState, VictoryRecord
+    from wyraj.ui.title import TitleApp
+
+    meta = MetaState()
+    plain = TitleApp(meta, has_save=False, rng_seed=1)
+    assert "glebiej" not in [key for key, _ in plain._menu_entries()]
+    meta.victories.append(VictoryRecord(origin="wygnaniec", seed=42, turn=800, epilogue="swit"))
+    proud = TitleApp(meta, has_save=False, rng_seed=1)
+    assert "glebiej" in [key for key, _ in proud._menu_entries()]
+    assert "The birds returned, once." in proud._render_body().plain

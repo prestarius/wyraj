@@ -105,7 +105,7 @@ def main() -> None:
     )
     auto_refill = bool(quickslots_cfg.get("auto_refill", True))
 
-    def launch(game: object | None, origin: str, seed: int) -> str | None:
+    def launch(game: object | None, origin: str, seed: int, glebiej: bool = False) -> str | None:
         return WyrajApp(
             seed=seed,
             use_ascii=args.ascii,
@@ -117,15 +117,36 @@ def main() -> None:
             llm_config=llm_config,
             hints=bool(config.get("hints", True)),
             quickslot_auto_refill=auto_refill,
+            glebiej=glebiej,
         ).run()
 
-    def play_run(game: object | None, origin: str, seed: int) -> str | None:
+    def show_epilogue(key: str) -> None:
+        """M8 §3: the run was won — pages fall like the prologue's did."""
+        from wyraj.content.intro import load_epilogues
+        from wyraj.ui.i18n import current_language
+        from wyraj.ui.prologue import PrologueApp
+
+        pages = load_epilogues(current_language()).endings.get(key)
+        if pages:
+            PrologueApp(
+                pages=pages,
+                text_speed=str(config.get("text_speed", "normal")),
+                final_hint_key="epilogue_end",
+            ).run()
+
+    def play_run(game: object | None, origin: str, seed: int, glebiej: bool = False) -> str | None:
         """Run the app; the death screen's "set out again" starts fresh runs
-        (same origin, new seed) until the player quits or asks for the title."""
-        outcome = launch(game, origin, seed)
-        while outcome == "restart":
-            outcome = launch(None, origin, secrets.randbelow(2**31))
-        return outcome
+        (same origin, new seed) until the player quits, wins, or asks for
+        the title. A victory shows its epilogue and lands on the title."""
+        outcome = launch(game, origin, seed, glebiej)
+        while True:
+            if outcome == "restart":
+                outcome = launch(None, origin, secrets.randbelow(2**31), glebiej)
+                continue
+            if outcome is not None and outcome.startswith("victory:"):
+                show_epilogue(outcome.split(":", 1)[1])
+                outcome = "title"
+            return outcome
 
     if args.seed is not None:
         # Fast path for testers and scripts: straight into a seeded run,
@@ -141,10 +162,20 @@ def main() -> None:
         if origin is None:
             from wyraj.ui.origin_select import OriginApp
 
-            origin = OriginApp(origins, unlocked=meta.unlocks.origins).run() or "wygnaniec"
+            origin = (
+                OriginApp(
+                    origins,
+                    unlocked=meta.unlocks.origins,
+                    victorious={v.origin for v in meta.victories},
+                ).run()
+                or "wygnaniec"
+            )
         outcome: str | None = "restart"
         while outcome == "restart":
             outcome = launch(None, origin, args.seed)  # a pinned seed stays pinned
+        if outcome is not None and outcome.startswith("victory:"):
+            show_epilogue(outcome.split(":", 1)[1])
+            outcome = "title"
         if outcome != "title":
             return
         meta = load_meta()  # death mutated it on disk
@@ -165,6 +196,7 @@ def main() -> None:
                 continue
             choice = "new"  # save vanished under us: fall through to a new journey
 
+        glebiej_run = choice == "glebiej"  # M8 §4: unlocked by a victory
         if choice.startswith("new:"):
             seed = int(choice.split(":", 1)[1])
         else:
@@ -174,7 +206,14 @@ def main() -> None:
         if origin is None:
             from wyraj.ui.origin_select import OriginApp
 
-            origin = OriginApp(origins, unlocked=meta.unlocks.origins).run() or "wygnaniec"
+            origin = (
+                OriginApp(
+                    origins,
+                    unlocked=meta.unlocks.origins,
+                    victorious={v.origin for v in meta.victories},
+                ).run()
+                or "wygnaniec"
+            )
 
         if not meta.prologue_seen:
             from wyraj.ui.prologue import PrologueApp
@@ -183,7 +222,7 @@ def main() -> None:
             meta.prologue_seen = True
             save_meta(meta)
 
-        if play_run(None, origin, seed) != "title":
+        if play_run(None, origin, seed, glebiej=glebiej_run) != "title":
             return
         meta = load_meta()  # back to the threshold with fresh unlocks
 

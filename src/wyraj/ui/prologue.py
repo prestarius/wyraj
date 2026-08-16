@@ -27,11 +27,20 @@ class PrologueApp(App[bool]):
     #page { width: 76; }
     """
 
-    def __init__(self, origin: str, text_speed: str = "normal") -> None:
+    def __init__(
+        self,
+        origin: str = "",
+        text_speed: str = "normal",
+        pages: list[str] | None = None,
+        final_hint_key: str = "prologue_begin",
+    ) -> None:
         super().__init__()
-        prologue = load_prologue(current_language())
-        final = prologue.origins.get(origin, prologue.fallback)
-        self.pages = [*prologue.common, final]
+        if pages is None:
+            prologue = load_prologue(current_language())
+            final = prologue.origins.get(origin, prologue.fallback)
+            pages = [*prologue.common, final]
+        self.pages = pages or [""]
+        self.final_hint_key = final_hint_key
         self.page_index = 0
         self.revealed = 0
         self.instant = text_speed == "instant"
@@ -66,7 +75,7 @@ class PrologueApp(App[bool]):
         if self._page_done():
             text.append("\n\n")
             hint = (
-                t("prologue_begin")
+                t(self.final_hint_key)
                 if self.page_index == len(self.pages) - 1
                 else t("prologue_next")
             )
