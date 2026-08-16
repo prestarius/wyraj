@@ -1,0 +1,8 @@
+# A weapon that kills EPITHET_KILLS (7) of one species earns its name.
+# One identity, two tongues — narration announces it, the pane wears it.
+wilk: { en: "Wolves' Bane", pl: "Wilcza Zguba" }
+bies: { en: "Bies-Breaker", pl: "Biesobój" }
+utopiec: { en: "Drowner's Sorrow", pl: "Zguba Utopców" }
+strzyga: { en: "Strzyga's Silence", pl: "Cisza Strzygi" }
+martwiak: { en: "Gravewarden", pl: "Stróż Mogił" }
+licho: { en: "Woe-Ender", pl: "Zmora Licha" }

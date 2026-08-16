@@ -17,6 +17,7 @@ from wyraj.content.economy import (
     load_prices,
     load_village_shop,
 )
+from wyraj.content.epithets import load_epithets
 from wyraj.content.hooks import HookDef, load_hooks
 from wyraj.content.items import ItemDef, load_items
 from wyraj.content.loot import load_loot_tables
@@ -24,7 +25,9 @@ from wyraj.content.origins import OriginDef, load_origins
 from wyraj.core.actions import (
     Action,
     Ascend,
+    BindQuickslot,
     BuyItem,
+    ClearQuickslot,
     DepositItem,
     Descend,
     Get,
@@ -32,8 +35,10 @@ from wyraj.core.actions import (
     Move,
     Rest,
     SellItem,
+    UnequipSlot,
     UpgradeStash,
     UseItem,
+    UseQuickslot,
     Wait,
     WearItem,
     WieldItem,
@@ -47,6 +52,7 @@ from wyraj.core.components import (
     Channeling,
     CoinPile,
     Consumable,
+    Epithet,
     Health,
     Hunger,
     Inventory,
@@ -76,6 +82,7 @@ from wyraj.core.components import (
 from wyraj.core.ecs import Entity, World
 from wyraj.core.events import (
     AttackResolved,
+    BliznaEarned,
     CoinsBanked,
     CoinsPicked,
     CraneRefused,
@@ -85,14 +92,17 @@ from wyraj.core.events import (
     CraneSummonStarted,
     DziadRecognized,
     EntityDied,
+    EntityRef,
     EventBus,
     ItemBought,
+    ItemPickedUp,
     ItemSold,
     LevelChanged,
     LoreDiscovered,
     MetaTransaction,
     OfferingMade,
     Outcome,
+    QuickslotUsed,
     Rested,
     ShrineVisited,
     StarvationHit,
@@ -103,13 +113,15 @@ from wyraj.core.events import (
     StatusTick,
     TalkedTo,
     TurnEnded,
+    WeaponNamed,
+    WeaponRecognized,
     ZnamiePlaced,
 )
 from wyraj.core.map import GameMap, Tile
 from wyraj.core.refs import ref_for
 from wyraj.core.rng import RngStreams
 from wyraj.core.scheduler import TurnScheduler
-from wyraj.core.systems import ai, combat, hunger, items, movement, status
+from wyraj.core.systems import ai, combat, hunger, items, movement, quickslots, status
 from wyraj.persistence.meta import MetaState, StashedItem, save_meta
 from wyraj.procgen.bagna import generate_bagna
 from wyraj.procgen.forest import generate_forest
@@ -127,6 +139,8 @@ REST_SATIATION_COST = 100
 
 PLAYER_HP = 20
 PLAYER_SPEED = 100
+DYING_BAND = 0.10  # M7 §2.3: below this, the run is one bad turn from over
+EPITHET_KILLS = 7  # M7 §6.2 tuning knob: kills of one species to earn a name
 PLAYER_DAMAGE = 4
 PLAYER_TO_HIT = 75
 PLAYER_SATIATION = 600
@@ -185,6 +199,17 @@ class Game:
         self.dziad_traded_this_run = False
         self.dziad_last_depth = 0
         self.bus.subscribe(EntityDied, self._on_monster_died)
+        # M7 "Sylwetka" run state
+        self.blizny = 0  # near-deaths survived (portrait scars)
+        self._was_dying = False
+        self.weapon_kills: dict[str, int] = {}  # "weapon_entity:species" → kills
+        self.last_foe: tuple[EntityRef, float] | None = None  # pane mini-line
+        self.quickslot_auto_refill = True  # spec §5.1 knob, config `quickslots.auto_refill`
+        self._dziad_greeted_weapon = False
+        self.epithets_catalog = load_epithets()
+        self.bus.subscribe(AttackResolved, self._on_attack_for_pane)
+        self.bus.subscribe(ItemPickedUp, self._on_item_gained)
+        self.bus.subscribe(ItemBought, self._on_item_gained)
 
         layout = generate_village()
         self.levels[0] = layout.map
@@ -482,6 +507,7 @@ class Game:
         hunger.tick(self.world, self.bus, self.player, self.turn + 1)
         if self.world.expect(self.player, Health).hp <= 0:
             self.game_over = True
+        self._track_blizna()
         self.scheduler.spend(self.player)
         self._advance_until_player_turn()
         channeling = self.world.get(self.player, Channeling)
@@ -528,6 +554,8 @@ class Game:
                         self.bus.publish(
                             TalkedTo(villager=ref_for(self.world, target), role=villager.role)
                         )
+                        if villager.role == "dziad_wedrowny":
+                            self._dziad_greets_weapon()
                     else:
                         combat.attack(self.world, self.bus, self.rng.combat, self.player, target)
                 else:
@@ -592,7 +620,17 @@ class Game:
             case WieldItem(item=item):
                 items.wield(self.world, self.bus, self.player, item)
             case WearItem(item=item):
-                items.wear(self.world, self.bus, self.player, item)
+                items.wear(self.world, self.bus, self.player, item, slot=self._slot_for(item))
+            case UnequipSlot(slot=slot):
+                items.unequip(self.world, self.bus, self.player, slot)
+            case BindQuickslot(index=index, item=item):
+                quickslots.bind(self.world, self.bus, self.player, index, item)
+            case ClearQuickslot(index=index):
+                quickslots.clear(self.world, self.bus, self.player, index)
+            case UseQuickslot(index=index):
+                entity = quickslots.bound_entity(self.world, self.player, index)
+                if entity is not None:
+                    self._use_quickslot(index, entity)
             case Wait():
                 pass
 
@@ -913,9 +951,11 @@ class Game:
         if not stacked:
             if self.stash_is_full():
                 return
-            self.meta.stash.items.append(
-                StashedItem(item_id=item_c.key, instance={"memory_tag": self.run_tag})
-            )
+            instance: dict[str, object] = {"memory_tag": self.run_tag}
+            epithet = self.world.get(item, Epithet)
+            if epithet is not None:  # a named weapon stays named (M7 §6.2)
+                instance["epithet"] = epithet.species
+            self.meta.stash.items.append(StashedItem(item_id=item_c.key, instance=instance))
         item_ref = ref_for(self.world, item)
         self.world.add(self.player, Inventory(items=tuple(i for i in inventory.items if i != item)))
         wielding = self.world.get(self.player, Wielding)
@@ -942,6 +982,9 @@ class Game:
         heirloom = bool(tag) and tag != self.run_tag
         if heirloom:
             self.world.add(entity, ItemMemory(memory_tag=tag))
+        species = stashed.instance.get("epithet")
+        if isinstance(species, str) and species:
+            self.world.add(entity, Epithet(species=species))
         inventory = self.world.get(self.player, Inventory) or Inventory()
         self.world.add(self.player, Inventory(items=(*inventory.items, entity)))
         self.bus.publish(StashWithdrawn(item=ref_for(self.world, entity), heirloom=heirloom))
@@ -1036,6 +1079,93 @@ class Game:
             self.meta.dziad.reputation += 1
             self.bus.publish(MetaTransaction(kind="dziad_rep", detail="+1"))
             self._save_meta()
+
+    # ---- M7 "Sylwetka" ----------------------------------------------------
+
+    def _slot_for(self, item: Entity) -> str:
+        component = self.world.get(item, Item)
+        definition = self.items_catalog.get(component.key) if component is not None else None
+        if definition is not None and definition.slot in ("head", "amulet", "feet"):
+            return definition.slot
+        return "torso"
+
+    def _use_quickslot(self, index: int, item: Entity) -> None:
+        item_ref = ref_for(self.world, item)
+        consumable = self.world.get(item, Consumable)
+        if consumable is not None and consumable.effect == "crane":
+            self._use_crane_feather(item, consumable.power)
+        else:
+            items.use_item(self.world, self.bus, self.player, item)
+        self.bus.publish(
+            QuickslotUsed(actor=ref_for(self.world, self.player), item=item_ref, index=index)
+        )
+        key = quickslots.slots_of(self.world, self.player).key_at(index)
+        if (
+            not self.quickslot_auto_refill
+            and key is not None
+            and quickslots.count_of(self.world, self.player, key) == 0
+        ):
+            quickslots.clear(self.world, self.bus, self.player, index)
+
+    def quickslot_entity(self, index: int) -> Entity | None:
+        """UI helper: what a `1-4` press would use (None = no turn spent)."""
+        return quickslots.bound_entity(self.world, self.player, index)
+
+    def _on_item_gained(self, event: ItemPickedUp | ItemBought) -> None:
+        if event.actor.is_player:
+            quickslots.note_gained(self.world, self.bus, self.player, event.item.entity)
+
+    def _track_blizna(self) -> None:
+        if self.game_over:
+            return
+        fraction = self.world.expect(self.player, Health).fraction
+        if fraction < DYING_BAND:
+            self._was_dying = True
+        elif self._was_dying:
+            self._was_dying = False
+            self.blizny += 1
+            self.bus.publish(
+                BliznaEarned(actor=ref_for(self.world, self.player), count=self.blizny)
+            )
+
+    def _on_attack_for_pane(self, event: AttackResolved) -> None:
+        if event.attacker.is_player and not event.defender.is_player:
+            self.last_foe = (event.defender, event.defender_hp_frac)
+            self._tally_weapon_kill(event)
+        elif event.defender.is_player and not event.attacker.is_player:
+            health = self.world.get(event.attacker.entity, Health)
+            fraction = health.fraction if health is not None else 1.0
+            self.last_foe = (event.attacker, fraction)
+
+    def _tally_weapon_kill(self, event: AttackResolved) -> None:
+        if event.outcome is not Outcome.KILL or event.weapon is None:
+            return
+        tally_key = f"{event.weapon.entity}:{event.defender.key}"
+        self.weapon_kills[tally_key] = self.weapon_kills.get(tally_key, 0) + 1
+        if (
+            self.weapon_kills[tally_key] >= EPITHET_KILLS
+            and event.defender.key in self.epithets_catalog
+            and self.world.get(event.weapon.entity, Item) is not None
+            and self.world.get(event.weapon.entity, Epithet) is None
+        ):
+            self.world.add(event.weapon.entity, Epithet(species=event.defender.key))
+            self.bus.publish(
+                WeaponNamed(actor=event.attacker, weapon=event.weapon, species=event.defender.key)
+            )
+
+    def _dziad_greets_weapon(self) -> None:
+        if self._dziad_greeted_weapon:
+            return
+        wielding = self.world.get(self.player, Wielding)
+        if wielding is None or wielding.item is None:
+            return
+        epithet = self.world.get(wielding.item, Epithet)
+        if epithet is None:
+            return
+        self._dziad_greeted_weapon = True
+        self.bus.publish(
+            WeaponRecognized(weapon=ref_for(self.world, wielding.item), species=epithet.species)
+        )
 
     def _track_kill_cause(self, event: AttackResolved) -> None:
         if event.defender.is_player and event.outcome is Outcome.KILL:

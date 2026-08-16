@@ -1,0 +1,47 @@
+item_unequipped:
+  - weight: 2
+    pl: "Odkładasz {item.name.bier}. Dłonie robią się lżejsze i mniej pewne."
+  - weight: 1
+    pl: "Chowasz {item.name.bier} z powrotem do tobołka."
+
+quickslot_bound:
+  - weight: 2
+    pl: "Wtykasz {item.name.bier} tam, gdzie sięgnie wystraszona ręka."
+  - weight: 1
+    pl: "Odtąd {item.name.mian} leży pod ręką — tam, gdzie strach sięga najpierw."
+
+blizna_earned:
+  - weight: 1
+    importance: high
+    pl: "Blizna przestała się sączyć. Nie pozwoli ci zapomnieć."
+
+weapon_named:
+  wilk:
+    - weight: 1
+      importance: high
+      pl: "Siedem wilków padło od {weapon.name.dop}. Odtąd ta broń zwie się Wilcza Zguba, a puszcza się z tym zgodzi."
+  bies:
+    - weight: 1
+      importance: high
+      pl: "Siedem biesów złamało się na jednym ostrzu. {weapon.name.Mian} zyskuje imię: Biesobój."
+  utopiec:
+    - weight: 1
+      importance: high
+      pl: "Siedmiu utopców wróciło pod wodę na dobre. {weapon.name.Mian} to teraz Zguba Utopców."
+  strzyga:
+    - weight: 1
+      importance: high
+      pl: "Siedem strzyg umilkło. {weapon.name.Mian} nosi odtąd imię Cisza Strzygi."
+  martwiak:
+    - weight: 1
+      importance: high
+      pl: "Siedmiu martwiaków położonych z powrotem do ziemi. {weapon.name.Mian} to Stróż Mogił."
+  licho:
+    - weight: 1
+      importance: high
+      pl: "Siedem lich przepadło bez śladu. {weapon.name.Mian} zwie się odtąd Zmora Licha."
+
+weapon_recognized:
+  - weight: 1
+    importance: high
+    pl: "Wzrok dziada odnajduje {weapon.name.bier} i zostaje tam o chwilę za długo. — Więc ma już imię — mówi i o nic więcej nie pyta."

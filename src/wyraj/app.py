@@ -100,6 +100,10 @@ def main() -> None:
 
     origins = load_origins()
     meta = load_meta()
+    quickslots_cfg: dict[str, Any] = (
+        config["quickslots"] if isinstance(config.get("quickslots"), dict) else {}
+    )
+    auto_refill = bool(quickslots_cfg.get("auto_refill", True))
 
     def launch(game: object | None, origin: str, seed: int) -> str | None:
         return WyrajApp(
@@ -112,6 +116,7 @@ def main() -> None:
             narrator_mode=args.narrator,
             llm_config=llm_config,
             hints=bool(config.get("hints", True)),
+            quickslot_auto_refill=auto_refill,
         ).run()
 
     def play_run(game: object | None, origin: str, seed: int) -> str | None:

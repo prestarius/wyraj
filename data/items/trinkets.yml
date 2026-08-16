@@ -44,3 +44,18 @@ zurawie_pioro:
     what pass between this world and Wyraj; hold the feather under open sky
     and a wedge of cranes will come down for you. They will not land while
     anything is watching.
+
+szkaplerz:
+  name: "szkaplerz of Weles"
+  forms:
+    pl: { mian: "szkaplerz Welesa", dop: "szkaplerza Welesa", cel: "szkaplerzowi Welesa", bier: "szkaplerz Welesa", narz: "szkaplerzem Welesa", miej: "szkaplerzu Welesa" }
+  glyph: '"'
+  ascii_glyph: '"'
+  style: "medium_purple3"
+  kind: trinket
+  slot: amulet
+  spawn_weight: 0
+  description: >
+    Two small squares of cloth on a woolen cord, one worn over the chest,
+    one over the back. What is stitched inside is between the wearer and
+    the god of the low places.

@@ -11,7 +11,17 @@ from textual.containers import Horizontal
 from textual.widgets import Footer, RichLog
 
 from wyraj.content.intro import load_szept
-from wyraj.core.actions import Action, Ascend, Descend, Get, Move, Rest, Wait
+from wyraj.core.actions import (
+    Action,
+    Ascend,
+    ClearQuickslot,
+    Descend,
+    Get,
+    Move,
+    Rest,
+    UseQuickslot,
+    Wait,
+)
 from wyraj.core.components import Health
 from wyraj.core.events import ShrineVisited, StashOpened, TalkedTo
 from wyraj.core.game import Game
@@ -29,6 +39,7 @@ from wyraj.ui.screens import (
     CodexScreen,
     ConfirmQuitScreen,
     DeathScreen,
+    EquipScreen,
     ExamineScreen,
     HelpScreen,
     InventoryScreen,
@@ -74,8 +85,17 @@ class WyrajApp(App[str]):
         Binding("g", "get", "Get"),
         Binding("i", "inventory", "Inventory"),
         Binding("x", "examine", "Examine"),
+        Binding("e", "equip", "Equip"),
         Binding("c", "codex", "Codex"),
         Binding("L", "legend", "Legend"),
+        Binding("1", "quickslot(0)", "Quick 1", show=False),
+        Binding("2", "quickslot(1)", "Quick 2", show=False),
+        Binding("3", "quickslot(2)", "Quick 3", show=False),
+        Binding("4", "quickslot(3)", "Quick 4", show=False),
+        Binding("exclamation_mark", "clear_quickslot(0)", "Clear 1", show=False),
+        Binding("at", "clear_quickslot(1)", "Clear 2", show=False),
+        Binding("number_sign", "clear_quickslot(2)", "Clear 3", show=False),
+        Binding("dollar_sign", "clear_quickslot(3)", "Clear 4", show=False),
         Binding("s", "save_quit", "Save+Quit"),
         Binding("r", "rest", "Rest"),
         Binding("question_mark", "help", "Help", key_display="?"),
@@ -92,9 +112,12 @@ class WyrajApp(App[str]):
         narrator_mode: str = "template",
         llm_config: dict | None = None,
         hints: bool = True,
+        quickslot_auto_refill: bool = True,
     ) -> None:
         super().__init__()
         self.game = game if game is not None else Game(seed, origin=origin)
+        self.game.quickslot_auto_refill = quickslot_auto_refill
+        self._quickslot_hinted = False
         self.use_ascii = use_ascii
         self.portrait_style = portrait_style
         self.lang = lang
@@ -180,6 +203,26 @@ class WyrajApp(App[str]):
 
     def action_help(self) -> None:
         self.push_screen(HelpScreen())
+
+    def action_equip(self) -> None:
+        def on_result(action: Action | None) -> None:
+            if action is not None:
+                self._play(action)
+
+        self.push_screen(EquipScreen(self.game), on_result)
+
+    def action_quickslot(self, index: int) -> None:
+        if self.game.quickslot_entity(index) is None:
+            if not self._quickslot_hinted:  # szept-style aside, first time only
+                self._quickslot_hinted = True
+                log = self.query_one(RichLog)
+                log.write(Text(""))
+                log.write(Text(t("quickslot_empty_hint"), style="italic grey50"))
+            return  # no turn spent on an empty slot (spec §5.1)
+        self._play(UseQuickslot(index))
+
+    def action_clear_quickslot(self, index: int) -> None:
+        self._play(ClearQuickslot(index))
 
     def _on_stash_opened(self, event: StashOpened) -> None:
         if not self.is_running:

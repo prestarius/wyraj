@@ -93,6 +93,64 @@ class ItemWorn(GameEvent):
 
 
 @dataclass(frozen=True)
+class ItemUnequipped(GameEvent):
+    actor: EntityRef
+    item: EntityRef
+
+
+@dataclass(frozen=True)
+class QuickslotBound(GameEvent):
+    actor: EntityRef
+    item: EntityRef
+    index: int  # 0-based slot
+
+
+@dataclass(frozen=True)
+class QuickslotCleared(GameEvent):
+    actor: EntityRef
+    index: int
+
+
+@dataclass(frozen=True)
+class QuickslotUsed(GameEvent):
+    actor: EntityRef
+    item: EntityRef
+    index: int
+
+
+@dataclass(frozen=True)
+class QuickslotRefilled(GameEvent):
+    actor: EntityRef
+    item: EntityRef
+    index: int
+
+
+@dataclass(frozen=True)
+class BliznaEarned(GameEvent):
+    """Survived a dying state (<10% HP): a scar the run will keep (M7 §2.5)."""
+
+    actor: EntityRef
+    count: int  # blizny total, this one included
+
+
+@dataclass(frozen=True)
+class WeaponNamed(GameEvent):
+    """A weapon earned its epithet after enough kills of one species (M7 §6.2)."""
+
+    actor: EntityRef
+    weapon: EntityRef
+    species: str
+
+
+@dataclass(frozen=True)
+class WeaponRecognized(GameEvent):
+    """The dziad greets a named weapon by its name (M7 §6.2, M6 bridge)."""
+
+    weapon: EntityRef
+    species: str
+
+
+@dataclass(frozen=True)
 class HungerChanged(GameEvent):
     actor: EntityRef
     band: str  # "sated" | "hungry" | "starving"

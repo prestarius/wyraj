@@ -16,6 +16,7 @@ from wyraj.core.components import (
     StatusEffect,
     Wearing,
     Wielding,
+    WornExtras,
 )
 from wyraj.core.ecs import Entity, World
 from wyraj.core.events import (
@@ -23,6 +24,7 @@ from wyraj.core.events import (
     HeirloomWielded,
     HungerChanged,
     ItemPickedUp,
+    ItemUnequipped,
     ItemUsed,
     ItemWielded,
     ItemWorn,
@@ -108,17 +110,53 @@ def wield(world: World, bus: EventBus, actor: Entity, item: Entity) -> None:
         bus.publish(HeirloomWielded(actor=ref_for(world, actor), item=ref_for(world, item)))
 
 
-def wear(world: World, bus: EventBus, actor: Entity, item: Entity) -> None:
-    world.add(actor, Wearing(item=item))
+def wear(world: World, bus: EventBus, actor: Entity, item: Entity, slot: str = "torso") -> None:
+    if slot == "torso":
+        world.add(actor, Wearing(item=item))
+    else:
+        extras = world.get(actor, WornExtras) or WornExtras()
+        world.add(actor, replace(extras, **{slot: item}))
     bus.publish(ItemWorn(actor=ref_for(world, actor), item=ref_for(world, item)))
 
 
+def unequip(world: World, bus: EventBus, actor: Entity, slot: str) -> bool:
+    """Empty a paper-doll slot; the item stays in the pack. True if something left it."""
+    item: Entity | None = None
+    if slot == "weapon":
+        wielding = world.get(actor, Wielding)
+        if wielding is not None and wielding.item is not None:
+            item = wielding.item
+            world.add(actor, Wielding(item=None))
+    elif slot == "torso":
+        wearing = world.get(actor, Wearing)
+        if wearing is not None and wearing.item is not None:
+            item = wearing.item
+            world.add(actor, Wearing(item=None))
+    elif slot in ("head", "amulet", "feet"):
+        extras = world.get(actor, WornExtras)
+        if extras is not None and getattr(extras, slot) is not None:
+            item = getattr(extras, slot)
+            world.add(actor, replace(extras, **{slot: None}))
+    if item is None:
+        return False
+    bus.publish(ItemUnequipped(actor=ref_for(world, actor), item=ref_for(world, item)))
+    return True
+
+
 def protection_of(world: World, actor: Entity) -> int:
+    worn: list[Entity] = []
     wearing = world.get(actor, Wearing)
-    if wearing is None or wearing.item is None:
-        return 0
-    stats = world.get(wearing.item, ArmorStats)
-    return stats.protection if stats is not None else 0
+    if wearing is not None and wearing.item is not None:
+        worn.append(wearing.item)
+    extras = world.get(actor, WornExtras)
+    if extras is not None:
+        worn += [e for e in (extras.head, extras.amulet, extras.feet) if e is not None]
+    total = 0
+    for item in worn:
+        stats = world.get(item, ArmorStats)
+        if stats is not None:
+            total += stats.protection
+    return total
 
 
 def _remove_from_inventory(world: World, actor: Entity, item: Entity) -> None:

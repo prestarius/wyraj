@@ -83,4 +83,25 @@ class WieldItem(Action):
 
 @dataclass(frozen=True)
 class WearItem(Action):
-    item: int  # entity id from the actor's inventory
+    item: int
+
+
+@dataclass(frozen=True)
+class UnequipSlot(Action):
+    slot: str  # "weapon" | "torso" | "head" | "amulet" | "feet"
+
+
+@dataclass(frozen=True)
+class BindQuickslot(Action):
+    index: int  # 0-based
+    item: int
+
+
+@dataclass(frozen=True)
+class ClearQuickslot(Action):
+    index: int
+
+
+@dataclass(frozen=True)
+class UseQuickslot(Action):
+    index: int  # entity id from the actor's inventory

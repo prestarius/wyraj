@@ -1,0 +1,47 @@
+item_unequipped:
+  - weight: 2
+    en: "You set {item.name.def} aside. Your hands feel lighter, and less sure."
+  - weight: 1
+    en: "{item.name.Def} goes back into the pack, still warm from wearing."
+
+quickslot_bound:
+  - weight: 2
+    en: "You tuck {item.name.def} where a frightened hand can find it."
+  - weight: 1
+    en: "Close at hand now: {item.name.def}, within reach of fear."
+
+blizna_earned:
+  - weight: 1
+    importance: high
+    en: "The scar has stopped weeping. It will not let you forget."
+
+weapon_named:
+  wilk:
+    - weight: 1
+      importance: high
+      en: "Seven wolves have gone down before {weapon.name.def}. Name it Wolves' Bane, and the forest will agree."
+  bies:
+    - weight: 1
+      importance: high
+      en: "Seven biesy broken against one edge. {weapon.name.Def} has earned a name: Bies-Breaker."
+  utopiec:
+    - weight: 1
+      importance: high
+      en: "Seven drowned things sent back under for good. {weapon.name.Def} is Drowner's Sorrow now."
+  strzyga:
+    - weight: 1
+      importance: high
+      en: "Seven strzygi gone quiet. {weapon.name.Def} will answer to Strzyga's Silence."
+  martwiak:
+    - weight: 1
+      importance: high
+      en: "Seven of the walking dead put down to stay. {weapon.name.Def} is Gravewarden now."
+  licho:
+    - weight: 1
+      importance: high
+      en: "Seven licha unmade. {weapon.name.Def} has become Woe-Ender."
+
+weapon_recognized:
+  - weight: 1
+    importance: high
+    en: "The dziad's eyes find {weapon.name.def} and stay there a moment too long. 'So it has a name now,' he says, and asks nothing more about it."

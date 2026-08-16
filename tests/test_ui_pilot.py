@@ -1,15 +1,20 @@
 """Textual Pilot smoke tests (async driven via asyncio.run — no plugin needed)."""
 
 import asyncio
+import string
+from dataclasses import replace
 
 from textual.widgets import RichLog
 
-from wyraj.core.components import AI, Health, OnLevel, Position
+from wyraj.core.actions import Get, WearItem
+from wyraj.core.components import AI, Health, Inventory, OnLevel, Position, Quickslots, Wearing
+from wyraj.core.game import Game
 from wyraj.ui.app import WyrajApp
 from wyraj.ui.screens import (
     CodexScreen,
     ConfirmQuitScreen,
     DeathScreen,
+    EquipScreen,
     ExamineScreen,
     InventoryScreen,
     LegendScreen,
@@ -18,6 +23,13 @@ from wyraj.ui.screens import (
     TradeScreen,
 )
 from wyraj.ui.widgets import CharacterPanel, MapView
+
+
+def _give(game: Game, key: str) -> int:
+    ppos = game.world.expect(game.player, Position)
+    entity = game.spawn_item(game.items_catalog[key], ppos.x, ppos.y)
+    game.step(Get())
+    return entity
 
 
 def test_app_boots_and_waits_advance_turns() -> None:
@@ -63,6 +75,7 @@ def test_escape_closes_every_modal() -> None:
                 ShrineScreen(app.game, "weles"),
                 TradeScreen(app.game, app.game.player),
                 LegendScreen(app.game),
+                EquipScreen(app.game),
             ]
             for modal in modals:
                 app.push_screen(modal)
@@ -132,5 +145,57 @@ def test_death_screen_main_screen_and_quit_outcomes() -> None:
                 await pilot.press(key)
                 await pilot.pause()
                 assert app.return_value == expected
+
+    asyncio.run(run())
+
+
+def test_quickslot_keyboard_cycle() -> None:
+    """M7 DoD (d): bind → use → clear, keyboard only."""
+
+    async def run() -> None:
+        app = WyrajApp(seed=42)
+        async with app.run_test(size=(100, 40)) as pilot:
+            game = app.game
+            entity = _give(game, "odwar")
+            inventory = game.world.expect(game.player, Inventory)
+            letter = string.ascii_lowercase[inventory.items.index(entity)]
+            await pilot.press("i")
+            await pilot.press("1")
+            await pilot.press(letter)
+            await pilot.pause()
+            assert len(app.screen_stack) == 1  # binding closed the pack
+            assert game.world.expect(game.player, Quickslots).slot1 == "odwar"
+
+            health = game.world.expect(game.player, Health)
+            game.world.add(game.player, replace(health, hp=5))
+            await pilot.press("1")
+            assert game.world.expect(game.player, Health).hp > 5
+
+            await pilot.press("exclamation_mark")  # Shift+1
+            assert game.world.expect(game.player, Quickslots).slot1 is None
+
+            await pilot.press("2")  # empty slot: aside only, no turn
+            turn = game.turn
+            await pilot.pause()
+            assert game.turn == turn
+
+    asyncio.run(run())
+
+
+def test_equip_screen_unequips_via_letter() -> None:
+    async def run() -> None:
+        app = WyrajApp(seed=42)
+        async with app.run_test(size=(100, 40)) as pilot:
+            game = app.game
+            kaftan = _give(game, "kaftan")
+            game.step(WearItem(kaftan))
+            await pilot.press("e")
+            assert isinstance(app.screen, EquipScreen)
+            await pilot.press("b")  # torso row
+            await pilot.pause()
+            assert len(app.screen_stack) == 1
+            wearing = game.world.expect(game.player, Wearing)
+            assert wearing.item is None
+            assert kaftan in game.world.expect(game.player, Inventory).items
 
     asyncio.run(run())

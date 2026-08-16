@@ -167,7 +167,7 @@ each story keeps `main` playable. Everything the pane shows is a projection of E
 - Six slots (head/torso/weapon/offhand/amulet/feet): core components + equip rules (offhand = shield xor light source), pane rows with enchant/curse coding (+ redundant glyph), gromnica burn turns, `e`/Tab unequip-swap flow
 - **Verify:** pilot equips/swaps keyboard-only; core tests for slot rules.
 
-### US 10.3 — Status row (spec §4)
+### US 10.3 — Status row (spec §4) — **DONE 2026-08-16**
 - Pure projection of `StatusEffects` with turn counters, color families + glyphs; overflow → 3 + `+N more`
 - **Verify:** fixture renders incl. >4 statuses.
 

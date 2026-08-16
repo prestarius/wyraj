@@ -12,7 +12,17 @@ import yaml
 
 from wyraj.persistence.paths import wyraj_home
 
-VALID_KEYS = {"ascii", "portrait", "origin", "lang", "narrator", "llm", "hints", "text_speed"}
+VALID_KEYS = {
+    "ascii",
+    "portrait",
+    "origin",
+    "lang",
+    "narrator",
+    "llm",
+    "hints",
+    "text_speed",
+    "quickslots",  # M7: {auto_refill: bool}
+}
 
 
 def load_config() -> dict[str, Any]:
